@@ -5,7 +5,6 @@ import pandas as pd
 class sigma:
     def __init__(self, data):
         self.data=data
-
     def sigma_print(self):
         df_news = pd.read_table(self.data,header = None)
         plt.plot(df_news[0],df_news[1],'-o', lw=3, color='royalblue',label='$G^{II}$')
