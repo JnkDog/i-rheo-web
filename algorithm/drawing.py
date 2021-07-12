@@ -20,3 +20,10 @@ def drawing(contents, value=1):
     
 
     return fig
+
+def drawing_demo_data():
+    df = pd.read_table("./example_data/SingExp6_5.txt",header=None)
+    df.columns = ["Time (s)", "G(t) (Pa)"]
+
+    fig = px.line(data_frame=df, x="Time (s)", y="G(t) (Pa)", log_x=True, range_y=[0, 1])
+    return fig

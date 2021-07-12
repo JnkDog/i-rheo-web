@@ -32,7 +32,7 @@ from components.input.input import InputValue
 from components.display.spinner import Spinner
 
 # Algorithms
-from drawing import drawing
+from algorithm.drawing import drawing, drawing_demo_data
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -46,6 +46,11 @@ app.layout = html.Div(
                         html.H5("Support .txt"),
                         Upload,
                         html.Div(id="upload_message")
+                    ]),
+                    html.Hr(),
+                    html.Div([
+                        html.H5("Example data"),
+                        dbc.Button("Load Example data", id="load_example", color="primary", style={"margin": "5px"})
                     ]),
                     html.Hr(),
                     html.Div([
@@ -74,17 +79,30 @@ app.layout = html.Div(
         Output("upload_message", "children")
     ],
     Input("calculate", "n_clicks"),
+    Input("load_example", "n_clicks"),
     State("upload", "contents"),
     State("input", "value"),
     State("upload", "filename"),
     # dont call the func when first loaded
     prevent_initial_call=True
 )
-def data_process(n_clicks, contents, input_value, name):
-    # print(contents)
-    # print(type(contents))
+def data_process(calculate_btn, sample_btn, contents, input_value, name):
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        button_id = 'No clicks yet'
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    # print(button_id)
+
+    if button_id == "load_example":
+        fig = drawing_demo_data()
+        message = "Demo data"
+        return fig, message
+
     fig = drawing(contents, input_value)
-    # print(type(value))  
+
     if contents is None:
         name = "Please chosse a file"
 
