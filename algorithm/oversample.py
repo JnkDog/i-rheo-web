@@ -24,9 +24,9 @@ class oversampling:
         t = df_news[0]
         g = df_news[1]
         t0 = 0   
-        g0 = 1     #delet
-        ginf = 0#delet
-        InterpFunc = "slinear"#delet
+        g0 = 1     #delet after design input label
+        ginf = 0#delet after design input label
+        InterpFunc = "slinear"#delet after design input label
         freqpoints = 200
         DIP = math.log10(len(t))/math.log10(t[len(t)-1]/t[1]);
         if DIP < 0.6:
