@@ -87,5 +87,3 @@ class mtfourier:
 #zyy=mtfourier("SingExp6_5.txt")
 #zyy.test()
     
-    
-    
