@@ -1,17 +1,4 @@
-"""
-TODO(Chen) layout for this web           ok
-TODO(Chen) encryption for message   
-TODO(Chen) Read txt                      ok
-TODO(Chen) Change txt to render          
-TODO(Chen) science represent    
-TODO(Chen) how to draw line
-TODO(Chen) import file and render        ok
-TODO(Chen) Web Router
-TODO(Chen) Data duration                 ok  
-"""
-
 # os package
-from calendar import c
 import datetime
 import base64
 from unicodedata import name
@@ -30,6 +17,7 @@ from components.nav.nav import NavBar
 from components.upload.upload import Upload
 from components.input.input import InputValue
 from components.display.spinner import Spinner
+from components.oversamping.oversamping import Oversamping
 
 # Algorithms
 from algorithm.drawing import drawing, drawing_demo_data
@@ -61,7 +49,9 @@ app.layout = html.Div(
                     html.Div([
                         html.H5("Commands"),
                         dbc.Button("Calculate", id="calculate", color="primary", style={"margin": "5px"})
-                    ])
+                    ]),
+                    html.Hr(),
+                    Oversamping
                 ], 
             width=3
             )
