@@ -3,12 +3,13 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 
 options_list = [
-    {"label": "Linear", "value": 1},
-    {"label": "Slinear", "value": 2},
-    {"label": "Nearest", "value": 3},
+    {"label": "Linear", "value": "linear"},
+    {"label": "Slinear", "value": "slinear"},
+    {"label": "Nearest", "value": "nearest"},
 ]
 
 SelectOversamping = dbc.Select(
+    id="select-oversamping",
     options=options_list,
-    placeholder="Type"
+    placeholder="Choose"
 )
