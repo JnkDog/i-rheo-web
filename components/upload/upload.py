@@ -6,7 +6,7 @@ Upload = dcc.Upload(
     id="upload",
     accept='.txt, .csv',
     # modify the upload file name
-    filename="rawdata"
+    filename="raw data"
 )
 
 # vitrtual line version
