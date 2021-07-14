@@ -26,12 +26,6 @@ app.layout = html.Div([
 ], className="container-fluid")
 
 
-# html.Div(
-#     [
-#         NavBar,
-#         sigma_app
-#     ],
-# )
 @app.callback(
     Output("page-content", "children"),
     Input("url", "pathname")
