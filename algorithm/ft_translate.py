@@ -8,12 +8,12 @@ class mtfourier:
     def __init__(self,data):
         self.data=data
 
-#available after design g_0,g_dot_inf input label
-'''       
-    def __init__(self,g_0,g_dot_inf):    
-        self.g_0= g_0
-        self.g_dot_inf= g_dot_inf
-'''    
+    #available after design g_0,g_dot_inf input label
+    '''       
+        def __init__(self,g_0,g_dot_inf):    
+            self.g_0= g_0
+            self.g_dot_inf= g_dot_inf
+    '''    
     #invoking test function to print G' and G"
     def test(self):
         df_news = pd.read_table(self.data,header = None)
