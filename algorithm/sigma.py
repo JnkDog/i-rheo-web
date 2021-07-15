@@ -25,7 +25,7 @@ class Sigma:
             decoded = base64.b64decode(contents)
             df = pd.read_table(io.StringIO(decoded.decode("utf-8")))
             df.columns = ["Time (s)", "G(t) (Pa)"]
-
+            
             fig = px.line(data_frame=df, x="Time (s)", y="G(t) (Pa)", log_x=True, range_y=[0, 1])
             # print(df)    
             
