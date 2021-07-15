@@ -5,16 +5,12 @@ from scipy.interpolate import interp1d
 import pandas as pd
 
 class mtfourier:
-    def __init__(self,data):
-        self.data=data
+    def __init__(self, data):
+        self.data = data
 
-#available after design g_0,g_dot_inf input label
-'''       
-    def __init__(self,g_0,g_dot_inf):    
-        self.g_0= g_0
-        self.g_dot_inf= g_dot_inf
-'''    
-    #invoking test function to print G' and G"
+# available after design g_0,g_dot_inf input label
+    
+    # invoking test function to print G' and G"
     def test(self):
         df_news = pd.read_table(self.data,header = None)
         i = complex(0,1)
@@ -32,35 +28,9 @@ class mtfourier:
         plt.show()
     
     def manlio_ft(self,g,t,g_0=1,g_dot_inf=0,N_f=100,interpolate=True,oversampling=10):
-        """ 
-        Calculates the Fourier transform of numeric data.
-
-        Takes any numeric time-dependent function g(t) that vanishes fot t<0,
-        sampled at finite points [g_k,t_k] with k=1...N, and returns its 
-        Fourier transform g(omega), together with the frequency range omega 
-        defined from 1/t_max to 1/t_min. For details on the numerical procedure,
-        refer to Tassieri et al., 2016 (https://doi.org/10.1122/1.4953443).
-
-        Parameters
-        ---------
-        g : array 
-            measured time-dependent variable.
-        t : array 
-            time array. 
-        g_0: 
-            value of g at time euqal 0. Can be taken as g[0].
-        g_dot_inf:
-            value of the time derivative of g at time equal infinity. Can be taken as 0.
-        N_f: int
-            frequency samples.
-        interpolate: bool
-            if True, data is interpolated with a cubic spline and re-sampled in log-space.
-        oversampling: int
-            factor by which the length of the time array is increased for oversampling in log-space.
-        """
     
-        g=np.array(g)
-        t=np.array(t)
+        g = np.array(g)
+        t = np.array(t)
     
         if interpolate is True:
             gi = interp1d(t,g,kind='cubic',fill_value='extrapolate')
@@ -70,9 +40,9 @@ class mtfourier:
         i = complex(0,1)
         min_omega = 1/max(t)
         max_omega = 1/min(t)
-        N_t=len(t)
+        N_t = len(t)
         omega = np.logspace(np.log10(min_omega),np.log10(max_omega),N_f)
-        zero=i*omega*g_0 + (1-np.exp(-i*omega*t[1]))*((g[1]-g_0)/t[1])\
+        zero = i*omega*g_0 + (1-np.exp(-i*omega*t[1]))*((g[1]-g_0)/t[1])\
                 + g_dot_inf*np.exp(-i*omega*t[N_t-1]) 
         res = np.zeros(len(omega),dtype=complex)
         for w_i, w in enumerate(omega):
@@ -84,6 +54,6 @@ class mtfourier:
         return omega, ((res)/(i*omega)**2)
 
 
-#zyy=mtfourier("SingExp6_5.txt")
-#zyy.test()
+zyy = mtfourier("SingExp6_5.txt")
+zyy.test()
     
