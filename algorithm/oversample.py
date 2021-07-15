@@ -10,12 +10,13 @@ class oversampling:
     def __init__(self, data):
         self.data=data
     #available after design g_0,g_dot_inf input label
-'''       
-    def __init__(self,g0,ginf,InterpFunc):    
+    '''       
+    def __init__(self,g0,ginf,InterpFunc,oversampling):    
         self.g0= g0
         self.ginf= ginf
         self.InterpFunc= InterpFunc
-''' 
+        self.oversampling= oversampling
+    ''' 
     
     def OverSample(self):
          #,t,g,g0,ginf,InterpFunc):
@@ -26,6 +27,14 @@ class oversampling:
         t0 = 0   
         g0 = 1     #delet after design input label
         ginf = 0#delet after design input label
+        oversampling=10
+        t0 = 0   
+        g0 = 1
+        gi = interp1d(t,g,InterpFunc='cubic',fill_value='extrapolate')
+        t_new = np.logspace(min(np.log10(t)),max(np.log10(t)),len(t)*oversampling) #re-sample t in log space
+        Gint_I = gi(t_new) # get new g(t) taken at log-space sampled t
+        t_I = t_new
+        '''
         InterpFunc = "slinear"#delet after design input label
         freqpoints = 200
         DIP = math.log10(len(t))/math.log10(t[len(t)-1]/t[1]);
@@ -43,6 +52,7 @@ class oversampling:
             g1 = np.hstack((g0,g))
             f = interpolate.interp1d(t1,g1,"slinear")
             Gint_I=f(t_I)
+        '''
         plt.plot(t_I,Gint_I,'-o', lw=3, color='royalblue',label='$G^{II}$')
         plt.xscale('log')
         plt.xlabel('Time (s)')
