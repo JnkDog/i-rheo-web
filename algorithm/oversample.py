@@ -15,10 +15,11 @@ class Oversampling:
     #available after design g_0,g_dot_inf input label
 
     '''       
-        def __init__(self,g0,ginf,InterpFunc):    
+        def __init__(self,g0,ginf,InterpFunc,oversampling):    
             self.g0= g0
             self.ginf= ginf
             self.InterpFunc= InterpFunc
+            self.oversampling= oversampling    #ntimes
     ''' 
 
     def OverSample(self):
@@ -26,6 +27,12 @@ class Oversampling:
         df_news = pd.read_table(self.data, header = None)
         t = df_news[0]
         g = df_news[1]
+        oversampling=10   #input
+        gi = interp1d(t,g,InterpFunc='cubic',fill_value='extrapolate')#InterpFunc need input
+        t_new = np.logspace(min(np.log10(t)),max(np.log10(t)),len(t)*oversampling) #re-sample t in log space
+        Gint_I = gi(t_new) # get new g(t) taken at log-space sampled t
+        t_I = t_new
+        '''
         t0 = 0   
 
         g0 = 1     #delet after design input label
@@ -48,6 +55,7 @@ class Oversampling:
             g1 = np.hstack((g0,g))
             f = interpolate.interp1d(t1, g1, "slinear")
             Gint_I = f(t_I)
+        '''
         plt.plot(t_I, Gint_I, '-o', lw=3, color='royalblue', label='$G^{II}$')
         plt.xscale('log')
         plt.xlabel('Time (s)')
@@ -56,6 +64,15 @@ class Oversampling:
     
     # @staticmethod
     def oversamping_process(self, t, g, points_number, option):
+        option = 'cubic'
+        InterpFunc = option
+        oversampling=10
+        gi = interp1d(t,g,InterpFunc,fill_value='extrapolate')
+        t_new = np.logspace(min(np.log10(t)),max(np.log10(t)),len(t)*oversampling) #re-sample t in log space
+        Gint_I = gi(t_new) # get new g(t) taken at log-space sampled t
+        t_I = t_new
+            
+        '''
         DIP = math.log10(len(t))/math.log10(t[len(t)-1]/t[1])
         g0 = 1
         InterpFunc = option
@@ -74,7 +91,7 @@ class Oversampling:
             g1 = np.hstack((g0, g))
             f = interpolate.interp1d(t1, g1, "slinear")
             Gint_I = f(t_I)
-        
+        '''
         return t_I, Gint_I
 
     # @classmethod
