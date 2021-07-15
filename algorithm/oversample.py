@@ -24,12 +24,7 @@ class oversampling:
         df_news = pd.read_table(self.data,header = None)
         t = df_news[0]
         g = df_news[1]
-        t0 = 0   
-        g0 = 1     #delet after design input label
-        ginf = 0#delet after design input label
         oversampling=10
-        t0 = 0   
-        g0 = 1
         gi = interp1d(t,g,InterpFunc='cubic',fill_value='extrapolate')
         t_new = np.logspace(min(np.log10(t)),max(np.log10(t)),len(t)*oversampling) #re-sample t in log space
         Gint_I = gi(t_new) # get new g(t) taken at log-space sampled t
