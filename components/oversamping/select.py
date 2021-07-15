@@ -11,5 +11,5 @@ options_list = [
 SelectOversamping = dbc.Select(
     id="select-oversamping",
     options=options_list,
-    placeholder="Choose"
+    placeholder="Choose a type ..."
 )
