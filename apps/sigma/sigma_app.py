@@ -31,7 +31,8 @@ Layout = dbc.Row([
                         Upload,
                         html.Div(id="upload-message"),
                         dcc.Store(id="raw-data-store"),
-                        dcc.Store(id="oversamping-data-store")
+                        dcc.Store(id="oversamping-data-store"),
+                        dcc.Store(id="FT-data-store")
                     ]),
                     html.Hr(),
                     html.Div([
@@ -42,30 +43,6 @@ Layout = dbc.Row([
                     Oversamping], width=3)
             , dbc.Col([Tabs], width=True)
 ])
-
-# @app.callback(
-#     [
-#         Output("display", "figure"),
-#         Output("upload_message", "children")
-#     ],
-#     Input("upload", "contents"),
-#     # State("input", "value"),
-#     State("upload", "filename"),
-#     # dont call the func when first loaded
-#     prevent_initial_call=True
-# )
-# def upload_process(contents, name):
-#     ctx = dash.callback_context
-#     button_id = ctx.triggered[0]["prop_id"].split(".")[0]
-#     print(button_id)
-#     if contents is None:
-#         name = "Please chosse a file"
-
-#     fig = Sigma.sigma_render(contents)
-
-#     message = html.H6(name)
-    
-#     return [fig, message]
 
 @app.callback(
     Output("raw-data-store", "data"),
@@ -87,18 +64,6 @@ def store_data(content, file_name):
 
     return data, upload_messge
 
-# @app.callback(
-#     Output("sigma-display", "figure"),
-#     Input("raw-data-store", "data"),
-#     prevent_initial_call=True
-# )
-# def data_render(data):
-#     fig = px.scatter()
- 
-#     return {
-        
-#     }
-
 # clientside callback test
 app.clientside_callback(
     """
@@ -112,11 +77,11 @@ app.clientside_callback(
         */
         if (switchValue[0] == true && oversampingData != undefined) {
             console.log("========= in oversamping =======")
-            console.log(oversampingData)
+            # console.log(oversampingData)
             data = oversampingData;
         } else {
-            console.log("========= in sigma =======")
-            console.log(rawData)
+            console.log("========= in sigma =============")
+            # console.log(rawData)
             data = rawData;
         }
 
@@ -135,48 +100,6 @@ app.clientside_callback(
     Input("oversamping-render-switch", "value"),
     prevent_initial_call=True
 )
-
-# @app.callback(
-#     [
-#         # Output("display", "figure"),
-#         Output("oversamping-message", "children"),
-#         Output("sigma-display", "figure"),
-#     ],
-#     [
-#         Input("oversamping-btn", "n_clicks")
-#     ],
-#     [
-#         State("upload", "contents"),
-#         # State("oversamping-input", "value"),
-#         State("select-oversamping", "value")
-#     ],
-#     # State("upload", "contents"),
-#     # dont call the func when first loaded
-#     prevent_initial_call=True
-# )
-# def oversamping_render(btn_click, content, option):
-#     fig = px.scatter()
-#     if option is None:
-#         return ["Choice types", fig]
-    
-    # # test option
-    # option = "slinear"
-    # test = Oversampling(content)
-    # fig = test.oversamping_render(content, option)
-
-    # fig = Oversampling.oversamping_render(content, points_number, option)    
-#     return ["oversamping OK", fig]
-
-# switch test
-# @app.callback(
-#     Output("oversamping-message", "children"),
-#     Input("oversamping-render-switch", "value"),
-#     prevent_initial_call=True
-# )
-# def switch_test(switch_value):
-#     switch_value.append(False) if len(switch_value) == 0 else switch_value
-    
-#     return "The switch is {}".format(switch_value[0])
 
 @app.callback(
     Output("oversamping-data-store", "data"),
@@ -199,11 +122,6 @@ def oversamping_render(n_clicks, content, option):
         "data_type" : "oversamping"
     }]
 
-    print(type(data))
     return data
 
-
-
-# ================ FT callback ===================
-
-
+# ================ FT callback ========================
