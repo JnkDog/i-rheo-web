@@ -11,11 +11,10 @@ class oversampling:
         self.data=data
     #available after design g_0,g_dot_inf input label
     '''       
-    def __init__(self,g0,ginf,InterpFunc,oversampling):    
-        self.g0= g0
-        self.ginf= ginf
-        self.InterpFunc= InterpFunc
-        self.oversampling= oversampling
+    def __init__(self,g0,ginf,oversampling):    
+        self.g0 = g0
+        self.ginf = ginf
+        self.oversampling = oversampling  #times
     ''' 
     
     def OverSample(self):
