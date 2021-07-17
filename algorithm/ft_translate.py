@@ -9,11 +9,13 @@ class mtfourier:
         self.data=data
 
 #available after design g_0,g_dot_inf input label
-'''       
-    def __init__(self,g_0,g_dot_inf):    
+    '''       
+    def __init__(self,g_0,g_dot_inf,interpolate,oversampling):    
         self.g_0= g_0
         self.g_dot_inf= g_dot_inf
-'''    
+        self.interpolate= interpolate
+        self.oversampling= oversampling
+    '''    
     #invoking test function to print G' and G"
     def test(self):
         df_news = pd.read_table(self.data,header = None)
