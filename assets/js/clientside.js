@@ -3,14 +3,19 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         tabChangeFigRender: function(rawData, oversampingData, switchValue=[false]) {
             let data = [];
             let layout = {
-                "xaxis": {"dtick": 1, "tick0": -2, "type": "log", "title": {"text": "Time (s)"}},
-                "yaxis": {"title": {"text" : "G(t) (Pa)"}},
+                "xaxis": {"tick0": -2, "dtick": 1,
+                          "type": "log", "title": {"text": "Time (s)"}, 
+                          "ticks": "outside" 
+                },
+                "yaxis": {"title": {"text" : "G(t) (Pa)"}, "range": [0, 1.0],
+                          "rangemode": "tozero", "ticks": "outside"
+                },
             }
             let rawDataTrace = {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
                 "name": "Experiental Data",
                 "mode": "markers",
-                "marker": {"symbol": "circle-open", "size": 12},
+                "marker": {"symbol": "circle-open", "size": 10},
                 "x": rawData.x,
                 "y": rawData.y
             }
