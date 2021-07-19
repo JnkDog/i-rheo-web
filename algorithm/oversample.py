@@ -103,7 +103,9 @@ class Oversampling:
     def get_oversamping_data(self, content, option, ginf=0, g0=1):
         contents = content.split(",")[-1]
         decoded = base64.b64decode(contents)
-        df = pd.read_table(io.StringIO(decoded.decode("utf-8")), header=None)
+
+        # read seprate includes space and tab (delim_whitespace=True)
+        df = pd.read_table(io.StringIO(decoded.decode("utf-8")), header=None, delim_whitespace=True)
         t_I, Gint_I = self.oversamping_process(df[0], df[1], option)
         
         return t_I.tolist(), Gint_I.tolist()

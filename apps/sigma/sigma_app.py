@@ -1,7 +1,7 @@
 import collections
 from datetime import date
 import dash
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc
 from dash_core_components.Store import Store
 import dash_html_components as html
@@ -51,64 +51,26 @@ Layout = dbc.Row([
     State("upload", "filename"),
     prevent_initial_call=True
 )
-def store_data(content, file_name):
+def store_raw_data(content, file_name):
     df = generate_df(content)
 
-    data = [{
+    data = {
         "x" : df[0],
         "y" : df[1],
-        "data_type" : "raw"
-    }]
+    }
 
     upload_messge = "The upload file {} with {} lines".format(file_name, len(df))
 
     return data, upload_messge
 
-# clientside callback test
-app.clientside_callback(
-    """
-    function(rawData, oversampingData, switchValue=[false]) {
-        let data = []
-
-        /**
-        * Only oversamping button on and oversampingData has value to render Oversamping figure.
-        * You may feel wired about the switchValue is [bool] not bool.
-        * It's the Dash's wired part... Just follow the framework's rule QAQ
-        */
-        if (switchValue[0] == true && oversampingData != undefined) {
-            console.log("========= in oversamping =======")
-            # console.log(oversampingData)
-            data = oversampingData;
-        } else {
-            console.log("========= in sigma =============")
-            # console.log(rawData)
-            data = rawData;
-        }
-
-        return {
-            "data" : data,
-            "layout": {
-                "xaxis" : {"type": "log", "title" : {"text" : "Time (s)"}},
-                "yaxis" : {"title" : {"text" : "G(t) (Pa)"}}
-             }
-        }   
-    }
-    """,
-    Output("sigma-display", "figure"),
-    Input("raw-data-store", "data"),
-    Input("oversamping-data-store", "data"),
-    Input("oversamping-render-switch", "value"),
-    prevent_initial_call=True
-)
-
 @app.callback(
     Output("oversamping-data-store", "data"),
     Input("oversamping-btn", "n_clicks"),
     State("upload", "contents"),
-    State("select-oversamping", "value")
+    State("oversamping-input", "value")
 )
-def oversamping_render(n_clicks, content, option):
-    if n_clicks == None or content == None:
+def store_oversamping_data(n_clicks, content, oversamping_number):
+    if n_clicks is None or content is None or oversamping_number is None:
         raise PreventUpdate
 
     # test demo
@@ -116,12 +78,24 @@ def oversamping_render(n_clicks, content, option):
     test = Oversampling(content)
     x, y = test.get_oversamping_data(content, option)
 
-    data = [{
+    data = {
         "x" : x,
         "y" : y,
-        "data_type" : "oversamping"
-    }]
+    }
 
     return data
 
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideSigma",
+        function_name="tabChangeFigRender"
+    ),
+    Output("sigma-display", "figure"),
+    Input("raw-data-store", "data"),
+    Input("oversamping-data-store", "data"),
+    Input("oversamping-render-switch", "value"),
+    prevent_initial_call=True
+)
+
 # ================ FT callback ========================
+
