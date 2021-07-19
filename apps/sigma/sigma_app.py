@@ -7,6 +7,7 @@ from dash_core_components.Store import Store
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
+from numpy import save
 import plotly.express as px
 import pandas as pd
 
@@ -14,8 +15,7 @@ from app import app
 
 # import components
 from components.upload.upload import Upload
-from components.input.input import InputValue
-from components.display.spinner import Spinner
+from components.download.download import Download
 from components.oversamping.oversamping import Oversamping
 from components.tab.tabs import Tabs
 
@@ -37,13 +37,22 @@ Layout = dbc.Row([
                     html.Hr(),
                     html.Div([
                         html.H5("Example data"),
-                        dbc.Button("Load Example data", id="load-example", color="primary", style={"margin": "5px"})
+                        dbc.Button("Load Example data", id="load-example", 
+                                   color="primary", style={"margin": "5px"})
                     ]),
                     html.Hr(),
-                    Oversamping], width=3)
+                    Oversamping,
+                    html.Hr(),
+                    Download
+                    ], width=3)
             , dbc.Col([Tabs], width=True)
 ])
 
+# ================ Upload callback ========================
+
+"""
+Trigger when the experiental data(raw data) uploaded  
+"""
 @app.callback(
     Output("raw-data-store", "data"),
     Output("upload-message", "children"),
@@ -63,6 +72,10 @@ def store_raw_data(content, file_name):
 
     return data, upload_messge
 
+"""
+Trigger when the experiental data(raw data) has already uploaded
+and the oversamping button clicked with the oversamping ntimes.
+"""
 @app.callback(
     Output("oversamping-data-store", "data"),
     Input("oversamping-btn", "n_clicks"),
@@ -84,6 +97,9 @@ def store_oversamping_data(n_clicks, content, ntimes):
 
     return data
 
+"""
+Trigger when the experiental data(raw data) or oversamping data changed
+"""
 app.clientside_callback(
     ClientsideFunction(
         namespace="clientsideSigma",
@@ -95,6 +111,41 @@ app.clientside_callback(
     Input("oversamping-render-switch", "value"),
     prevent_initial_call=True
 )
+
+# ================ Download callback ========================
+
+@app.callback(
+    Output("download-text", "data"),
+    Output("download-message", "children"),
+    Input("download-btn", "n_clicks"),
+    State("begin-line-number", "value"),
+    State("end-line-number", "value"),
+    State("oversamping-data-store", "data"),
+    prevent_initial_call=True,
+)
+def download(n_clicks, beginLineIdx, endLineIdx, data):
+    if data is None:
+        raise PreventUpdate
+
+    # avoid floor number
+    beginLineIdx = int(beginLineIdx)
+    endLineIdx   = int(endLineIdx)
+    if beginLineIdx >= endLineIdx:
+        return None, "Invaild parameters"
+    
+    len = endLineIdx - beginLineIdx
+
+    try:
+        saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
+        saving_y_list = data.get("y")[beginLineIdx:endLineIdx+1]
+    except:
+        # if the idx is out of range, say, endLineIdx > len(x)
+        saving_x_list = data.get("x")[beginLineIdx:]
+        saving_y_list = data.get("y")[beginLineIdx:]
+    else:
+        saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
+
+    return dcc.send_data_frame(saving_df.to_csv, "data.txt"), "Download OK !"    
 
 # ================ FT callback ========================
 

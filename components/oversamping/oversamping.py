@@ -7,13 +7,14 @@ from components.oversamping.input import OversampingInput
 from components.oversamping.switch import Switch
 
 Oversamping = html.Div([
-    Switch,
+    html.H5("Oversamping"),
     dbc.InputGroup(
         id="oversamping-control-components",
         children=[
             OversampingInput,
             dbc.Button("oversamping", id="oversamping-btn", color="primary"),
     ]),
-    html.H5(id="oversamping-message", className="text-warning")
+    # html.H5(id="oversamping-message", className="text-warning"),
+    Switch
 ]) 
  
