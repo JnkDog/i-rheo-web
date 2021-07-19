@@ -83,7 +83,3 @@ class mtfourier:
             res[w_i]=(zero[w_i]+after)
         return omega, ((res)/(i*omega)**2)
 
-
-#zyy=mtfourier("SingExp6_5.txt")
-#zyy.test()
-    

@@ -16,6 +16,11 @@ Spinner_FT = dbc.Spinner(
     color="primary"
 )
 
+Spinner_Gamma = dbc.Spinner(
+    dcc.Graph(id="Gamma-display", style={"height" : "80vh"}),
+    color="primary"
+)
+
 # TODO generate spinner better
 def spinner_generate(id):
     spinner = dbc.Spinner(

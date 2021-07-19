@@ -31,5 +31,3 @@ class Sigma:
             
         return fig
 
-#zyy=sigma("SingExp6_5.txt")
-#zyy.sigma_print()
