@@ -3,6 +3,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
+from plotly.missing_ipywidgets import FigureWidget
 
 from scipy.interpolate import interp1d
 import plotly.graph_objs as go
@@ -13,10 +14,19 @@ app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 def fttest():
     df_news = pd.read_table("SingExp6_5.txt", header=None)
-
+    df_news = df_news
     i = complex(0, 1)
     time = np.linspace(1e-2, 1e2, 10000) 
     func = df_news[1]
+
+    layout = go.Layout(
+        title='ft graph',
+        yaxis={
+            'hoverformat': '.2f'  # 如果想显示小数点后两位'.2f'，显示百分比'.2%'
+        },
+        xaxis_type="log",
+        yaxis_type="log"
+    )
 
     def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=10):
         g = np.array(g)
@@ -45,12 +55,12 @@ def fttest():
     omega, res_test = manlio_ft(func, time, 1, 0, N_f=100, interpolate=True)
     g_p = np.real(res_test*omega*i)
     g_pp = np.imag(res_test*omega*i)
-    print(len(g_p), len(omega))
+   
     # Add traces
     trace1 = go.Scatter(
         x=omega,
         y=g_p,
-        # mode="linear+markers"
+        mode="lines",
         name="g_p"
     )
     trace2 = go.Scatter(
@@ -58,37 +68,29 @@ def fttest():
         y=g_pp,
         name="g_pp"
     )
-    layout = go.Layout(
-        title='ft graph',
-        yaxis={
-            'hoverformat': '.2f'  # 如果想显示小数点后两位'.2f'，显示百分比'.2%'
-        },
-        xaxis_type="log",
-        yaxis_type="log"
-    )
     data = [trace1, trace2]
-
+    # print(go.Figure(data=data, layout=layout))
     return go.Figure(
         data=data,
         layout=layout
     )
 
-
 app.layout = html.Div([
     dcc.Graph(
-        id='show_scatter',
+        id='ft-fig',
         figure=fttest()
     ),
 ], style={'margin': 100})
 
 
-# @app.callback(
-#     Output('show_scatter', 'figure'),
-#     Output('square', 'children'),
-#     input('num-multi', 'value')
-#     )
-# def upgrade(x):
-#     return x+1
+@app.callback(
+    Output('ft-fig', 'figure'),
+    )
+def switch_ftfigure():
+    if button == on:
+        return original-Figure
+    else:
+        return oversampled-Figure
 
 
 if __name__ == '__main__':
