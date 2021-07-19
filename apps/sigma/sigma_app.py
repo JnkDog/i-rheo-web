@@ -21,7 +21,7 @@ from components.tab.tabs import Tabs
 
 # import algorithm
 from algorithm.sigma import Sigma
-from algorithm.oversample import Oversampling
+from algorithm.oversample import get_oversamping_data
 from algorithm.read_data import generate_df
 
 Layout = dbc.Row([
@@ -69,14 +69,13 @@ def store_raw_data(content, file_name):
     State("upload", "contents"),
     State("oversamping-input", "value")
 )
-def store_oversamping_data(n_clicks, content, oversamping_number):
-    if n_clicks is None or content is None or oversamping_number is None:
+def store_oversamping_data(n_clicks, content, ntimes):
+    if n_clicks is None or content is None or ntimes is None:
         raise PreventUpdate
 
-    # test demo
-    option = "slinear"
-    test = Oversampling(content)
-    x, y = test.get_oversamping_data(content, option)
+    # avoid floor number
+    ntimes = int(ntimes)
+    x, y = get_oversamping_data(content=content, ntimes=ntimes)
 
     data = {
         "x" : x,

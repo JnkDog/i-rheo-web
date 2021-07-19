@@ -9,6 +9,8 @@ import plotly.express as px
 import base64
 import io
 
+from algorithm.read_data import generate_df
+
 class Oversampling:
     def __init__(self, data):
         self.data = data
@@ -63,8 +65,6 @@ class Oversampling:
         plt.show()
     
     # @staticmethod
-<<<<<<< HEAD
-    def oversamping_process(self, t, g, points_number, option):
         option = 'cubic'
         InterpFunc = option
         oversampling=10
@@ -75,15 +75,7 @@ class Oversampling:
             
         '''
         DIP = math.log10(len(t))/math.log10(t[len(t)-1]/t[1])
-=======
-    def oversamping_process(self, t, g, option):
-        DIP = math.log10(len(t)) / math.log10(t.tail(1).item() / t.head(1).item())
->>>>>>> 8678a3bf2d43258d19cfb24c162a154c76211ef0
         g0 = 1
-        InterpFunc = option
-
-        if DIP < 0.6:
-            OverSample = int(10 ^ (math.log10(t.tail(1).item() / t.head(1).item())))
             t_I = np.linspace(0, t.tail(1).item(), OverSample)
             t1 = np.hstack((0, t))
             g1 = np.hstack((g0, g))
@@ -99,40 +91,28 @@ class Oversampling:
         '''
         return t_I, Gint_I
 
-    # @classmethod
-    def oversamping_render(self, content, option):
-        fig = px.scatter()
-    
-        if content is not None:
-            # oversamping_times = math.floor(oversamping_times)
-            contents = content.split(",")[-1]
-            decoded = base64.b64decode(contents)
-            df = pd.read_table(io.StringIO(decoded.decode("utf-8")), header=None)
-            df.columns = ["Time (s)", "G(t) (Pa)"]
-            t_I, Gint_I = self.oversamping_process(df["Time (s)"], df["G(t) (Pa)"], option)
-
-            # need modify later
-            t_I = pd.Series(t_I.tolist())
-            Gint_I = pd.Series(Gint_I.tolist())
-            df = DataFrame(dict(t_I = t_I, Gint_I = Gint_I))
-            df.columns = ["Time (s)", "G(t) (Pa)"]
-            
-            fig = px.line(data_frame=df, x="Time (s)", y="G(t) (Pa)", log_x=True, range_y=[0, 1])
-
-        return fig
-    
-    # A function get x, y value from oversamping
-    def get_oversamping_data(self, content, option, ginf=0, g0=1):
-        contents = content.split(",")[-1]
-        decoded = base64.b64decode(contents)
-
-        # read seprate includes space and tab (delim_whitespace=True)
-        df = pd.read_table(io.StringIO(decoded.decode("utf-8")), header=None, delim_whitespace=True)
-        t_I, Gint_I = self.oversamping_process(df[0], df[1], option)
-        
-        return t_I.tolist(), Gint_I.tolist()
-
 ##zyy=oversampling("SingExp6_5.txt")
 #zyy.OverSample()
 
-          
+
+# ========================= Useful Function =============================
+def get_oversamping_data(content, ntimes):
+    raw_data_df = generate_df(content)
+    x, y = oversamping_process(raw_data_df[0], raw_data_df[1], ntimes)
+
+    return x, y
+
+def oversamping_process(t, g, ntimes):
+    """
+    t = values in x-axis
+    g = values in y-axis
+    ntimes = input number from component(id="oversamping-input") 
+    """
+    gi = interp1d(t, g, kind='cubic', fill_value='extrapolate')
+    #re-sample t in log space
+    t_new = np.logspace(min(np.log10(t)), max(np.log10(t)), len(t) * ntimes)
+    # get new g(t) taken at log-space sampled t 
+    Gint_I = gi(t_new) 
+    t_I = t_new   
+
+    return t_I.tolist(), Gint_I.tolist()
