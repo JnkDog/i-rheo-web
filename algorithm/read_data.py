@@ -5,7 +5,8 @@ import io
 # generate dataframe
 def generate_df(content):
     decoded_content = parse_contents(content)
-    df = pd.read_table(io.StringIO(decoded_content.decode("utf-8")), header=None)
+    # read seprate includes space and tab (delim_whitespace=True)
+    df = pd.read_table(io.StringIO(decoded_content.decode("utf-8")), header=None, delim_whitespace=True)
 
     return df
     

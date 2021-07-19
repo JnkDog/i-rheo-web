@@ -6,3 +6,9 @@ InputValue = html.Div([
     html.P("Input the x value"),
     dbc.Input(id="input", placeholder="Type something...", type="number")
 ])
+
+def input_component_generate(id, placeholder, type, p_message=None):
+    return  html.Div([
+            html.P(p_message),
+            dbc.Input(id=id, placeholder=placeholder, type=type)
+    ])
