@@ -72,8 +72,9 @@ def oversampling_process(t, g, ntimes):
     gi = interp1d(t, g, kind='cubic', fill_value='extrapolate')
     #re-sample t in log space
     t_new = np.logspace(min(np.log10(t)), max(np.log10(t)), len(t) * ntimes)
-    # get new g(t) taken at log-space sampled t 
-    Gint_I = gi(t_new) 
-    t_I = t_new   
+    # get new g(t) taken at log-space sampled t and save as decimals = 9 
+    Gint_I = np.around(gi(t_new), decimals=9)
+    # save as decimals = 2
+    t_I = np.around(t_new, decimals=2)   
 
     return t_I.tolist(), Gint_I.tolist()

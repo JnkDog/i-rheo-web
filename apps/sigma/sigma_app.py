@@ -7,7 +7,7 @@ from dash_core_components.Store import Store
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
-from numpy import save
+from numpy import index_exp, save
 import plotly.express as px
 import pandas as pd
 
@@ -114,6 +114,7 @@ app.clientside_callback(
 
 # ================ Download callback ========================
 
+# TODO might modify the floor decimal places and format
 @app.callback(
     Output("download-text", "data"),
     Output("download-message", "children"),
@@ -132,8 +133,6 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
     endLineIdx   = int(endLineIdx)
     if beginLineIdx >= endLineIdx:
         return None, "Invaild parameters"
-    
-    len = endLineIdx - beginLineIdx
 
     try:
         saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
@@ -145,7 +144,10 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
     else:
         saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
 
-    return dcc.send_data_frame(saving_df.to_csv, "data.txt"), "Download OK !"    
+    return (dcc.send_data_frame(saving_df.to_csv, "data.txt", 
+                                header=False, index=False, 
+                                sep='\t', encoding='utf-8'), 
+                                "Download OK !") 
 
 # ================ FT callback ========================
 
