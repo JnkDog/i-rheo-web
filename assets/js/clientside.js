@@ -15,7 +15,8 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
                 "name": "Experiental Data",
                 "mode": "markers",
-                "marker": {"symbol": "circle-open", "size": 10},
+                "marker": {"symbol": "circle-open", 
+                           "size": 10, "maxdisplayed": 200},
                 "x": rawData.x,
                 "y": rawData.y
             }
@@ -32,7 +33,8 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 let oversamplingDataTrace = {
                     "name": "Oversamping Data",
                     "mode": "markers",
-                    "marker": {"symbol": "circle-x", "size": 6},
+                    "marker": {"symbol": "circle-x", 
+                                "size": 6, "maxdisplayed": 200},
                     "x": oversamplingData.x,
                     "y": oversamplingData.y
                 }
