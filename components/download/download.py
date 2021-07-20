@@ -25,7 +25,7 @@ Download = html.Div([
          EndLineInput,
          html.Button("Download File", id="download-btn", 
                      className="btn btn-primary", 
-                     style={"margin-top": "10px"}), 
+                     style={"marginTop": "10px"}), 
          dcc.Download(id="download-text"),
          html.Div(id="download-message")   
 ])

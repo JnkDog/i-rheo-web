@@ -53,9 +53,6 @@ class Oversampling:
 
         return t_I, Gint_I
 
-
-
-
 # ========================= Useful Function =============================
 def get_oversampling_data(content, ntimes):
     raw_data_df = generate_df(content)

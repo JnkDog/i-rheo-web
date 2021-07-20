@@ -17,6 +17,7 @@ from dash_html_components.Nav import Nav
 # import apps and components
 from app import app
 from apps.sigma import sigma_app
+from apps.notfound import notfound_app
 from components.nav.nav import NavBar
 
 app.layout = html.Div([
@@ -35,7 +36,7 @@ def display_page(pathname):
     if pathname == "/app1" or pathname == "/":
         return sigma_app.Layout
     else:
-        return "404"
+        return notfound_app.NotFoundPage
 
 if __name__ == '__main__':
     app.run_server(debug=True)
