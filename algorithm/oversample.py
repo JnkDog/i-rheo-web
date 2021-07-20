@@ -96,17 +96,17 @@ class Oversampling:
 
 
 # ========================= Useful Function =============================
-def get_oversamping_data(content, ntimes):
+def get_oversampling_data(content, ntimes):
     raw_data_df = generate_df(content)
-    x, y = oversamping_process(raw_data_df[0], raw_data_df[1], ntimes)
+    x, y = oversampling_process(raw_data_df[0], raw_data_df[1], ntimes)
 
     return x, y
 
-def oversamping_process(t, g, ntimes):
+def oversampling_process(t, g, ntimes):
     """
     t = values in x-axis
     g = values in y-axis
-    ntimes = input number from component(id="oversamping-input") 
+    ntimes = input number from component(id="oversampling-input") 
     """
     gi = interp1d(t, g, kind='cubic', fill_value='extrapolate')
     #re-sample t in log space

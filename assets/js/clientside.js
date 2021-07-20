@@ -1,6 +1,6 @@
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientsideSigma: {
-        tabChangeFigRender: function(rawData, oversampingData, switchValue=[false]) {
+        tabChangeFigRender: function(rawData, oversamplingData, switchValue=[false]) {
             let data = [];
             let layout = {
                 "xaxis": {"tick0": -2, "dtick": 1,
@@ -21,23 +21,23 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             }
 
             /**
-            * Only oversamping button on and oversampingData has value to render Oversamping figure.
+            * Only oversampling button on and oversamplingData has value to render Oversamping figure.
             * You may feel wired about the switchValue is [bool] not bool.
             * It's the Dash's wired part... Just follow the framework's rule.
             */
-            if (switchValue[0] == true && oversampingData != undefined) {
-                console.log("========= in oversamping =======");
-                // console.log(oversampingData)
-                // data = oversampingData;
-                let oversampingDataTrace = {
+            if (switchValue[0] == true && oversamplingData != undefined) {
+                console.log("========= in oversampling =======");
+                // console.log(oversamplingData)
+                // data = oversamplingData;
+                let oversamplingDataTrace = {
                     "name": "Oversamping Data",
                     "mode": "markers",
                     "marker": {"symbol": "circle-x", "size": 6},
-                    "x": oversampingData.x,
-                    "y": oversampingData.y
+                    "x": oversamplingData.x,
+                    "y": oversamplingData.y
                 }
                 
-                data.push(rawDataTrace, oversampingDataTrace);
+                data.push(rawDataTrace, oversamplingDataTrace);
             } else {
                 console.log("========= in sigma =============");
                 // console.log(rawData)

@@ -16,12 +16,12 @@ from app import app
 # import components
 from components.upload.upload import Upload
 from components.download.download import Download
-from components.oversamping.oversamping import Oversamping
+from components.oversampling.oversampling import Oversampling
 from components.tab.tabs import Tabs
 
 # import algorithm
 from algorithm.sigma import Sigma
-from algorithm.oversample import get_oversamping_data
+from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import generate_df
 
 Layout = dbc.Row([
@@ -31,7 +31,7 @@ Layout = dbc.Row([
                         Upload,
                         html.Div(id="upload-message"),
                         dcc.Store(id="raw-data-store"),
-                        dcc.Store(id="oversamping-data-store"),
+                        dcc.Store(id="oversampling-data-store"),
                         dcc.Store(id="FT-data-store")
                     ]),
                     html.Hr(),
@@ -41,7 +41,7 @@ Layout = dbc.Row([
                                    color="primary", style={"margin": "5px"})
                     ]),
                     html.Hr(),
-                    Oversamping,
+                    Oversampling,
                     html.Hr(),
                     Download
                     ], width=3)
@@ -74,21 +74,21 @@ def store_raw_data(content, file_name):
 
 """
 Trigger when the experiental data(raw data) has already uploaded
-and the oversamping button clicked with the oversamping ntimes.
+and the oversampling button clicked with the oversampling ntimes.
 """
 @app.callback(
-    Output("oversamping-data-store", "data"),
-    Input("oversamping-btn", "n_clicks"),
+    Output("oversampling-data-store", "data"),
+    Input("oversampling-btn", "n_clicks"),
     State("upload", "contents"),
-    State("oversamping-input", "value")
+    State("oversampling-input", "value")
 )
-def store_oversamping_data(n_clicks, content, ntimes):
+def store_oversampling_data(n_clicks, content, ntimes):
     if n_clicks is None or content is None or ntimes is None:
         raise PreventUpdate
 
     # avoid floor number
     ntimes = int(ntimes)
-    x, y = get_oversamping_data(content=content, ntimes=ntimes)
+    x, y = get_oversampling_data(content=content, ntimes=ntimes)
 
     data = {
         "x" : x,
@@ -98,7 +98,7 @@ def store_oversamping_data(n_clicks, content, ntimes):
     return data
 
 """
-Trigger when the experiental data(raw data) or oversamping data changed
+Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
     ClientsideFunction(
@@ -107,8 +107,8 @@ app.clientside_callback(
     ),
     Output("sigma-display", "figure"),
     Input("raw-data-store", "data"),
-    Input("oversamping-data-store", "data"),
-    Input("oversamping-render-switch", "value"),
+    Input("oversampling-data-store", "data"),
+    Input("oversampling-render-switch", "value"),
     prevent_initial_call=True
 )
 
@@ -120,7 +120,7 @@ app.clientside_callback(
     Input("download-btn", "n_clicks"),
     State("begin-line-number", "value"),
     State("end-line-number", "value"),
-    State("oversamping-data-store", "data"),
+    State("oversampling-data-store", "data"),
     prevent_initial_call=True,
 )
 def download(n_clicks, beginLineIdx, endLineIdx, data):
