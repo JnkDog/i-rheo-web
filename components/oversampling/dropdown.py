@@ -7,8 +7,8 @@ items_list = [
 ]
 
 Dropdown = dbc.DropdownMenu(
-    id="oversamping-dropdown",
-    label="oversamping choice",
+    id="oversampling-dropdown",
+    label="oversampling choice",
     color="primary",
     className="m-1",
     children=items_list

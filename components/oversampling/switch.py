@@ -4,10 +4,10 @@ import dash_bootstrap_components as dbc
 
 Switch = dbc.FormGroup([
     dbc.Checklist(options=[
-        {"label" : "oversamping render", "value" : True}
+        {"label" : "oversampling render", "value" : True}
     ],
     # value=[False], 
-    id="oversamping-render-switch", 
+    id="oversampling-render-switch", 
     switch=True,
     style={"fontSize" : "20px"}
 )])

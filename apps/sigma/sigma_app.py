@@ -7,6 +7,7 @@ from dash_core_components.Store import Store
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
+from numpy import index_exp, save
 import plotly.express as px
 import pandas as pd
 
@@ -14,14 +15,13 @@ from app import app
 
 # import components
 from components.upload.upload import Upload
-from components.input.input import InputValue
-from components.display.spinner import Spinner
-from components.oversamping.oversamping import Oversamping
+from components.download.download import Download
+from components.oversampling.oversampling import Oversampling
 from components.tab.tabs import Tabs
 
 # import algorithm
 from algorithm.sigma import Sigma
-from algorithm.oversample import Oversampling
+from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import generate_df
 from algorithm.pwft import ftdata
 
@@ -39,13 +39,22 @@ Layout = dbc.Row([
                     html.Hr(),
                     html.Div([
                         html.H5("Example data"),
-                        dbc.Button("Load Example data", id="load-example", color="primary", style={"margin": "5px"})
+                        dbc.Button("Load Example data", id="load-example", 
+                                   color="primary", style={"margin": "5px"})
                     ]),
                     html.Hr(),
-                    Oversamping], width=3)
+                    Oversampling,
+                    html.Hr(),
+                    Download
+                    ], width=3)
             , dbc.Col([Tabs], width=True)
 ])
 
+# ================ Upload callback ========================
+
+"""
+Trigger when the experiental data(raw data) uploaded  
+"""
 @app.callback(
     Output("raw-data-store", "data"),
     Output("upload-message", "children"),
@@ -72,21 +81,24 @@ def store_raw_data(content, file_name):
 
     return data, upload_messge, ft_data
 
+"""
+Trigger when the experiental data(raw data) has already uploaded
+and the oversampling button clicked with the oversampling ntimes.
+"""
 @app.callback(
     Output("oversamping-data-store", "data"),
     Output("oversampled-ft-data-store", "data"),
     Input("oversamping-btn", "n_clicks"),
     State("upload", "contents"),
-    State("oversamping-input", "value")
+    State("oversampling-input", "value")
 )
-def store_oversamping_data(n_clicks, content, oversamping_number):
-    if n_clicks is None or content is None or oversamping_number is None:
+def store_oversampling_data(n_clicks, content, ntimes):
+    if n_clicks is None or content is None or ntimes is None:
         raise PreventUpdate
 
-    # test demo
-    option = "slinear"
-    test = Oversampling(content)
-    x, y = test.get_oversamping_data(content, option)
+    # avoid floor number
+    ntimes = int(ntimes)
+    x, y = get_oversampling_data(content=content, ntimes=ntimes)
 
     data = {
         "x": x,
@@ -102,6 +114,9 @@ def store_oversamping_data(n_clicks, content, oversamping_number):
     return data, oversampled_ft_data
 
 
+"""
+Trigger when the experiental data(raw data) or oversampling data changed
+"""
 app.clientside_callback(
     ClientsideFunction(
         namespace="clientsideSigma",
@@ -109,10 +124,47 @@ app.clientside_callback(
     ),
     Output("sigma-display", "figure"),
     Input("raw-data-store", "data"),
-    Input("oversamping-data-store", "data"),
-    Input("oversamping-render-switch", "value"),
+    Input("oversampling-data-store", "data"),
+    Input("oversampling-render-switch", "value"),
     prevent_initial_call=True
 )
+
+# ================ Download callback ========================
+
+# TODO might modify the floor decimal places and format
+@app.callback(
+    Output("download-text", "data"),
+    Output("download-message", "children"),
+    Input("download-btn", "n_clicks"),
+    State("begin-line-number", "value"),
+    State("end-line-number", "value"),
+    State("oversampling-data-store", "data"),
+    prevent_initial_call=True,
+)
+def download(n_clicks, beginLineIdx, endLineIdx, data):
+    if data is None:
+        raise PreventUpdate
+
+    # avoid floor number
+    beginLineIdx = int(beginLineIdx)
+    endLineIdx   = int(endLineIdx)
+    if beginLineIdx >= endLineIdx:
+        return None, "Invaild parameters"
+
+    try:
+        saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
+        saving_y_list = data.get("y")[beginLineIdx:endLineIdx+1]
+    except:
+        # if the idx is out of range, say, endLineIdx > len(x)
+        saving_x_list = data.get("x")[beginLineIdx:]
+        saving_y_list = data.get("y")[beginLineIdx:]
+    else:
+        saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
+
+    return (dcc.send_data_frame(saving_df.to_csv, "data.txt", 
+                                header=False, index=False, 
+                                sep='\t', encoding='utf-8'), 
+                                "Download OK !") 
 
 # ================ FT callback ========================
 app.clientside_callback(

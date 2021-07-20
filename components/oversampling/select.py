@@ -9,7 +9,7 @@ options_list = [
 ]
 
 SelectOversamping = dbc.Select(
-    id="select-oversamping",
+    id="select-oversampling",
     options=options_list,
     placeholder="Choose a type ..."
 )

@@ -1,22 +1,27 @@
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientsideSigma: {
-        tabChangeFigRender: function(rawData, oversampingData, switchValue=[false]) {
+        tabChangeFigRender: function(rawData, oversamplingData, switchValue=[false]) {
             let data = [];
             let layout = {
-                "xaxis": {"dtick": 1, "tick0": -2, "type": "log", "title": {"text": "Time (s)"}},
-                "yaxis": {"title": {"text" : "G(t) (Pa)"}},
+                "xaxis": {"tick0": -2, "dtick": 1,
+                          "type": "log", "title": {"text": "Time (s)"}, 
+                          "ticks": "outside" 
+                },
+                "yaxis": {"title": {"text" : "G(t) (Pa)"}, "range": [0, 1.0],
+                          "rangemode": "tozero", "ticks": "outside"
+                },
             }
             let rawDataTrace = {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
                 "name": "Experiental Data",
                 "mode": "markers",
-                "marker": {"symbol": "circle-open", "size": 12},
+                "marker": {"symbol": "circle-open", "size": 10},
                 "x": rawData.x,
                 "y": rawData.y
             }
 
             /**
-            * Only oversamping button on and oversampingData has value to render Oversamping figure.
+            * Only oversampling button on and oversamplingData has value to render Oversamping figure.
             * You may feel wired about the switchValue is [bool] not bool.
             * It's the Dash's wired part... Just follow the framework's rule.
             */
@@ -28,11 +33,11 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     "name": "Oversamping Data",
                     "mode": "markers",
                     "marker": {"symbol": "circle-x", "size": 6},
-                    "x": oversampingData.x,
-                    "y": oversampingData.y
+                    "x": oversamplingData.x,
+                    "y": oversamplingData.y
                 }
                 
-                data.push(rawDataTrace, oversampingDataTrace);
+                data.push(rawDataTrace, oversamplingDataTrace);
             } else {
                 // console.log("========= in sigma =============");
                 // console.log(rawData)
