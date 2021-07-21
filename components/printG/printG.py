@@ -25,8 +25,8 @@ def store_ft_data():
     return data
 
 
-def store_oversampled_data(n_clicks, content, oversamping_number):
-    data = fttest(oversamping_number)
+def store_oversampled_data(n_clicks, content, oversampling_number):
+    data = fttest(oversampling_number)
     return data 
 
 

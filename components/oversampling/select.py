@@ -8,7 +8,7 @@ options_list = [
     {"label": "Nearest", "value": "nearest"},
 ]
 
-SelectOversamping = dbc.Select(
+Selectoversampling = dbc.Select(
     id="select-oversampling",
     options=options_list,
     placeholder="Choose a type ..."

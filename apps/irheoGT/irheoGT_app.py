@@ -28,7 +28,7 @@ Layout = dbc.Row([
                         Upload,
                         html.Div(id="upload-message"),
                         dcc.Store(id="raw-data-store"),
-                        dcc.Store(id="oversamping-data-store"),
+                        dcc.Store(id="oversampling-data-store"),
                         dcc.Store(id="ft-data-store"),
                         dcc.Store(id="oversampled-ft-data-store")
                     ]),
@@ -83,9 +83,9 @@ Trigger when the experiental data(raw data) has already uploaded
 and the oversampling button clicked with the oversampling ntimes.
 """
 @app.callback(
-    Output("oversamping-data-store", "data"),
+    Output("oversampling-data-store", "data"),
     Output("oversampled-ft-data-store", "data"),
-    Input("oversamping-btn", "n_clicks"),
+    Input("oversampling-btn", "n_clicks"),
     State("upload", "contents"),
     State("oversampling-input", "value")
 )
@@ -102,7 +102,7 @@ def store_oversampling_data(n_clicks, content, ntimes):
         "y": y,
     }
     df = generate_df(content)
-    omega, g_p, g_pp = ftdata(df, True, oversamping_number)
+    omega, g_p, g_pp = ftdata(df, True, ntimes)
     oversampled_ft_data = {
         "x": omega,
         "y1": g_p,
@@ -183,6 +183,6 @@ app.clientside_callback(
     Output("FT-display", "figure"),
     Input("ft-data-store", "data"),
     Input("oversampled-ft-data-store", "data"),
-    Input("oversamping-render-switch", "value"),
+    Input("oversampling-render-switch", "value"),
     prevent_initial_call=True
 )

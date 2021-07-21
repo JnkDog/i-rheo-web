@@ -22,16 +22,16 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             }
 
             /**
-            * Only oversampling button on and oversamplingData has value to render Oversamping figure.
+            * Only oversampling button on and oversamplingData has value to render Oversampling figure.
             * You may feel wired about the switchValue is [bool] not bool.
             * It's the Dash's wired part... Just follow the framework's rule.
             */
             if (switchValue[0] == true && oversamplingData != undefined) {
-                // console.log("========= in oversamping =======");
-                // console.log(oversampingData)
-                // data = oversampingData;
-                let oversampinglDataTrace = {
-                    "name": "Oversamping Data",
+                // console.log("========= in oversampling =======");
+                // console.log(oversamplingData)
+                // data = oversamplingData;
+                let oversamplingDataTrace = {
+                    "name": "Oversampling Data",
                     "mode": "markers",
                     "marker": {"symbol": "circle-x", 
                                 "size": 6, "maxdisplayed": 200},
@@ -78,14 +78,14 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             // }
 
             /**
-            * Only oversamping button on and oversampingData has value to render Oversamping figure.
+            * Only oversampling button on and oversamplingData has value to render oversampling figure.
             * You may feel wired about the switchValue is [bool] not bool.
             * It's the Dash's wired part... Just follow the framework's rule.
             */
             if (switchValue[0] == true && oversampledftData != undefined) {
-                console.log("========= in ft oversamping =======");
-                // console.log(oversampingData)
-                // data = oversampingData;
+                console.log("========= in ft oversampling =======");
+                // console.log(oversamplingData)
+                // data = oversamplingData;
                 let oversampledftDataTrace0 = {
                     "name": "OversampledftData0",
                     "mode": "lines",

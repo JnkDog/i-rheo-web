@@ -4,7 +4,7 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 
 from components.oversampling.input import OversamplingInput, oversampling_input_generate
-# from components.oversampling.select import SelectOversamping
+# from components.oversampling.select import SelectOversampling
 from components.oversampling.switch import Switch, switch_component_generate
 
 OVERSAMPLING_BUTTON_SUFFIX = "-oversampling-btn"
