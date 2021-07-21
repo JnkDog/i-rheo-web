@@ -63,8 +63,9 @@ def store_raw_data(content, file_name):
     # df = generate_df(content)
 
     data = {
-        "x" : [1, 2, 3],
-        "y" : [1, 2, 3],
+        "x": [i for i in range(0, 50)],
+        "y": [i for i in range(0, 50)],
+        "z": [i for i in range (50, 100)]
     }
 
     # original 
@@ -99,6 +100,7 @@ def store_oversampling_data(n_clicks, content, ntimes):
     return data
 
 """
+Sigma Renedr
 Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
@@ -107,6 +109,38 @@ app.clientside_callback(
         function_name="tabChangeFigRender"
     ),
     Output("FTAPP-sigma-display", "figure"),
+    Input("FTAPP-raw-data-store", "data"),
+    Input("FTAPP-oversampling-data-store", "data"),
+    Input("FTAPP-oversampling-render-switch", "value"),
+    prevent_initial_call=True
+)
+
+"""
+Gamma Renedr
+Trigger when the experiental data(raw data) or oversampling data changed
+"""
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideGamma",
+        function_name="tabChangeFigRender"
+    ),
+    Output("FTAPP-gamma-display", "figure"),
+    Input("FTAPP-raw-data-store", "data"),
+    Input("FTAPP-oversampling-data-store", "data"),
+    Input("FTAPP-oversampling-render-switch", "value"),
+    prevent_initial_call=True
+)
+
+"""
+Eta Renedr
+Trigger when the experiental data(raw data) or oversampling data changed
+"""
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideEta",
+        function_name="tabChangeFigRender"
+    ),
+    Output("FTAPP-eta-display", "figure"),
     Input("FTAPP-raw-data-store", "data"),
     Input("FTAPP-oversampling-data-store", "data"),
     Input("FTAPP-oversampling-render-switch", "value"),

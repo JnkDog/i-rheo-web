@@ -19,6 +19,7 @@ from app import app
 from apps.irheoGT import irheoGT_app
 from apps.irheoFT import irheoFT_app
 from apps.notfound import notfound_app
+from apps.wiki import wiki_app
 from components.nav.nav import NavBar
 
 app.layout = html.Div([
@@ -33,11 +34,15 @@ app.layout = html.Div([
     Input("url", "pathname")
 )
 def display_page(pathname): 
-    # print("1")
-    if pathname == "/app1" or pathname == "/":
+    pathname = pathname.lower()
+    
+    # TODO need to modify
+    if pathname == "/gt" or pathname == "/":
         return irheoGT_app.Layout
-    elif pathname == "/app5":
+    elif pathname == "/ft":
         return irheoFT_app.Layout
+    elif pathname == "/wiki":
+        return wiki_app.Layout
     else:
         return notfound_app.NotFoundPage
 

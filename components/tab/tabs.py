@@ -29,12 +29,7 @@ Tabs = dbc.Tabs([
         dbc.Tab(children=Spinner_eta, label="Eta", tab_id="eta")
 ], id="fig-tabs")
 
-def tabs_component_generate(prefix_app_name):
-    # Spinner_list = [spinner_generate(prefix_app_name
-    #                                  +"-"
-    #                                  +value) 
-    #                 for value in TABS_ID_SUFFIX_DICT.values()]
-    
+def tabs_component_generate(prefix_app_name):    
     Tab_list = [dbc.Tab(spinner_generate(prefix_app_name+"-"+value), 
              label=value.capitalize(), tab_id=value) 
              for value in TABS_ID_SUFFIX_DICT.values()]
