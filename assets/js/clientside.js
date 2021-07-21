@@ -1,5 +1,9 @@
 // Function implementation list
 gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
+    if (rawData == undefined) {
+        return;
+    }
+
     let data = [];
     let layout = {
         "xaxis": {"tick0": -2, "dtick": 1,
@@ -54,6 +58,10 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
 }
 
 etaRender = function(rawData, oversamplingData, switchValue=[false]) {
+    if (rawData == undefined) {
+        return;
+    }
+
     let data = [];
     let layout = {
     "xaxis": {"tick0": -2, "dtick": 1,
@@ -110,6 +118,10 @@ etaRender = function(rawData, oversamplingData, switchValue=[false]) {
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientsideSigma: {
         tabChangeFigRender: function(rawData, oversamplingData, switchValue=[false]) {
+            if (rawData == undefined) {
+                return;
+            }
+
             let data = [];
             let layout = {
                 "xaxis": {"tick0": -2, "dtick": 1,
@@ -164,6 +176,10 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     },
     clientsideFT:{
         tabChangeFigRender: function(ftData, oversampledftData, switchValue=[false]) {
+            if (ftData == undefined) {
+                return;
+            }
+
             let data = [];
             let layout = {
                 "xaxis": {"dtick": 1, "tick0": -12, 

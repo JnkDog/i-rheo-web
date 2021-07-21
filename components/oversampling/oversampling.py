@@ -31,7 +31,8 @@ def oversampling_component_generate(prefix_app_name):
                         # id="oversampling-control-components",
                         children=[
                             oversampling_input_generate(prefix_app_name),
-                            dbc.Button("oversampling", id=button_id, color="primary"),
+                            dbc.Button("oversampling", id=button_id, 
+                                       color="primary", className="ml-3"),
                         ]),
                     # html.H5(id="oversampling-message", className="text-warning"),
                     switch_component_generate(prefix_app_name)
