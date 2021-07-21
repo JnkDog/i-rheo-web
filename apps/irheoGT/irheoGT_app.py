@@ -1,13 +1,9 @@
-import collections
-from datetime import date
 import dash
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc
-from dash_core_components.Store import Store
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
-from numpy import index_exp, save
 import plotly.express as px
 import pandas as pd
 
@@ -18,9 +14,9 @@ from components.upload.upload import Upload
 from components.download.download import Download
 from components.oversampling.oversampling import Oversampling
 from components.tab.tabs import Tabs
+from components.display.loading import Loading
 
 # import algorithm
-from algorithm.sigma import Sigma
 from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import generate_df
 
@@ -44,8 +40,9 @@ Layout = dbc.Row([
                     Oversampling,
                     html.Hr(),
                     Download
-                    ], width=3)
-            , dbc.Col([Tabs], width=True)
+                    ], width=3), 
+            dbc.Col(Tabs, width=True),
+            Loading
 ])
 
 # ================ Upload callback ========================
@@ -114,7 +111,6 @@ app.clientside_callback(
 
 # ================ Download callback ========================
 
-# TODO might modify the floor decimal places and format
 @app.callback(
     Output("download-text", "data"),
     Output("download-message", "children"),
@@ -151,3 +147,13 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
 
 # ================ FT callback ========================
 
+# ================ Loading mask ========================
+
+# @app.callback(
+#     Output("loading-test", "children"),
+#     Input("begin-line-number", "value"),
+#     prevent_initial_call=True,
+# )
+# def loading_test(number):
+#     time.sleep(30)
+#     return number

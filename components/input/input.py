@@ -7,10 +7,10 @@ InputValue = html.Div([
     dbc.Input(id="input", placeholder="Type something...", type="number")
 ])
 
-def input_component_generate(id, style={"margin-top": "10px"}, 
+def input_component_generate(id, style={"marginTop": "10px"}, 
                              placeholder="Type number ...", type="number", 
                              p_message=None):
     return  html.Div([
-            # html.P(p_message) if p_message is not None else None,
-            dbc.Input(id=id, placeholder=placeholder, type=type)
-    ], style=style)
+                # html.P(p_message) if p_message is not None else None,
+                dbc.Input(id=id, placeholder=placeholder, type=type)
+                ], style=style)
