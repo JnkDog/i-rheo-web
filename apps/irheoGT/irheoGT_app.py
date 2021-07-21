@@ -19,6 +19,7 @@ from components.display.loading import Loading
 # import algorithm
 from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import generate_df
+from algorithm.pwft import ftdata
 
 Layout = dbc.Row([
             dbc.Col([
@@ -27,8 +28,9 @@ Layout = dbc.Row([
                         Upload,
                         html.Div(id="upload-message"),
                         dcc.Store(id="raw-data-store"),
-                        dcc.Store(id="oversampling-data-store"),
-                        dcc.Store(id="FT-data-store")
+                        dcc.Store(id="oversamping-data-store"),
+                        dcc.Store(id="ft-data-store"),
+                        dcc.Store(id="oversampled-ft-data-store")
                     ]),
                     html.Hr(),
                     html.Div([
@@ -53,6 +55,7 @@ Trigger when the experiental data(raw data) uploaded
 @app.callback(
     Output("raw-data-store", "data"),
     Output("upload-message", "children"),
+    Output("ft-data-store", "data"),
     Input("upload", "contents"),
     State("upload", "filename"),
     prevent_initial_call=True
@@ -61,21 +64,28 @@ def store_raw_data(content, file_name):
     df = generate_df(content)
 
     data = {
-        "x" : df[0],
-        "y" : df[1],
+        "x": df[0],
+        "y": df[1],
+    }
+    omega, g_p, g_pp = ftdata(df, False)
+    ft_data = {
+        "x": omega,
+        "y1": g_p,
+        "y2": g_pp
     }
 
     upload_messge = "The upload file {} with {} lines".format(file_name, len(df))
 
-    return data, upload_messge
+    return data, upload_messge, ft_data
 
 """
 Trigger when the experiental data(raw data) has already uploaded
 and the oversampling button clicked with the oversampling ntimes.
 """
 @app.callback(
-    Output("oversampling-data-store", "data"),
-    Input("oversampling-btn", "n_clicks"),
+    Output("oversamping-data-store", "data"),
+    Output("oversampled-ft-data-store", "data"),
+    Input("oversamping-btn", "n_clicks"),
     State("upload", "contents"),
     State("oversampling-input", "value")
 )
@@ -88,11 +98,18 @@ def store_oversampling_data(n_clicks, content, ntimes):
     x, y = get_oversampling_data(content=content, ntimes=ntimes)
 
     data = {
-        "x" : x,
-        "y" : y,
+        "x": x,
+        "y": y,
     }
+    df = generate_df(content)
+    omega, g_p, g_pp = ftdata(df, True, oversamping_number)
+    oversampled_ft_data = {
+        "x": omega,
+        "y1": g_p,
+        "y2": g_pp
+    }
+    return data, oversampled_ft_data
 
-    return data
 
 """
 Trigger when the experiental data(raw data) or oversampling data changed
@@ -157,3 +174,15 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
 # def loading_test(number):
 #     time.sleep(30)
 #     return number
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideFT",
+        function_name="tabChangeFigRender"
+    ),
+    Output("FT-display", "figure"),
+    Input("ft-data-store", "data"),
+    Input("oversampled-ft-data-store", "data"),
+    Input("oversamping-render-switch", "value"),
+    prevent_initial_call=True
+)
