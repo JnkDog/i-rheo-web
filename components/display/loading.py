@@ -9,3 +9,5 @@ Loading = dcc.Loading(
           type="default",
         #   debug=True,
 )
+
+# def loading_component_generate():

@@ -111,7 +111,6 @@ app.clientside_callback(
 
 # ================ Download callback ========================
 
-# TODO might modify the floor decimal places and format
 @app.callback(
     Output("download-text", "data"),
     Output("download-message", "children"),
