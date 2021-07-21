@@ -50,10 +50,12 @@ Download = html.Div([
 def download_component_generate(prefix_app_name):
     BeginLineInput = input_component_generate(
                      prefix_app_name
-                     +INPUT_ID_SUFFIX_DICT["BEGIN_INPUT"])
+                     +INPUT_ID_SUFFIX_DICT["BEGIN_INPUT"],
+                     placeholder="Type cut bottom number ...")
     EndLineInput   = input_component_generate(
                      prefix_app_name
-                     +INPUT_ID_SUFFIX_DICT["END_INPUT"])
+                     +INPUT_ID_SUFFIX_DICT["END_INPUT"],
+                     placeholder="Type cut top number ...")
 
     btn_id      = prefix_app_name + OUTPUT_ID_SUFFIX_DICT["BUTTON"]
     message_id  = prefix_app_name + OUTPUT_ID_SUFFIX_DICT["MESSAGE"]

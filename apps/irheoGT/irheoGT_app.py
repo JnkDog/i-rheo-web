@@ -23,20 +23,21 @@ from algorithm.pwft import ftdata
 
 Layout = dbc.Row([
             dbc.Col([
+                    html.H5("Support .txt"),
                     html.Div([
-                        html.H5("Support .txt"),
-                        Upload,
-                        html.Div(id="upload-message"),
+                        Upload, 
                         dcc.Store(id="raw-data-store"),
                         dcc.Store(id="oversampling-data-store"),
                         dcc.Store(id="ft-data-store"),
                         dcc.Store(id="oversampled-ft-data-store")
-                    ]),
+                    ], className="btn-group me-2"),
+                    html.Div([dbc.Button("Load Example data", id="load-example", 
+                              color="primary", style={"margin": "5px"})],
+                              className="btn-group me-2"),
+                    html.Div(id="upload-message"),
                     html.Hr(),
                     html.Div([
-                        html.H5("Example data"),
-                        dbc.Button("Load Example data", id="load-example", 
-                                   color="primary", style={"margin": "5px"})
+                        # html.H5("Example data"),
                     ]),
                     html.Hr(),
                     Oversampling,

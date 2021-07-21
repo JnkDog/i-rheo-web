@@ -24,22 +24,36 @@ prefix_app_name = "FTAPP"
 # TODO need modify and change the algorithm plus with function
 Layout = dbc.Row([
             dbc.Col([
+                    html.H5("Support .txt"),
                     html.Div([
-                        html.H5("Support .txt"),
                         upload_component_generate("FTAPP-upload"),
-                        html.Div(id="FTAPP-upload-message"),
                         dcc.Store(id="FTAPP-raw-data-store"),
                         dcc.Store(id="FTAPP-oversampling-data-store"),
                         dcc.Store(id="FTAPP-FT-data-store")
-                    ]),
-                    html.Hr(),
-                    html.Div([
-                        html.H5("Example data"),
-                        dbc.Button("Load Example data", id="FTAPP-load-example", 
-                                   color="primary", style={"margin": "5px"})
-                    ]),
+                    ], className="btn-group me-2"),
+                    html.Div([dbc.Button("Load Example data", id="FTAPP-load-example", 
+                              color="primary", style={"margin": "5px"})],
+                              className="btn-group me-2"),
+                    html.Div(id="FTAPP-upload-message"),
                     html.Hr(),
                     oversampling_component_generate(prefix_app_name),
+                    html.Hr(),
+                    html.Div([
+                        dbc.Button("Divide by 100", id="FTAPP-divide-example", 
+                                   color="primary", style={"margin": "5px"}),
+                        dbc.Button("Use slope", id="FTAPP-slope-example", 
+                                   color="primary", style={"margin": "5px"}),           
+                    ], className="btn-group me-2"),
+                    html.Div([
+                        dbc.Input(id="FTAPP-strain-input"),
+                        dbc.Button("Strain con", id="FTAPP-strain-example", 
+                                   color="primary")], 
+                        className="input-group", style={"width": "300px"}),
+                    html.Div([
+                        dbc.Input(id="FTAPP-fixed-input"),
+                        dbc.Button("Fixed x", id="FTAPP-fixed-example", 
+                                color="primary")], 
+                        className="input-group mt-2", style={"width": "280px"}),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
@@ -65,7 +79,8 @@ def store_raw_data(content, file_name):
     data = {
         "x": [i for i in range(0, 50)],
         "y": [i for i in range(0, 50)],
-        "z": [i for i in range (50, 100)]
+        "z": [i for i in range (50, 100)],
+        "file_name": file_name
     }
 
     # original 
@@ -177,8 +192,9 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
         saving_y_list = data.get("y")[beginLineIdx:]
     else:
         saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
+        saving_file_name = data.get("file_name") + "_Complex Moduli.txt"
 
-    return (dcc.send_data_frame(saving_df.to_csv, "data.txt", 
+    return (dcc.send_data_frame(saving_df.to_csv,saving_file_name, 
                                 header=False, index=False, 
                                 sep='\t', encoding='utf-8'), 
                                 "Download OK !") 
