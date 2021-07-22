@@ -16,7 +16,8 @@ Oversampling = html.Div([
         id="oversampling-control-components",
         children=[
             OversamplingInput,
-            dbc.Button("oversampling", id="oversampling-btn", color="primary"),
+            dbc.Button("oversampling", id="oversampling-btn", 
+                       color="primary", className="ml-3"),
     ]),
     # html.H5(id="oversampling-message", className="text-warning"),
     Switch
