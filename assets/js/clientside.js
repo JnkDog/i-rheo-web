@@ -197,14 +197,14 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 "x": ftData.x,
                 "y": ftData.y1,
             }
-            // let ftDataTrace1 = {
-            //     "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-            //     "name": "FT Data1",
-            //     "mode": "markers",
-            //     "marker": {"symbol": "circle-open", "size": 12},
-            //     "x": ftData.x,
-            //     "y": ftData.y2,
-            // }
+            let ftDataTrace1 = {
+                "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+                "name": "FT Data1",
+                "mode": "markers",
+                "marker": {"symbol": "circle-open", "size": 12},
+                "x": ftData.x,
+                "y": ftData.y2,
+            }
 
             /**
             * Only oversampling button on and oversamplingData has value to render oversampling figure.
@@ -238,7 +238,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 // console.log(rawData)
                 // data = rawData;
                 // data.push(ftDataTrace0, ftDataTrace1);
-                data.push(ftDataTrace0);  
+                data.push(ftDataTrace0, ftDataTrace1);  
             }
             
             console.log(ftData.x.slice(0, 20))

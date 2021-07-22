@@ -15,6 +15,7 @@ from components.download.download import Download
 from components.oversampling.oversampling import Oversampling
 from components.tab.tabs import Tabs
 from components.display.loading import Loading
+from components.inputgdot.inputgdot import Inputgdot
 
 # import algorithm
 from algorithm.oversample import get_oversampling_data
@@ -39,6 +40,7 @@ Layout = dbc.Row([
                     html.Div([
                         # html.H5("Example data"),
                     ]),
+                    Inputgdot,
                     html.Hr(),
                     Oversampling,
                     html.Hr(),
@@ -58,17 +60,19 @@ Trigger when the experiental data(raw data) uploaded
     Output("upload-message", "children"),
     Output("ft-data-store", "data"),
     Input("upload", "contents"),
+    Input("g_0", "value"),
+    Input("g_inf", "value"),
     State("upload", "filename"),
     prevent_initial_call=True
 )
-def store_raw_data(content, file_name):
+def store_raw_data(content, g_0, g_inf, file_name):
     df = generate_df(content)
 
     data = {
         "x": df[0],
         "y": df[1],
     }
-    omega, g_p, g_pp = ftdata(df, False)
+    omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
     ft_data = {
         "x": omega,
         "y1": g_p,
@@ -87,10 +91,12 @@ and the oversampling button clicked with the oversampling ntimes.
     Output("oversampling-data-store", "data"),
     Output("oversampled-ft-data-store", "data"),
     Input("oversampling-btn", "n_clicks"),
+    Input("g_0", "value"),
+    Input("g_inf", "value"),
     State("upload", "contents"),
     State("oversampling-input", "value")
 )
-def store_oversampling_data(n_clicks, content, ntimes):
+def store_oversampling_data(n_clicks, g_0, g_inf, content, ntimes):
     if n_clicks is None or content is None or ntimes is None:
         raise PreventUpdate
 
@@ -103,7 +109,7 @@ def store_oversampling_data(n_clicks, content, ntimes):
         "y": y,
     }
     df = generate_df(content)
-    omega, g_p, g_pp = ftdata(df, True, ntimes)
+    omega, g_p, g_pp = ftdata(df, g_0, g-inf, True, ntimes)
     oversampled_ft_data = {
         "x": omega,
         "y1": g_p,
@@ -144,7 +150,7 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
 
     # avoid floor number
     beginLineIdx = int(beginLineIdx)
-    endLineIdx   = int(endLineIdx)
+    endLineIdx = int(endLineIdx)
     if beginLineIdx >= endLineIdx:
         return None, "Invaild parameters"
 
@@ -165,17 +171,7 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
 
 # ================ FT callback ========================
 
-# ================ Loading mask ========================
-
-# @app.callback(
-#     Output("loading-test", "children"),
-#     Input("begin-line-number", "value"),
-#     prevent_initial_call=True,
-# )
-# def loading_test(number):
-#     time.sleep(30)
-#     return number
-
+# add to the js part and data store part
 app.clientside_callback(
     ClientsideFunction(
         namespace="clientsideFT",
@@ -187,3 +183,15 @@ app.clientside_callback(
     Input("oversampling-render-switch", "value"),
     prevent_initial_call=True
 )
+
+# ================ Loading mask ========================
+
+# @app.callback(
+#     Output("loading-test", "children"),
+#     Input("begin-line-number", "value"),
+#     prevent_initial_call=True,
+# )
+# def loading_test(number):
+#     time.sleep(30)
+#     return number
+

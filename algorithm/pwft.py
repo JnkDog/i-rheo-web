@@ -70,12 +70,12 @@ import numpy as np
 #     )
 
 
-def ftdata(df, interpolate=False, oversampling=0):
+def ftdata(df, gc_0, gc_inf, interpolate=False, oversampling=10):
     i = complex(0, 1)
     time = np.linspace(1e-2, 1e2, 10000)
     func = df[1]
-    g_0 = 1
-    g_dot_inf = 0
+    g_0 = gc_0
+    g_dot_inf = gc_inf
     N_f = 100
 
     omega, res_test = manlio_ft(func, time, g_0, g_dot_inf, N_f, interpolate, oversampling)
