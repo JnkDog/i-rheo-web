@@ -66,13 +66,22 @@ Trigger when the experiental data(raw data) uploaded
     prevent_initial_call=True
 )
 def store_raw_data(content, g_0, g_inf, file_name):
+    if content is None:
+        raise dash.exceptions.PreventUpdate
+        
     df = generate_df(content)
 
     data = {
         "x": df[0],
         "y": df[1],
     }
+
+    # default g_0: 1, g_inf: 0
+    g_0 = 1 if g_0 is None else int(g_0)
+    g_inf = 0 if g_inf is None else int(g_inf)
+
     omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
+
     ft_data = {
         "x": omega,
         "y1": g_p,

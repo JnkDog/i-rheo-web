@@ -98,13 +98,15 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
         g = gi(t_new)
         t = t_new
     i = complex(0, 1)
-    min_omega = 1/max(t)
-    max_omega = 1/min(t)
+    min_omega = 1 / max(t)
+    max_omega = 1 / min(t)
     N_t = len(t)
     omega = np.logspace(np.log10(min_omega), np.log10(max_omega), N_f)
-    zero = i*omega*g_0 + (1-np.exp(-i*omega*t[1]))*((g[1]-g_0)/t[1])\
-        + g_dot_inf*np.exp(-i*omega*t[N_t-1])
+
+    zero = i * omega * g_0 + (1-np.exp(-i*omega*t[1]))*((g[1]-g_0)/t[1]) \
+           + g_dot_inf * np.exp(-i*omega*t[N_t-1])
     res = np.zeros(len(omega), dtype=complex)
+    
     for w_i, w in enumerate(omega):
         after = 0
         for k in range(2, N_t):

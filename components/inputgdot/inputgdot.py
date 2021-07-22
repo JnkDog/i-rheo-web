@@ -6,13 +6,13 @@ from dash.dependencies import Input, Output
 
 
 Inputgdot = html.Div([
-    dcc.Input(
+    dbc.Input(
         id="g_0",
         type="number",
         placeholder="Input your g(0)"
     ),
     html.Br(),
-    dcc.Input(
+    dbc.Input(
         id="g_inf",
         type="number",
         placeholder="Input your g(∞)"
