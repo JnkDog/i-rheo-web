@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output, State
 from dash_html_components.Div import Div
 
 WEB_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
-BAR_ITEMS = ["app1", "app2", "app3", "GT", "FT"]
+BAR_ITEMS = ["app1", "app2", "BULK", "GT", "FT"]
 
 """
 id (string; Must)
