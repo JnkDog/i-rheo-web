@@ -47,13 +47,13 @@ Layout = dbc.Row([
                     html.Div([
                         dbc.Input(id="FTAPP-strain-input"),
                         dbc.Button("Strain con", id="FTAPP-strain-example", 
-                                   color="primary")], 
+                                   color="primary", className="ml-2")], 
                         className="input-group", style={"width": "300px"}),
                     html.Div([
                         dbc.Input(id="FTAPP-fixed-input"),
                         dbc.Button("Fixed x", id="FTAPP-fixed-example", 
-                                color="primary")], 
-                        className="input-group mt-2", style={"width": "280px"}),
+                                color="primary", className="ml-2", style={"width": "99.84px"})], 
+                        className="input-group mt-2", style={"width": "300px"}),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
