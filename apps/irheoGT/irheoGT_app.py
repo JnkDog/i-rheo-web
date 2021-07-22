@@ -68,7 +68,7 @@ Trigger when the experiental data(raw data) uploaded
 def store_raw_data(content, g_0, g_inf, file_name):
     if content is None:
         raise dash.exceptions.PreventUpdate
-        
+
     df = generate_df(content)
 
     data = {
@@ -117,8 +117,14 @@ def store_oversampling_data(n_clicks, g_0, g_inf, content, ntimes):
         "x": x,
         "y": y,
     }
+
+    # default g_0: 1, g_inf: 0
+    g_0 = 1 if g_0 is None else int(g_0)
+    g_inf = 0 if g_inf is None else int(g_inf)
+    
     df = generate_df(content)
-    omega, g_p, g_pp = ftdata(df, g_0, g-inf, True, ntimes)
+    omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
+
     oversampled_ft_data = {
         "x": omega,
         "y1": g_p,
