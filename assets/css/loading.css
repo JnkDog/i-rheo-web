@@ -1,0 +1,10 @@
+/* *[data-dash-is-loading="true"]{
+    visibility: hidden;
+}
+
+*[data-dash-is-loading="true"]::before{
+    content: "FT will take about 1 minute, please be patient ...";
+    display: inline-block;
+    color: megenta;
+    visibility: visible;
+} */
