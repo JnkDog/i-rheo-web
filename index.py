@@ -18,6 +18,7 @@ from dash_html_components.Nav import Nav
 from app import app
 from apps.irheoGT import irheoGT_app
 from apps.irheoFT import irheoFT_app
+from apps.bulk import bulk_app
 from apps.notfound import notfound_app
 from apps.wiki import wiki_app
 from components.nav.nav import NavBar
@@ -41,6 +42,8 @@ def display_page(pathname):
         return irheoGT_app.Layout
     elif pathname == "/ft":
         return irheoFT_app.Layout
+    elif pathname == "/bulk":
+        return bulk_app.Layout
     elif pathname == "/wiki":
         return wiki_app.Layout
     else:
