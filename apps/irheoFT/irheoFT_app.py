@@ -12,7 +12,6 @@ from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
 from components.oversampling.oversampling import oversampling_component_generate
 from components.tab.tabs import tabs_component_generate
-from components.display.loading import Loading
 
 """
 The orginal version is the i-Rheo virtual instrument (VI) LABVIEW.
@@ -29,7 +28,10 @@ Layout = dbc.Row([
                         upload_component_generate("FTAPP-upload"),
                         dcc.Store(id="FTAPP-raw-data-store"),
                         dcc.Store(id="FTAPP-oversampling-data-store"),
-                        dcc.Store(id="FTAPP-FT-data-store")
+                        dcc.Store(id="FTAPP-FT-data-store"),
+                        dcc.Loading(dcc.Store(id="FTAPP-oversampled-ft-data-store"),
+                                    id="full-screen-mask",
+                                    fullscreen=True)
                     ], className="btn-group me-2"),
                     html.Div([dbc.Button("Load Example data", id="FTAPP-load-example", 
                               color="primary", style={"margin": "5px"})],

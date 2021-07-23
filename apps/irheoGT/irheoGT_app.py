@@ -30,7 +30,9 @@ Layout = dbc.Row([
                         dcc.Store(id="raw-data-store"),
                         dcc.Store(id="oversampling-data-store"),
                         dcc.Store(id="ft-data-store"),
-                        dcc.Store(id="oversampled-ft-data-store")
+                        dcc.Loading(dcc.Store(id="oversampled-ft-data-store"),
+                                    id="full-screen-mask",
+                                    fullscreen=True)
                     ], className="btn-group me-2"),
                     html.Div([dbc.Button("Load Example data", id="load-example", 
                               color="primary", style={"margin": "5px"})],
@@ -40,7 +42,6 @@ Layout = dbc.Row([
                     html.Div([
                         # html.H5("Example data"),
                     ]),
-                    Inputgdot,
                     html.Hr(),
                     Oversampling,
                     html.Hr(),
@@ -100,8 +101,8 @@ and the oversampling button clicked with the oversampling ntimes.
     Output("oversampling-data-store", "data"),
     Output("oversampled-ft-data-store", "data"),
     Input("oversampling-btn", "n_clicks"),
-    Input("g_0", "value"),
-    Input("g_inf", "value"),
+    State("g_0", "value"),
+    State("g_inf", "value"),
     State("upload", "contents"),
     State("oversampling-input", "value")
 )
@@ -121,8 +122,10 @@ def store_oversampling_data(n_clicks, g_0, g_inf, content, ntimes):
     # default g_0: 1, g_inf: 0
     g_0 = 1 if g_0 is None else int(g_0)
     g_inf = 0 if g_inf is None else int(g_inf)
-    
+
     df = generate_df(content)
+    
+    # This function takes lots of time
     omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
 
     oversampled_ft_data = {

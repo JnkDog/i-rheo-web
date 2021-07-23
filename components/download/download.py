@@ -1,6 +1,7 @@
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
+from dash_html_components.Br import Br
 
 from components.input.input import input_component_generate
 
@@ -37,10 +38,11 @@ EndLineInput   = input_component_generate(**end_line_input_cfg)
 Download = html.Div([
          html.H5("Download Data"),
          BeginLineInput,
+         html.Br(),
          EndLineInput,
+         html.Br(),
          html.Button("Download File", id="download-btn", 
-                     className="btn btn-primary", 
-                     style={"marginTop": "10px"}), 
+                     className="btn btn-primary"), 
          dcc.Download(id="download-text"),
          html.Div(id="download-message")   
 ])
@@ -64,7 +66,9 @@ def download_component_generate(prefix_app_name):
     Download = html.Div([
          html.H5("Download Data"),
          BeginLineInput,
+         html.Br(),
          EndLineInput,
+         html.Br(),
          html.Button("Download File", id=btn_id, 
                      className="btn btn-primary", 
                      style={"marginTop": "10px"}), 
