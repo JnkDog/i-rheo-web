@@ -7,6 +7,19 @@ import dash_bootstrap_components as dbc
 
 
 Layout = html.Div(
-    [html.H2("Overview"), html.P("This is a i-rheo web")],
-    className="bd-content ps-lg-4"
+    children=[
+        html.Br(),
+        dcc.Link(
+            'Navigate to Manlio\'s LinkedIn', href="https://www.linkedin.com/in/manlio-tassieri-b94a7127/",
+            refresh=True,
+            style={'font-family': 'Times New Roman, Times, serif', 'font-weight': 'bold'}
+        ),
+        html.Br(),
+        dcc.Link(
+            'Navigate to Manlio\'s Twitetr', href="https://twitter.com/ManlioTassieri",
+            refresh=True,
+            style={'font-family': 'Times New Roman, Times, serif', 'font-weight': 'bold'}
+        )
+    ],
+    className="bd-content ps-lg-4",
 )
