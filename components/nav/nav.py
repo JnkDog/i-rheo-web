@@ -20,7 +20,7 @@ def generate_navbar_item(id, url=None):
     else:
         href = "/" + id
 
-    item =  dbc.NavItem(dbc.NavLink(id, href=href, className="px-2 text-white", active="partial"))
+    item = dbc.NavItem(dbc.NavLink(id, href=href, className="px-2 text-white", active="partial"))
     
     return item
 
@@ -44,7 +44,7 @@ NavBar = html.Header(
             html.Div(
                 [
                     html.Ul([generate_navbar_item(id) for id in BAR_ITEMS], className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"),
-                ], 
+                ],
                 className="collapse navbar-collapse"
             ),
             html.Div([dbc.Button("wiki", color="primary", className="mr-1",
