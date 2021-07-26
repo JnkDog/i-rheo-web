@@ -6,7 +6,7 @@ Spinner = dbc.Spinner(
     color="primary"
 )
 
-Spinner_sigma = dbc.Spinner(
+Spinner_stress = dbc.Spinner(
     dcc.Graph(id="sigma-display", style={"height" : "80vh"}),
     color="primary"
 )
@@ -16,7 +16,7 @@ Spinner_FT = dbc.Spinner(
     color="primary"
 )
 
-Spinner_gamma = dbc.Spinner(
+Spinner_strain = dbc.Spinner(
     dcc.Graph(id="gamma-display", style={"height" : "80vh"}),
     color="primary"
 )

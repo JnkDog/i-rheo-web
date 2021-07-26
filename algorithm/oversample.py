@@ -72,6 +72,6 @@ def oversampling_process(t, g, ntimes):
     # get new g(t) taken at log-space sampled t and save as decimals = 9 
     Gint_I = np.around(gi(t_new), decimals=9)
     # save as decimals = 2
-    t_I = np.around(t_new, decimals=2)   
+    t_I = np.around(t_new, decimals=9)   
 
     return t_I.tolist(), Gint_I.tolist()

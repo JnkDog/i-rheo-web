@@ -19,7 +19,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "Experiental Data",
         "mode": "markers",
-        "marker": {"symbol": "circle-open", 
+        "marker": {color:"orange", "symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
         "x": rawData.x,
         "y": rawData.z
@@ -136,7 +136,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
                 "name": "Experiental Data",
                 "mode": "markers",
-                "marker": {"symbol": "circle-open", 
+                "marker": {color:"green", "symbol": "circle-open", 
                            "size": 10, "maxdisplayed": 200},
                 "x": rawData.x,
                 "y": rawData.y
@@ -154,7 +154,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 let oversamplingDataTrace = {
                     "name": "Oversampling Data",
                     "mode": "markers",
-                    "marker": {"symbol": "circle-x", 
+                    "marker": {color:"darkgreen", "symbol": "circle-x", 
                                 "size": 6, "maxdisplayed": 200},
                     "x": oversamplingData.x,
                     "y": oversamplingData.y
@@ -188,20 +188,21 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 "yaxis": {"dtick": 1, "tick0": -7, 
                           "type": "log", "title": {"text" : "G′ G′′ [Pa]"},
                           "ticks": "outside"},
+                // "colorway": ["green"],
             }
             let ftDataTrace0 = {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
                 "name": "FT Data0",
                 "mode": "lines",
-                "marker": {"symbol": "circle-open", "size": 12},
+                "line": {color:"black"},
                 "x": ftData.x,
                 "y": ftData.y1,
             }
             let ftDataTrace1 = {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
                 "name": "FT Data1",
-                "mode": "markers",
-                "marker": {"symbol": "circle-open", "size": 12},
+                "mode": "lines",
+                "line": {color:"red"},
                 "x": ftData.x,
                 "y": ftData.y2,
             }
@@ -218,16 +219,14 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 let oversampledftDataTrace0 = {
                     "name": "OversampledftData0",
                     "mode": "lines",
-                    "marker": {"symbol": "circle-x", "size": 6,
-                               "maxdisplayed": 200},
+                    "line": {color:"black"},
                     "x": oversampledftData.x,
                     "y": oversampledftData.y1,
                 }
                 let oversampledftDataTrace1 = {
                     "name": "OversampledftData1",
-                    "mode": "markers",
-                    "marker": {"symbol": "circle-x", "size": 6,
-                               "maxdisplayed": 200},
+                    "mode": "lines",
+                    "line": {color:"red"},
                     "x": oversampledftData.x,
                     "y": oversampledftData.y2,
                 }
