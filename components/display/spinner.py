@@ -21,10 +21,10 @@ Spinner_strain = dbc.Spinner(
     color="primary"
 )
 
-Spinner_eta = dbc.Spinner(
-    dcc.Graph(id="gamma-display", style={"height" : "80vh"}),
-    color="primary"
-)
+# Spinner_eta = dbc.Spinner(
+#     dcc.Graph(id="gamma-display", style={"height" : "80vh"}),
+#     color="primary"
+# )
 
 def spinner_generate(id):
     id += "-display"
