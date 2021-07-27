@@ -27,10 +27,11 @@ Layout = dbc.Row([
                     html.H5("Support .txt"),
                     html.Div([
                         Upload, 
-                        dcc.Store(id="raw-data-store"),
-                        dcc.Store(id="oversampling-data-store"),
-                        dcc.Store(id="ft-data-store"),
-                        dcc.Loading(dcc.Store(id="oversampled-ft-data-store"),
+                        dcc.Store(id="raw-data-store", storage_type="session"),
+                        dcc.Store(id="oversampling-data-store", storage_type="session"),
+                        dcc.Store(id="ft-data-store", storage_type="session"),
+                        dcc.Loading(dcc.Store(id="oversampled-ft-data-store", 
+                                              storage_type="session"),
                                     id="full-screen-mask",
                                     fullscreen=True)
                     ], className="btn-group me-2"),
@@ -135,22 +136,6 @@ def store_oversampling_data(n_clicks, g_0, g_inf, content, ntimes):
     }
     return data, oversampled_ft_data
 
-
-"""
-Trigger when the experiental data(raw data) or oversampling data changed
-"""
-app.clientside_callback(
-    ClientsideFunction(
-        namespace="clientsideSigma",
-        function_name="tabChangeFigRender"
-    ),
-    Output("sigma-display", "figure"),
-    Input("raw-data-store", "data"),
-    Input("oversampling-data-store", "data"),
-    Input("oversampling-render-switch", "value"),
-    prevent_initial_call=True
-)
-
 # ================ Download callback ========================
 
 @app.callback(
@@ -187,7 +172,23 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
                                 sep='\t', encoding='utf-8'), 
                                 "Download OK !") 
 
-# ================ FT callback ========================
+# =================== Clientside callback ===================
+
+"""
+Trigger when the experiental data(raw data) or oversampling data changed
+"""
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideSigma",
+        function_name="tabChangeFigRender"
+    ),
+    Output("sigma-display", "figure"),
+    Input("raw-data-store", "data"),
+    Input("oversampling-data-store", "data"),
+    Input("oversampling-render-switch", "value"),
+    # Due to the dcc.Stroe's storage_type is 
+    # prevent_initial_call=True
+)
 
 # add to the js part and data store part
 app.clientside_callback(
@@ -199,7 +200,7 @@ app.clientside_callback(
     Input("ft-data-store", "data"),
     Input("oversampled-ft-data-store", "data"),
     Input("oversampling-render-switch", "value"),
-    prevent_initial_call=True
+    # prevent_initial_call=True
 )
 
 # ================ Loading mask ========================

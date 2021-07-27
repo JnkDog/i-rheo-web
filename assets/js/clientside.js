@@ -213,7 +213,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             * It's the Dash's wired part... Just follow the framework's rule.
             */
             if (switchValue[0] == true && oversampledftData != undefined) {
-                console.log("========= in ft oversampling =======");
+                // console.log("========= in ft oversampling =======");
                 // console.log(oversamplingData)
                 // data = oversamplingData;
                 let oversampledftDataTrace0 = {
@@ -233,15 +233,12 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 
                 data.push(oversampledftDataTrace0, oversampledftDataTrace1);
             } else {
-                console.log("========= in ft =============");
+                // console.log("========= in ft =============");
                 // console.log(rawData)
                 // data = rawData;
                 // data.push(ftDataTrace0, ftDataTrace1);
                 data.push(ftDataTrace0, ftDataTrace1);  
             }
-            
-            console.log(ftData.x.slice(0, 20))
-            console.log(ftData.y1.slice(0, 20))
 
             return {
                 "data" : data,

@@ -26,10 +26,11 @@ Layout = dbc.Row([
                     html.H5("Support .txt"),
                     html.Div([
                         upload_component_generate("FTAPP-upload"),
-                        dcc.Store(id="FTAPP-raw-data-store"),
-                        dcc.Store(id="FTAPP-oversampling-data-store"),
-                        dcc.Store(id="FTAPP-FT-data-store"),
-                        dcc.Loading(dcc.Store(id="FTAPP-oversampled-ft-data-store"),
+                        dcc.Store(id="FTAPP-raw-data-store", storage_type="session"),
+                        dcc.Store(id="FTAPP-oversampling-data-store", storage_type="session"),
+                        dcc.Store(id="FTAPP-FT-data-store", storage_type="session"),
+                        dcc.Loading(dcc.Store(id="FTAPP-oversampled-ft-data-store", 
+                                              storage_type="session"),
                                     id="full-screen-mask",
                                     fullscreen=True)
                     ], className="btn-group me-2"),
