@@ -52,7 +52,7 @@ NavBar = html.Header(
                     className="text-end")],
         color="dark",
         dark=True,
-        className="navbar navbar-expand-lg navbar-light bg-light"
+        className="navbar navbar-expand-lg navbar-light bg-light nav-pills"
         )
     ),
     className="p-3 bg-dark text-white"
