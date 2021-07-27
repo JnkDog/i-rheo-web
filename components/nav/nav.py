@@ -19,8 +19,18 @@ def generate_navbar_item(id, url=None):
         href = url
     else:
         href = "/" + id
-
-    item = dbc.NavItem(dbc.NavLink(id, href=href, className="px-2 text-white", active="partial"))
+    
+    # TODO needs modify after the project finished
+    # if href == "/GT":
+    #     item = dbc.NavItem(dbc.NavLink(id, href="/", 
+    #                                    className="px-2 text-white active", 
+    #                                    active="exact"
+    #                                    ))
+    # else:
+    item = dbc.NavItem(dbc.NavLink(id, href=href, 
+                                className="px-2 text-white", 
+                                active="partial"
+                                ))
     
     return item
 
@@ -43,7 +53,8 @@ NavBar = html.Header(
             ),
             html.Div(
                 [
-                    html.Ul([generate_navbar_item(id) for id in BAR_ITEMS], className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"),
+                    html.Ul([generate_navbar_item(id) for id in BAR_ITEMS], 
+                             className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"),
                 ],
                 className="collapse navbar-collapse"
             ),
