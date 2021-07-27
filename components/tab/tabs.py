@@ -4,12 +4,18 @@ import dash_bootstrap_components as dbc
 
 from components.display.spinner import Spinner_stress, Spinner_FT, Spinner_strain, spinner_generate # Spinner_eta
 
-TABS_ID_SUFFIX_DICT = {
-    "STRESS": "stress",
-    "FT"   :    "FT",
-    "STRAIN": "strain",
+TABS_LABEL_DICT = {
+    "STRESS": "Stress",
+    "E & V" : "Elastic & Viscous",
+    "STRAIN": "Strain",
     # "ETA"  :   "eta",
-    
+}
+
+TABS_ID_SUFFIX_DICT = {
+    "SIGMA": "sigma",
+    "FT"   :    "FT",
+    "GAMMA": "gamma",
+    # "ETA"  :   "eta",
 }
 
 # This is templates but used in irheo GT
@@ -24,15 +30,22 @@ Tab_Strain_content = Spinner_strain
 # This is templates but used in irheo GT
 Tabs = dbc.Tabs([
         dbc.Tab(children=Spinner_stress, label="Stress", tab_id="stress"),
-        dbc.Tab(children=Spinner_FT, label="Elastic & Viscous", tab_id="FT"),
+        dbc.Tab(children=Spinner_FT, label="Elastic & Viscous", tab_id="elastic & viscous"),
         dbc.Tab(children=Spinner_strain, label="Strain", tab_id="strain"),
         # dbc.Tab(children=Spinner_eta, label="Eta", tab_id="eta")
 ], id="fig-tabs")
 
-def tabs_component_generate(prefix_app_name):    
-    Tab_list = [dbc.Tab(spinner_generate(prefix_app_name+"-"+value), 
-             label=value.capitalize(), tab_id=value) 
-             for value in TABS_ID_SUFFIX_DICT.values()]
+def tabs_component_generate(prefix_app_name):
+    Spinner_list = [spinner_generate(prefix_app_name+"-"+value)
+                    for value in TABS_ID_SUFFIX_DICT.values()]
+    
+    Tab_list = [dbc.Tab(item, label=list(TABS_LABEL_DICT.values())[idx], 
+                        tab_id=list(TABS_LABEL_DICT.values())[idx].lower()) 
+                        for idx, item in enumerate(Spinner_list)]
+
+    # Tab_list = [dbc.Tab(spinner_generate(prefix_app_name+"-"+value), 
+    #          label=value.capitalize(), tab_id=value) 
+    #          for value in TABS_ID_SUFFIX_DICT.values()]
     
     Tabs = dbc.Tabs(children=Tab_list)
 
