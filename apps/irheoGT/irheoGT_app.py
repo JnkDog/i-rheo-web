@@ -39,6 +39,8 @@ Layout = dbc.Row([
                               color="primary", style={"margin": "5px"})],
                               className="btn-group me-2"),
                     html.Div(id="upload-message"),
+                    # This is just for show the loading message
+                    html.Div(id="loading-message"),
                     html.Hr(),
                     html.Div([
                         # html.H5("Example data"),
@@ -58,10 +60,12 @@ Layout = dbc.Row([
 Trigger when the experiental data(raw data) uploaded  
 """
 @app.callback(
-    Output("raw-data-store", "data"),
-    Output("upload-message", "children"),
+    Output("raw-data-store", "data"),  
     Output("ft-data-store", "data"),
+    # Output("upload-message", "children"),
+    Output("loading-message", "children"),
     Input("upload", "contents"),
+    # The g_0 and g_inf are not used ... 
     Input("g_0", "value"),
     Input("g_inf", "value"),
     State("upload", "filename"),
@@ -72,10 +76,13 @@ def store_raw_data(content, g_0, g_inf, file_name):
         raise dash.exceptions.PreventUpdate
 
     df = generate_df(content)
-
+    
+    # save file_name and lens for message recovering when app changing
     data = {
         "x": df[0],
         "y": df[1],
+        "filename": file_name,
+        "lines": len(df)
     }
 
     # default g_0: 1, g_inf: 0
@@ -90,9 +97,10 @@ def store_raw_data(content, g_0, g_inf, file_name):
         "y2": g_pp
     }
 
-    upload_messge = "The upload file {} with {} lines".format(file_name, len(df))
+    # upload_messge = "The upload file {} with {} lines".format(file_name, len(df))
 
-    return data, upload_messge, ft_data
+    # return data, upload_messge, ft_data
+    return data, ft_data, ""
 
 """
 Trigger when the experiental data(raw data) has already uploaded
@@ -186,7 +194,8 @@ app.clientside_callback(
     Input("raw-data-store", "data"),
     Input("oversampling-data-store", "data"),
     Input("oversampling-render-switch", "value"),
-    # Due to the dcc.Stroe's storage_type is 
+    # Due to the dcc.Stroe's storage_type is session
+    # if prevent_initial_call=True, the fig cannot show
     # prevent_initial_call=True
 )
 
@@ -200,6 +209,16 @@ app.clientside_callback(
     Input("ft-data-store", "data"),
     Input("oversampled-ft-data-store", "data"),
     Input("oversampling-render-switch", "value"),
+    # prevent_initial_call=True
+)
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideMessageRec",
+        function_name="uploadMessage"
+    ),
+    Output("upload-message", "children"),
+    Input("raw-data-store", "data"),
     # prevent_initial_call=True
 )
 

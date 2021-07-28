@@ -64,23 +64,23 @@ etaRender = function(rawData, oversamplingData, switchValue=[false]) {
 
     let data = [];
     let layout = {
-    "xaxis": {"tick0": -2, "dtick": 1,
-            "type": "log", "title": {"text": "ω [rad/s]"}, 
-            "ticks": "outside" 
-    },
-    "yaxis": {"title": {"text" : "η* [Pa.s]"}, 
-            // "range": [0, 1.0],
-            "rangemode": "tozero", "ticks": "outside"
-    },
+        "xaxis": {"tick0": -2, "dtick": 1,
+                "type": "log", "title": {"text": "ω [rad/s]"}, 
+                "ticks": "outside" 
+        },
+        "yaxis": {"title": {"text" : "η* [Pa.s]"}, 
+                // "range": [0, 1.0],
+                "rangemode": "tozero", "ticks": "outside"
+        },
     }
     let rawDataTrace = {
-    "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-    "name": "Experiental Data",
-    "mode": "markers",
-    "marker": {"symbol": "circle-open", 
-            "size": 10, "maxdisplayed": 200},
-    "x": rawData.x,
-    "y": rawData.y
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "Experiental Data",
+        "mode": "markers",
+        "marker": {"symbol": "circle-open", 
+                "size": 10, "maxdisplayed": 200},
+        "x": rawData.x,
+        "y": rawData.y
     }
 
     /**
@@ -103,16 +103,28 @@ etaRender = function(rawData, oversamplingData, switchValue=[false]) {
 
     data.push(rawDataTrace, oversamplingDataTrace);
     } else {
-    // console.log("========= in sigma =============");
-    // console.log(rawData)
-    // data = rawData;
-    data.push(rawDataTrace);
+        // console.log("========= in sigma =============");
+        // console.log(rawData)
+        // data = rawData;
+        data.push(rawDataTrace);
     }
 
     return {
-    "data" : data,
-    "layout": layout
+        "data" : data,
+        "layout": layout
     }
+}
+
+uploadMessageRecovery = function(rawData) {
+    if (rawData == undefined) {
+        return;
+    }
+
+    const filename = rawData.filename;
+    const len    = rawData.lines;
+
+    return `The upload file ${filename} 
+            with ${len} lines`;
 }
 
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
@@ -252,4 +264,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientsideEta: {
         tabChangeFigRender: etaRender,
     },
+    clientsideMessageRec: {
+        uploadMessage: uploadMessageRecovery
+    }
 });

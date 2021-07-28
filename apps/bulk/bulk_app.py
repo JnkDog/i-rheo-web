@@ -35,6 +35,8 @@ Layout = dbc.Row([
                               color="primary", style={"margin": "5px"})],
                               className="btn-group me-2"),
                     html.Div(id="BULKAPP-upload-message"),
+                    # This is just for show the loading message
+                    html.Div(id="BULKAPP-loading-message"),
                     html.Hr(),
                     oversampling_component_generate(prefix_app_name),
                     html.Hr(),
@@ -68,7 +70,8 @@ Trigger when the experiental data(raw data) uploaded
 """
 @app.callback(
     Output("BULKAPP-raw-data-store", "data"),
-    Output("BULKAPP-upload-message", "children"),
+    # Output("BULKAPP-upload-message", "children"),
+    Output("BULKAPP-loading-message", "children"),
     Input("BULKAPP-upload", "contents"),
     State("BULKAPP-upload", "filename"),
     prevent_initial_call=True
@@ -76,18 +79,29 @@ Trigger when the experiental data(raw data) uploaded
 def store_raw_data(content, file_name):
     # df = generate_df(content)
 
+    # data = {
+    #     "x": df[0],
+    #     "y": df[1],
+    #     "filename": file_name,
+    #     "lines": len(df)
+    # }
+
     data = {
         "x": [i for i in range(0, 50)],
         "y": [i for i in range(0, 50)],
         "z": [i for i in range (50, 100)],
-        "file_name": file_name
+        "file_name": file_name,
+        "lines": 10
     }
 
     # original 
     # upload_messge = "The upload file {} with {} lines".format(file_name, len(df))
-    upload_messge = "The upload file {} with {} lines".format(file_name, 1)
+    # upload_messge = "The upload file {} with {} lines".format(file_name, 1)
 
-    return data, upload_messge
+    """
+    Don't pass any string to this return. This component only for loading message.
+    """
+    return data, ""
 
 """
 Trigger when the experiental data(raw data) has already uploaded
@@ -160,6 +174,16 @@ app.clientside_callback(
     Input("BULKAPP-oversampling-data-store", "data"),
     Input("BULKAPP-oversampling-render-switch", "value"),
     prevent_initial_call=True
+)
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideMessageRec",
+        function_name="uploadMessage"
+    ),
+    Output("BULKAPP-upload-message", "children"),
+    Input("BULKAPP-raw-data-store", "data"),
+    # prevent_initial_call=True
 )
 
 # ================ Download callback ========================

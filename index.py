@@ -38,14 +38,14 @@ def display_page(pathname):
     pathname = pathname.lower()
     
     # TODO need to modify
-    if pathname == "/gt" or pathname == "/":
-        return irheoGT_app.Layout
-    elif pathname == "/ft":
+    if pathname == "/ft":
         return irheoFT_app.Layout
     elif pathname == "/bulk":
         return bulk_app.Layout
     elif pathname == "/wiki":
         return wiki_app.Layout
+    elif pathname == "/gt" or pathname == "/":
+        return irheoGT_app.Layout
     else:
         return notfound_app.NotFoundPage
 
