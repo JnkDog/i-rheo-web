@@ -6,8 +6,8 @@ Upload = dcc.Upload(
     html.Button('Upload File', className="btn btn-primary"),
     id="upload",
     accept='.txt, .csv',
-    # modify the upload file name
-    filename="raw data"
+    # this would be overwritten by the upload filenmae
+    filename="example.txt"
 )
 
 def upload_component_generate(id):
@@ -15,8 +15,8 @@ def upload_component_generate(id):
         html.Button('Upload File', className="btn btn-primary"),
         id=id,
         accept='.txt, .csv',
-        # modify the upload file name
-        filename="raw data"
+        # this would be overwritten by the upload filenmae
+        filename="example.txt"
     )
 
 

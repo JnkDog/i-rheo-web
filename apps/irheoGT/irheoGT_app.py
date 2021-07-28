@@ -19,7 +19,7 @@ from components.inputgdot.inputgdot import Inputgdot
 
 # import algorithm
 from algorithm.oversample import get_oversampling_data
-from algorithm.read_data import generate_df
+from algorithm.read_data import generate_df, generate_df_from_local
 from algorithm.pwft import ftdata
 
 Layout = dbc.Row([
@@ -42,10 +42,6 @@ Layout = dbc.Row([
                     # This is just for show the loading message
                     html.Div(id="loading-message"),
                     html.Hr(),
-                    html.Div([
-                        # html.H5("Example data"),
-                    ]),
-                    html.Hr(),
                     Oversampling,
                     html.Hr(),
                     Download
@@ -65,17 +61,24 @@ Trigger when the experiental data(raw data) uploaded
     # Output("upload-message", "children"),
     Output("loading-message", "children"),
     Input("upload", "contents"),
+    Input("load-example", "n_clicks"),
     # The g_0 and g_inf are not used ... 
     Input("g_0", "value"),
     Input("g_inf", "value"),
     State("upload", "filename"),
     prevent_initial_call=True
 )
-def store_raw_data(content, g_0, g_inf, file_name):
-    if content is None:
-        raise dash.exceptions.PreventUpdate
+def store_raw_data(content, n_clicks, g_0, g_inf, file_name):
+    # Deciding which raw_data used according to the ctx 
+    ctx = dash.callback_context
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    df = generate_df(content)
+    df = pd.DataFrame()
+    if button_id == "load-example":
+        path = "example_data/SingExp6_5.txt"
+        df = generate_df_from_local(path)
+    else:
+        df = generate_df(content)
     
     # save file_name and lens for message recovering when app changing
     data = {

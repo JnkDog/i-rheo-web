@@ -73,10 +73,11 @@ Trigger when the experiental data(raw data) uploaded
     # Output("BULKAPP-upload-message", "children"),
     Output("BULKAPP-loading-message", "children"),
     Input("BULKAPP-upload", "contents"),
+    Input("load-example", "n_clicks"),
     State("BULKAPP-upload", "filename"),
     prevent_initial_call=True
 )
-def store_raw_data(content, file_name):
+def store_raw_data(content, n_clicks, file_name):
     # df = generate_df(content)
 
     # data = {
@@ -85,6 +86,17 @@ def store_raw_data(content, file_name):
     #     "filename": file_name,
     #     "lines": len(df)
     # }
+
+    # Deciding which raw_data used according to the ctx 
+    # ctx = dash.callback_context
+    # button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    # df = pd.DataFrame()
+    # if button_id == "load-example":
+    #     path = "xxx"
+    #     df = generate_df_from_local(path)
+    # else:
+    #     df = generate_df(content)
 
     data = {
         "x": [i for i in range(0, 50)],

@@ -15,3 +15,8 @@ def parse_contents(content):
     decoded_content = base64.b64decode(content)
 
     return decoded_content
+
+def generate_df_from_local(path):
+    df = pd.read_table(path, header=None, delim_whitespace=True)
+
+    return df

@@ -13,6 +13,11 @@ from components.download.download import download_component_generate
 from components.oversampling.oversampling import oversampling_component_generate
 from components.tab.tabs import tabs_component_generate
 
+# import algorithm
+from algorithm.oversample import get_oversampling_data
+from algorithm.read_data import generate_df, generate_df_from_local
+from algorithm.pwft import ftdata
+
 """
 The orginal version is the i-Rheo virtual instrument (VI) LABVIEW.
 """
@@ -76,11 +81,22 @@ Trigger when the experiental data(raw data) uploaded
     # Output("FTAPP-upload-message", "children"),
     Output("FTAPP-loading-message", "children"),
     Input("FTAPP-upload", "contents"),
+    Input("FTAPP-load-example", "n_clicks"),
     State("FTAPP-upload", "filename"),
     prevent_initial_call=True
 )
-def store_raw_data(content, file_name):
+def store_raw_data(content, n_clicks, file_name):
     # df = generate_df(content)
+    # Deciding which raw_data used according to the ctx 
+    # ctx = dash.callback_context
+    # button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    # df = pd.DataFrame()
+    # if button_id == "load-example":
+    #     path = "xxx"
+    #     df = generate_df_from_local(path)
+    # else:
+    #     df = generate_df(content)
 
     raw_data = {
         "x": [i for i in range(0, 50)],
