@@ -27,10 +27,11 @@ Layout = dbc.Row([
                     html.H5("Support .txt"),
                     html.Div([
                         Upload, 
-                        dcc.Store(id="raw-data-store"),
-                        dcc.Store(id="oversampling-data-store"),
-                        dcc.Store(id="ft-data-store"),
-                        dcc.Loading(dcc.Store(id="oversampled-ft-data-store"),
+                        dcc.Store(id="raw-data-store", storage_type="session"),
+                        dcc.Store(id="oversampling-data-store", storage_type="session"),
+                        dcc.Store(id="ft-data-store", storage_type="session"),
+                        dcc.Loading(dcc.Store(id="oversampled-ft-data-store", 
+                                              storage_type="session"),
                                     id="full-screen-mask",
                                     fullscreen=True)
                     ], className="btn-group me-2"),

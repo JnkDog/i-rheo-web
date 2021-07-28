@@ -18,10 +18,10 @@ def switch_component_generate(prefix_app_name):
     switch_id = prefix_app_name + SWITCH_ID_SUFFIX
     return dbc.FormGroup([
             dbc.Checklist(options=[
-                {"label" : "oversampling render", "value" : True}
+                {"label": "oversampling render", "value": True}
             ],
             # value=[False], 
-            id=switch_id, 
+            id=switch_id,
             switch=True,
-            style={"fontSize" : "20px"}
+            style={"fontSize": "20px"}
     )])

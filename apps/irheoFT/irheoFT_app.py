@@ -26,10 +26,11 @@ Layout = dbc.Row([
                     html.H5("Support .txt"),
                     html.Div([
                         upload_component_generate("FTAPP-upload"),
-                        dcc.Store(id="FTAPP-raw-data-store"),
-                        dcc.Store(id="FTAPP-oversampling-data-store"),
-                        dcc.Store(id="FTAPP-FT-data-store"),
-                        dcc.Loading(dcc.Store(id="FTAPP-oversampled-ft-data-store"),
+                        dcc.Store(id="FTAPP-raw-data-store", storage_type="session"),
+                        dcc.Store(id="FTAPP-oversampling-data-store", storage_type="session"),
+                        dcc.Store(id="FTAPP-FT-data-store", storage_type="session"),
+                        dcc.Loading(dcc.Store(id="FTAPP-oversampled-ft-data-store", 
+                                              storage_type="session"),
                                     id="full-screen-mask",
                                     fullscreen=True)
                     ], className="btn-group me-2"),
@@ -37,6 +38,8 @@ Layout = dbc.Row([
                               color="primary", style={"margin": "5px"})],
                               className="btn-group me-2"),
                     html.Div(id="FTAPP-upload-message"),
+                    # This is just for show the loading message
+                    html.Div(id="FTAPP-loading-message"),
                     html.Hr(),
                     oversampling_component_generate(prefix_app_name),
                     html.Hr(),
@@ -70,7 +73,8 @@ Trigger when the experiental data(raw data) uploaded
 """
 @app.callback(
     Output("FTAPP-raw-data-store", "data"),
-    Output("FTAPP-upload-message", "children"),
+    # Output("FTAPP-upload-message", "children"),
+    Output("FTAPP-loading-message", "children"),
     Input("FTAPP-upload", "contents"),
     State("FTAPP-upload", "filename"),
     prevent_initial_call=True
@@ -78,18 +82,30 @@ Trigger when the experiental data(raw data) uploaded
 def store_raw_data(content, file_name):
     # df = generate_df(content)
 
-    data = {
+    raw_data = {
         "x": [i for i in range(0, 50)],
         "y": [i for i in range(0, 50)],
         "z": [i for i in range (50, 100)],
-        "file_name": file_name
+        "file_name": file_name,
+        "lines": 10
     }
+
+    # save file_name and lens for message recovering when app changing
+    # data = {
+    #     "x": df[0],
+    #     "y": df[1],
+    #     "filename": file_name,
+    #     "lines": len(df)
+    # }
 
     # original 
     # upload_messge = "The upload file {} with {} lines".format(file_name, len(df))
-    upload_messge = "The upload file {} with {} lines".format(file_name, 1)
-
-    return data, upload_messge
+    # upload_messge = "The upload file {} with {} lines".format(file_name, 1)
+    
+    """
+    Don't pass any string to this return. This component only for loading message.
+    """
+    return raw_data, ""
 
 """
 Trigger when the experiental data(raw data) has already uploaded
@@ -162,6 +178,16 @@ app.clientside_callback(
     Input("FTAPP-oversampling-data-store", "data"),
     Input("FTAPP-oversampling-render-switch", "value"),
     prevent_initial_call=True
+)
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideMessageRec",
+        function_name="uploadMessage"
+    ),
+    Output("FTAPP-upload-message", "children"),
+    Input("FTAPP-raw-data-store", "data"),
+    # prevent_initial_call=True
 )
 
 # ================ Download callback ========================

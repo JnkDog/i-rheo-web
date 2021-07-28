@@ -5,7 +5,7 @@ import dash_bootstrap_components as dbc
 INPUT_ID_SUFFIX = "-oversampling-input"
 
 OversamplingInput = html.Div([
-    # html.P("Input the oversampling points number"),
+    # html.P("Input the oversampling points number and use the switch"),
     dbc.Input(id="oversampling-input", placeholder="Type the number", type="number")
 ])
 
