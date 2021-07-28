@@ -16,6 +16,7 @@ from dash_html_components.Nav import Nav
 
 # import apps and components
 from app import app
+from apps.mot import mot_app
 from apps.irheoGT import irheoGT_app
 from apps.irheoFT import irheoFT_app
 from apps.bulk import bulk_app
@@ -38,6 +39,8 @@ def display_page(pathname):
     pathname = pathname.lower()
     
     # TODO need to modify
+    if pathname == "/mot":
+        return mot_app.Layout
     if pathname == "/ft":
         return irheoFT_app.Layout
     elif pathname == "/bulk":

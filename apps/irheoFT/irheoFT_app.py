@@ -7,7 +7,7 @@ import pandas as pd
 
 from app import app
 
-# import components
+# import components and its generation
 from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
 from components.oversampling.oversampling import oversampling_component_generate
