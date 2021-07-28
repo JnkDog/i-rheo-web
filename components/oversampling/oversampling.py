@@ -13,9 +13,10 @@ OVERSAMPLING_BUTTON_SUFFIX = "-oversampling-btn"
 
 # This is templates but used in irheo GT
 Oversampling = html.Div([
-    html.H5("Oversampling"),
+    html.H5("Input g dot values"),
     Inputgdot,
     html.Br(),
+    html.H5("Oversampling operation"),
     dbc.InputGroup(
         id="oversampling-control-components",
         children=[
@@ -24,6 +25,7 @@ Oversampling = html.Div([
                        color="primary", className="ml-3"),
     ]),
     # html.H5(id="oversampling-message", className="text-warning"),
+    html.P("switch it"),
     Switch
 ])
 
