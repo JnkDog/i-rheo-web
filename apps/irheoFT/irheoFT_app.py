@@ -47,23 +47,23 @@ Layout = dbc.Row([
                     html.Div(id="FTAPP-loading-message"),
                     html.Hr(),
                     oversampling_component_generate(prefix_app_name),
-                    html.Hr(),
-                    html.Div([
-                        dbc.Button("Divide by 100", id="FTAPP-divide-example", 
-                                   color="primary", style={"margin": "5px"}),
-                        dbc.Button("Use slope", id="FTAPP-slope-example", 
-                                   color="primary", style={"margin": "5px"}),           
-                    ], className="btn-group me-2"),
-                    html.Div([
-                        dbc.Input(id="FTAPP-strain-input"),
-                        dbc.Button("Strain con", id="FTAPP-strain-example", 
-                                   color="primary", className="ml-2")], 
-                        className="input-group", style={"width": "300px"}),
-                    html.Div([
-                        dbc.Input(id="FTAPP-fixed-input"),
-                        dbc.Button("Fixed x", id="FTAPP-fixed-example", 
-                                color="primary", className="ml-2", style={"width": "99.84px"})], 
-                        className="input-group mt-2", style={"width": "300px"}),
+                    # html.Hr(),
+                    # html.Div([
+                    #     dbc.Button("Divide by 100", id="FTAPP-divide-example", 
+                    #                color="primary", style={"margin": "5px"}),
+                    #     dbc.Button("Use slope", id="FTAPP-slope-example", 
+                    #                color="primary", style={"margin": "5px"}),           
+                    # ], className="btn-group me-2"),
+                    # html.Div([
+                    #     dbc.Input(id="FTAPP-strain-input"),
+                    #     dbc.Button("Strain con", id="FTAPP-strain-example", 
+                    #                color="primary", className="ml-2")], 
+                    #     className="input-group", style={"width": "300px"}),
+                    # html.Div([
+                    #     dbc.Input(id="FTAPP-fixed-input"),
+                    #     dbc.Button("Fixed x", id="FTAPP-fixed-example", 
+                    #             color="primary", className="ml-2", style={"width": "99.84px"})], 
+                    #     className="input-group mt-2", style={"width": "300px"}),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 

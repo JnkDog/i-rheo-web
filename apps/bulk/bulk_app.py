@@ -40,23 +40,6 @@ Layout = dbc.Row([
                     html.Hr(),
                     oversampling_component_generate(prefix_app_name),
                     html.Hr(),
-                    html.Div([
-                        dbc.Button("Divide by 100", id="BULKAPP-divide-example", 
-                                   color="primary", style={"margin": "5px"}),
-                        dbc.Button("Use slope", id="BULKAPP-slope-example", 
-                                   color="primary", style={"margin": "5px"}),           
-                    ], className="btn-group me-2"),
-                    html.Div([
-                        dbc.Input(id="BULKAPP-strain-input"),
-                        dbc.Button("Strain con", id="BULKAPP-strain-example", 
-                                   color="primary", className="ml-2")], 
-                        className="input-group", style={"width": "300px"}),
-                    html.Div([
-                        dbc.Input(id="BULKAPP-fixed-input"),
-                        dbc.Button("Fixed x", id="BULKAPP-fixed-example", 
-                                color="primary", className="ml-2", style={"width": "99.84px"})], 
-                        className="input-group mt-2", style={"width": "300px"}),
-                    html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
             dbc.Col(tabs_component_generate(prefix_app_name), width=True),
