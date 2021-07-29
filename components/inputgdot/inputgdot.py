@@ -39,3 +39,22 @@ def input_gdot_generate(prefix_app_name):
 
     return Inputgdot
 
+def mot_input_generate(prefix_app_name):
+    kt_id = prefix_app_name + "-kt"
+    at_id = prefix_app_name + "-at"
+
+    MOTInput = html.Div([
+        dbc.Input(
+            id=kt_id,
+            type="number",
+            placeholder="Input kt, default 1e-6"
+        ),
+        html.Br(),
+        dbc.Input(
+            id=at_id,
+            type="number",
+            placeholder="Input at, default 1e6"
+        )
+    ])
+
+    return MOTInput

@@ -29,8 +29,6 @@ def oversampling_test():
 
 # oversampling_test()
 
-
-
 def mot_oversampling(df, n_times):
     t = df[0]
     g = df[1]

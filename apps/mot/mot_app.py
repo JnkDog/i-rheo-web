@@ -12,13 +12,13 @@ from app import app
 # import components and its generation
 from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
-from components.oversampling.oversampling import oversampling_component_generate
+from components.oversampling.oversampling import mot_oversampling_generate
 from components.tab.tabs import mot_tabs_generate
 
 # import algorithm
 from algorithm.mot_At_oversampling import mot_oversampling
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
-from algorithm.pwft import ftdata
+from algorithm.mot import mot_processing
 from algorithm.pai import pai_processing
 
 # Using your own app name. Can't be same.
@@ -44,7 +44,7 @@ Layout = dbc.Row([
                     # This is just for show the loading message
                     html.Div(id="MOT-loading-message"),
                     html.Hr(),
-                    oversampling_component_generate(prefix_app_name),
+                    mot_oversampling_generate(prefix_app_name),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
@@ -59,15 +59,18 @@ Trigger when the experiental data(raw data) uploaded
 """
 @app.callback(
     Output("MOT-raw-data-store", "data"),  
-    # Output("MOT-ft-data-store", "data"),
+    Output("MOT-ft-data-store", "data"),
     # Output("upload-message", "children"),
     Output("MOT-loading-message", "children"),
     Input("MOT-upload", "contents"),
     Input("MOT-load-example", "n_clicks"),
     State("MOT-upload", "filename"),
+    # TODO need change later
+    State("MOT-kt", "value"),
+    State("MOT-at", "value"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, file_name):
+def store_raw_data(content, n_clicks, file_name, kt, at):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -86,24 +89,23 @@ def store_raw_data(content, n_clicks, file_name):
         "pai": pai_processing(df)["pai"],
         "filename": file_name,
         "lines": len(df)
+    }  
+
+    # default kt: 1e-6, at: 1e6
+    kt = 1e-6 if kt is None else kt
+    at = 1e6 if at is None else at
+
+    # This function takes lots of time
+    omega, g_p, g_pp = mot_processing(df, kt, at, False)
+
+    ft_data = {
+        "x": omega,
+        "y1": g_p,
+        "y2": g_pp
     }
 
-    # default g_0: 1, g_inf: 0
-    # g_0 = 1 if g_0 is None else int(g_0)
-    # g_inf = 0 if g_inf is None else int(g_inf)
-
-    # omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
-
-    # ft_data = {
-    #     "x": omega,
-    #     "y1": g_p,
-    #     "y2": g_pp
-    # }
-
-    # upload_messge = "The upload file {} with {} lines".format(file_name, len(df))
-
     # return data, upload_messge, ft_data
-    return data, ""
+    return data, ft_data, ""
 
 """
 Trigger when the experiental data(raw data) has already uploaded
@@ -111,14 +113,14 @@ and the oversampling button clicked with the oversampling ntimes.
 """
 @app.callback(
     Output("MOT-oversampling-data-store", "data"),
-    # Output("MOT-oversampled-ft-data-store", "data"),
+    Output("MOT-oversampled-ft-data-store", "data"),
     Input("MOT-oversampling-btn", "n_clicks"),
-    # State("MOT-g_0", "value"),
-    # State("MOT-g_inf", "value"),
+    State("MOT-kt", "value"),
+    State("MOT-at", "value"),
     State("MOT-raw-data-store", "data"),
     State("MOT-oversampling-input", "value")
 )
-def store_oversampling_data(n_clicks, data, ntimes):
+def store_oversampling_data(n_clicks, kt, at, data, ntimes):
     if n_clicks is None or data is None or ntimes is None:
         raise PreventUpdate
 
@@ -132,22 +134,20 @@ def store_oversampling_data(n_clicks, data, ntimes):
         "y": y,
     }
 
-    # # default g_0: 1, g_inf: 0
-    # g_0 = 1 if g_0 is None else int(g_0)
-    # g_inf = 0 if g_inf is None else int(g_inf)
+    # default kt: 1e-6, at: 1e6
+    kt = 1e-6 if kt is None else kt
+    at = 1e6 if at is None else at
 
-    # df = generate_df(content)
-    
-    # # This function takes lots of time
-    # omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
+    # This function takes lots of time
+    omega, g_p, g_pp = mot_processing(df, kt, at, True, ntimes)
 
-    # oversampled_ft_data = {
-    #     "x": omega,
-    #     "y1": g_p,
-    #     "y2": g_pp
-    # }
-    # return data, oversampled_ft_data
-    return data
+    oversampled_ft_data = {
+        "x": omega,
+        "y1": g_p,
+        "y2": g_pp
+    }
+
+    return data, oversampled_ft_data
 
 # ================ Download callback ========================
 
@@ -248,8 +248,8 @@ app.clientside_callback(
 # add to the js part and data store part
 app.clientside_callback(
     ClientsideFunction(
-        namespace="clientsideFT",
-        function_name="tabChangeFigRender"
+        namespace="clientsideMot",
+        function_name="tabChangeMotRender"
     ),
     Output("MOT-Mot-display", "figure"),
     Input("MOT-ft-data-store", "data"),
@@ -267,15 +267,4 @@ app.clientside_callback(
     Input("MOT-raw-data-store", "data"),
     # prevent_initial_call=True
 )
-
-# ================ Loading mask ========================
-
-# @app.callback(
-#     Output("loading-test", "children"),
-#     Input("begin-line-number", "value"),
-#     prevent_initial_call=True,
-# )
-# def loading_test(number):
-#     time.sleep(30)
-#     return number
 
