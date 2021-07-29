@@ -16,8 +16,8 @@ from components.oversampling.oversampling import oversampling_component_generate
 from components.tab.tabs import mot_tabs_generate
 
 # import algorithm
-from algorithm.oversample import get_oversampling_data
-from algorithm.read_data import generate_df, generate_df_from_local
+from algorithm.mot_At_oversampling import mot_oversampling
+from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
 from algorithm.pwft import ftdata
 from algorithm.pai import pai_processing
 
@@ -111,41 +111,43 @@ and the oversampling button clicked with the oversampling ntimes.
 """
 @app.callback(
     Output("MOT-oversampling-data-store", "data"),
-    Output("MOT-oversampled-ft-data-store", "data"),
+    # Output("MOT-oversampled-ft-data-store", "data"),
     Input("MOT-oversampling-btn", "n_clicks"),
-    State("MOT-g_0", "value"),
-    State("MOT-g_inf", "value"),
-    State("MOT-upload", "contents"),
+    # State("MOT-g_0", "value"),
+    # State("MOT-g_inf", "value"),
+    State("MOT-raw-data-store", "data"),
     State("MOT-oversampling-input", "value")
 )
-def store_oversampling_data(n_clicks, g_0, g_inf, content, ntimes):
-    if n_clicks is None or content is None or ntimes is None:
+def store_oversampling_data(n_clicks, data, ntimes):
+    if n_clicks is None or data is None or ntimes is None:
         raise PreventUpdate
 
     # avoid floor number
     ntimes = int(ntimes)
-    x, y = get_oversampling_data(content=content, ntimes=ntimes)
+    df = convert_lists_to_df(data)
+    x, y = mot_oversampling(df, ntimes)
 
     data = {
         "x": x,
         "y": y,
     }
 
-    # default g_0: 1, g_inf: 0
-    g_0 = 1 if g_0 is None else int(g_0)
-    g_inf = 0 if g_inf is None else int(g_inf)
+    # # default g_0: 1, g_inf: 0
+    # g_0 = 1 if g_0 is None else int(g_0)
+    # g_inf = 0 if g_inf is None else int(g_inf)
 
-    df = generate_df(content)
+    # df = generate_df(content)
     
-    # This function takes lots of time
-    omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
+    # # This function takes lots of time
+    # omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
 
-    oversampled_ft_data = {
-        "x": omega,
-        "y1": g_p,
-        "y2": g_pp
-    }
-    return data, oversampled_ft_data
+    # oversampled_ft_data = {
+    #     "x": omega,
+    #     "y1": g_p,
+    #     "y2": g_pp
+    # }
+    # return data, oversampled_ft_data
+    return data
 
 # ================ Download callback ========================
 
@@ -190,7 +192,7 @@ Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
     ClientsideFunction(
-        namespace="clientsideSigma",
+        namespace="clientsideMot",
         function_name="tabChangeFigRender"
     ),
     Output("MOT-A(t)-display", "figure"),

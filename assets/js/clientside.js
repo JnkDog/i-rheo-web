@@ -57,7 +57,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
     }
 }
 
-etaRender = function(rawData, oversamplingData, switchValue=[false]) {
+motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
     if (rawData == undefined) {
         return;
     }
@@ -65,10 +65,10 @@ etaRender = function(rawData, oversamplingData, switchValue=[false]) {
     let data = [];
     let layout = {
         "xaxis": {"tick0": -2, "dtick": 1,
-                "type": "log", "title": {"text": "ω [rad/s]"}, 
+                "type": "log", "title": {"text": "t (sec)"}, 
                 "ticks": "outside" 
         },
-        "yaxis": {"title": {"text" : "η* [Pa.s]"}, 
+        "yaxis": {"title": {"text" : "A(t)"}, 
                 // "range": [0, 1.0],
                 "rangemode": "tozero", "ticks": "outside"
         },
@@ -261,8 +261,8 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientsideGamma: {
         tabChangeFigRender: gammaRender,
     },
-    clientsideEta: {
-        tabChangeFigRender: etaRender,
+    clientsideMot: {
+        tabChangeFigRender: motAtRender,
     },
     clientsideMessageRec: {
         uploadMessage: uploadMessageRecovery

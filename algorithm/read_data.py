@@ -20,3 +20,11 @@ def generate_df_from_local(path):
     df = pd.read_table(path, header=None, delim_whitespace=True)
 
     return df
+
+def convert_lists_to_df(data):
+    x = data.get("x")
+    y = data.get("y")
+
+    df = pd.DataFrame(list(zip(x, y)))
+
+    return df
