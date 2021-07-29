@@ -36,10 +36,12 @@ def test():
     g_p = np.real(res_test*omega*i)
     g_pp = np.imag(res_test*omega*i)
     fig = plt.figure(figsize=(6, 5))
+    g_p[g_p < 0] = None
+    g_pp[g_pp < 0] = None
     print(g_pp)
     
-    plt.plot(omega, g_p, '-o', lw=3, color='red', label='$G^{I}$') 
-    plt.plot(omega, g_pp, '-o', lw=3, color='royalblue', label='$G^{II}$')
+    plt.loglog(omega, g_p, '-o', lw=3, color='red', label='$G^{I}$') 
+    plt.loglog(omega, g_pp, '-o', lw=3, color='royalblue', label='$G^{II}$')
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Moduli (Pa)')
     plt.legend()
