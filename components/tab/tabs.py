@@ -2,7 +2,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 
-from components.display.spinner import Spinner_stress, Spinner_FT, Spinner_strain, spinner_generate # Spinner_eta
+from components.display.spinner import Spinner, Spinner_stress, Spinner_FT, Spinner_strain, spinner_generate # Spinner_eta
 
 TABS_LABEL_DICT = {
     "STRESS": "Stress",
@@ -16,6 +16,12 @@ TABS_ID_SUFFIX_DICT = {
     "FT"   :    "FT",
     "GAMMA": "gamma",
     # "ETA"  :   "eta",
+}
+
+MOT_TABS_DICT = {
+    "1": "A(t)",
+    "2": "Mot",
+    "3": "pai"
 }
 
 # This is templates but used in irheo GT
@@ -46,6 +52,18 @@ def tabs_component_generate(prefix_app_name):
     # Tab_list = [dbc.Tab(spinner_generate(prefix_app_name+"-"+value), 
     #          label=value.capitalize(), tab_id=value) 
     #          for value in TABS_ID_SUFFIX_DICT.values()]
+    
+    Tabs = dbc.Tabs(children=Tab_list)
+
+    return Tabs
+
+def mot_tabs_generate(prefix_app_name):
+    Spinner_list = [spinner_generate(prefix_app_name+"-"+value)
+                    for value in MOT_TABS_DICT.values()]
+    
+    Tab_list = [dbc.Tab(item, label=list(MOT_TABS_DICT.values())[idx],
+                        tab_id=list(MOT_TABS_DICT.values())[idx])
+                        for idx, item in enumerate(Spinner_list)]
     
     Tabs = dbc.Tabs(children=Tab_list)
 
