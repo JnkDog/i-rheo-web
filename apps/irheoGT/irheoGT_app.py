@@ -63,8 +63,8 @@ Trigger when the experiental data(raw data) uploaded
     Input("upload", "contents"),
     Input("load-example", "n_clicks"),
     # The g_0 and g_inf are not used ... 
-    Input("g_0", "value"),
-    Input("g_inf", "value"),
+    State("g_0", "value"),
+    State("g_inf", "value"),
     State("upload", "filename"),
     prevent_initial_call=True
 )
