@@ -55,7 +55,7 @@ class Oversampling:
 
 # ========================= Useful Function =============================
 def get_oversampling_data(content, ntimes):
-    raw_data_df = generate_df(content)
+    raw_data_df = content
     x, y = oversampling_process(raw_data_df[0], raw_data_df[1], ntimes)
 
     return x, y
