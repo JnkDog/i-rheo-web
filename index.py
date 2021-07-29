@@ -1,6 +1,7 @@
 # os package
 import datetime
 import base64
+from os import path
 from unicodedata import name
 
 # framework package
@@ -16,6 +17,7 @@ from dash_html_components.Nav import Nav
 
 # import apps and components
 from app import app
+
 from apps.mot import mot_app
 from apps.irheoGT import irheoGT_app
 from apps.irheoFT import irheoFT_app
@@ -39,6 +41,9 @@ def display_page(pathname):
     pathname = pathname.lower()
     
     # TODO need to modify
+    if pathname == "/afm":
+        # return afm_app.Layout
+        return ""
     if pathname == "/mot":
         return mot_app.Layout
     if pathname == "/ft":
