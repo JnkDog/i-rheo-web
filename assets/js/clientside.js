@@ -57,7 +57,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
     }
 }
 
-etaRender = function(rawData, oversamplingData, switchValue=[false]) {
+motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
     if (rawData == undefined) {
         return;
     }
@@ -65,10 +65,10 @@ etaRender = function(rawData, oversamplingData, switchValue=[false]) {
     let data = [];
     let layout = {
         "xaxis": {"tick0": -2, "dtick": 1,
-                "type": "log", "title": {"text": "ω [rad/s]"}, 
+                "type": "log", "title": {"text": "t (sec)"}, 
                 "ticks": "outside" 
         },
-        "yaxis": {"title": {"text" : "η* [Pa.s]"}, 
+        "yaxis": {"title": {"text" : "A(t)"}, 
                 // "range": [0, 1.0],
                 "rangemode": "tozero", "ticks": "outside"
         },
@@ -83,15 +83,7 @@ etaRender = function(rawData, oversamplingData, switchValue=[false]) {
         "y": rawData.y
     }
 
-    /**
-    * Only oversampling button on and oversamplingData has value to render Oversampling figure.
-    * You may feel wired about the switchValue is [bool] not bool.
-    * It's the Dash's wired part... Just follow the framework's rule.
-    */
     if (switchValue[0] == true && oversamplingData != undefined) {
-    // console.log("========= in oversampling =======");
-    // console.log(oversamplingData)
-    // data = oversamplingData;
     let oversamplingDataTrace = {
         "name": "Oversampling Data",
         "mode": "markers",
@@ -113,6 +105,65 @@ etaRender = function(rawData, oversamplingData, switchValue=[false]) {
         "data" : data,
         "layout": layout
     }
+}
+
+motRender = function(ftData, oversampledftData, switchValue=[false]) {
+    if (ftData == undefined) {
+        return;
+    }
+
+    let data = [];
+    let layout = {
+        "xaxis": {"dtick": 1, "tick0": -12, 
+                  "type": "log", "title": {"text": "Frequency (Hz)"},
+                  "ticks": "outside"},
+        "yaxis": {"dtick": 1, "tick0": -7, 
+                  "type": "log", "title": {"text" : "Moduli (Pa)"},
+                  "ticks": "outside"},
+        // "colorway": ["green"],
+    }
+    let ftDataTrace0 = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "G'",
+        "mode": "lines",
+        "line": {color:"black"},
+        "x": ftData.x,
+        "y": ftData.y1,
+    }
+    let ftDataTrace1 = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "G''",
+        "mode": "lines",
+        "line": {color:"red"},
+        "x": ftData.x,
+        "y": ftData.y2,
+    }
+
+    if (switchValue[0] == true && oversampledftData != undefined) {
+        let oversampledftDataTrace0 = {
+            "name": "Oversampled-G'",
+            "mode": "lines",
+            "line": {color:"black"},
+            "x": oversampledftData.x,
+            "y": oversampledftData.y1,
+        }
+        let oversampledftDataTrace1 = {
+            "name": "Oversampled-G''",
+            "mode": "lines",
+            "line": {color:"red"},
+            "x": oversampledftData.x,
+            "y": oversampledftData.y2,
+        }
+        
+        data.push(oversampledftDataTrace0, oversampledftDataTrace1);
+    } else {
+        data.push(ftDataTrace0, ftDataTrace1);  
+    }
+
+    return {
+        "data" : data,
+        "layout": layout
+    }   
 }
 
 uploadMessageRecovery = function(rawData) {
@@ -219,15 +270,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 "y": ftData.y2,
             }
 
-            /**
-            * Only oversampling button on and oversamplingData has value to render oversampling figure.
-            * You may feel wired about the switchValue is [bool] not bool.
-            * It's the Dash's wired part... Just follow the framework's rule.
-            */
             if (switchValue[0] == true && oversampledftData != undefined) {
-                // console.log("========= in ft oversampling =======");
-                // console.log(oversamplingData)
-                // data = oversamplingData;
                 let oversampledftDataTrace0 = {
                     "name": "OversampledftData0",
                     "mode": "lines",
@@ -245,10 +288,6 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 
                 data.push(oversampledftDataTrace0, oversampledftDataTrace1);
             } else {
-                // console.log("========= in ft =============");
-                // console.log(rawData)
-                // data = rawData;
-                // data.push(ftDataTrace0, ftDataTrace1);
                 data.push(ftDataTrace0, ftDataTrace1);  
             }
 
@@ -261,8 +300,9 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientsideGamma: {
         tabChangeFigRender: gammaRender,
     },
-    clientsideEta: {
-        tabChangeFigRender: etaRender,
+    clientsideMot: {
+        tabChangeFigRender: motAtRender,
+        tabChangeMotRender: motRender
     },
     clientsideMessageRec: {
         uploadMessage: uploadMessageRecovery

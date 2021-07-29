@@ -12,13 +12,14 @@ from app import app
 # import components and its generation
 from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
-from components.oversampling.oversampling import oversampling_component_generate
-from components.tab.tabs import tabs_component_generate
+from components.oversampling.oversampling import mot_oversampling_generate
+from components.tab.tabs import mot_tabs_generate
 
 # import algorithm
-from algorithm.oversample import get_oversampling_data
-from algorithm.read_data import generate_df, generate_df_from_local
-from algorithm.pwft import ftdata
+from algorithm.mot_At_oversampling import mot_oversampling
+from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
+from algorithm.mot import mot_processing
+from algorithm.pai import pai_processing
 
 # Using your own app name. Can't be same.
 prefix_app_name = "MOT"
@@ -43,11 +44,11 @@ Layout = dbc.Row([
                     # This is just for show the loading message
                     html.Div(id="MOT-loading-message"),
                     html.Hr(),
-                    oversampling_component_generate(prefix_app_name),
+                    mot_oversampling_generate(prefix_app_name),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
-            dbc.Col(tabs_component_generate(prefix_app_name), width=True),
+            dbc.Col(mot_tabs_generate(prefix_app_name), width=True),
             # Loading
 ])
 
@@ -63,20 +64,20 @@ Trigger when the experiental data(raw data) uploaded
     Output("MOT-loading-message", "children"),
     Input("MOT-upload", "contents"),
     Input("MOT-load-example", "n_clicks"),
-    # The g_0 and g_inf are not used ... 
-    Input("MOT-g_0", "value"),
-    Input("MOT-g_inf", "value"),
     State("MOT-upload", "filename"),
+    # TODO need change later
+    State("MOT-kt", "value"),
+    State("MOT-at", "value"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, g_0, g_inf, file_name):
+def store_raw_data(content, n_clicks, file_name, kt, at):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     df = pd.DataFrame()
     if button_id == "load-example":
-        path = "example_data/SingExp6_5.txt"
+        path = "example_data/mot/data.txt"
         df = generate_df_from_local(path)
     else:
         df = generate_df(content)
@@ -85,23 +86,23 @@ def store_raw_data(content, n_clicks, g_0, g_inf, file_name):
     data = {
         "x": df[0],
         "y": df[1],
+        "pai": pai_processing(df)["pai"],
         "filename": file_name,
         "lines": len(df)
-    }
+    }  
 
-    # default g_0: 1, g_inf: 0
-    g_0 = 1 if g_0 is None else int(g_0)
-    g_inf = 0 if g_inf is None else int(g_inf)
+    # default kt: 1e-6, at: 1e6
+    kt = 1e-6 if kt is None else kt
+    at = 1e6 if at is None else at
 
-    omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
+    # This function takes lots of time
+    omega, g_p, g_pp = mot_processing(df, kt, at, False)
 
     ft_data = {
         "x": omega,
         "y1": g_p,
         "y2": g_pp
     }
-
-    # upload_messge = "The upload file {} with {} lines".format(file_name, len(df))
 
     # return data, upload_messge, ft_data
     return data, ft_data, ""
@@ -114,38 +115,38 @@ and the oversampling button clicked with the oversampling ntimes.
     Output("MOT-oversampling-data-store", "data"),
     Output("MOT-oversampled-ft-data-store", "data"),
     Input("MOT-oversampling-btn", "n_clicks"),
-    State("MOT-g_0", "value"),
-    State("MOT-g_inf", "value"),
-    State("MOT-upload", "contents"),
+    State("MOT-kt", "value"),
+    State("MOT-at", "value"),
+    State("MOT-raw-data-store", "data"),
     State("MOT-oversampling-input", "value")
 )
-def store_oversampling_data(n_clicks, g_0, g_inf, content, ntimes):
-    if n_clicks is None or content is None or ntimes is None:
+def store_oversampling_data(n_clicks, kt, at, data, ntimes):
+    if n_clicks is None or data is None or ntimes is None:
         raise PreventUpdate
 
     # avoid floor number
     ntimes = int(ntimes)
-    x, y = get_oversampling_data(content=content, ntimes=ntimes)
+    df = convert_lists_to_df(data)
+    x, y = mot_oversampling(df, ntimes)
 
     data = {
         "x": x,
         "y": y,
     }
 
-    # default g_0: 1, g_inf: 0
-    g_0 = 1 if g_0 is None else int(g_0)
-    g_inf = 0 if g_inf is None else int(g_inf)
+    # default kt: 1e-6, at: 1e6
+    kt = 1e-6 if kt is None else kt
+    at = 1e6 if at is None else at
 
-    df = generate_df(content)
-    
     # This function takes lots of time
-    omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
+    omega, g_p, g_pp = mot_processing(df, kt, at, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
         "y1": g_p,
         "y2": g_pp
     }
+
     return data, oversampled_ft_data
 
 # ================ Download callback ========================
@@ -191,10 +192,10 @@ Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
     ClientsideFunction(
-        namespace="clientsideSigma",
+        namespace="clientsideMot",
         function_name="tabChangeFigRender"
     ),
-    Output("MOT-sigma-display", "figure"),
+    Output("MOT-A(t)-display", "figure"),
     Input("MOT-raw-data-store", "data"),
     Input("MOT-oversampling-data-store", "data"),
     Input("MOT-oversampling-render-switch", "value"),
@@ -203,13 +204,54 @@ app.clientside_callback(
     # prevent_initial_call=True
 )
 
+# pai figure render
+app.clientside_callback(
+    """
+    function(rawData) {
+        if (rawData == undefined) {
+            return;
+        }
+        let data = [];
+        let layout = {
+            "xaxis": {"tick0": -2, "dtick": 1,
+                    "type": "log", "title": {"text": "t (sec)"}, 
+                    "ticks": "outside" 
+            },
+            "yaxis": {"title": {"text": "Π(t)"}, 
+                    // "range": [0, 1.0],
+                    "rangemode": "tozero", "ticks": "outside"
+            },
+        }
+
+        let rawDataTrace = {
+            "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+            "name": "Experiental Data",
+            "mode": "markers",
+            "marker": {color:"orange", "symbol": "circle-open", 
+                    "size": 10, "maxdisplayed": 200},
+            "x": rawData.x,
+            "y": rawData.pai
+        }
+
+        data.push(rawDataTrace)
+
+        return {
+            "data": data,
+            "layout": layout
+        }
+    }
+    """,
+    Output("MOT-pai-display", "figure"),
+    Input("MOT-raw-data-store", "data")
+)
+
 # add to the js part and data store part
 app.clientside_callback(
     ClientsideFunction(
-        namespace="clientsideFT",
-        function_name="tabChangeFigRender"
+        namespace="clientsideMot",
+        function_name="tabChangeMotRender"
     ),
-    Output("MOT-FT-display", "figure"),
+    Output("MOT-Mot-display", "figure"),
     Input("MOT-ft-data-store", "data"),
     Input("MOT-oversampled-ft-data-store", "data"),
     Input("MOT-oversampling-render-switch", "value"),
@@ -225,15 +267,4 @@ app.clientside_callback(
     Input("MOT-raw-data-store", "data"),
     # prevent_initial_call=True
 )
-
-# ================ Loading mask ========================
-
-# @app.callback(
-#     Output("loading-test", "children"),
-#     Input("begin-line-number", "value"),
-#     prevent_initial_call=True,
-# )
-# def loading_test(number):
-#     time.sleep(30)
-#     return number
 

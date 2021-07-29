@@ -1,10 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from prompt_toolkit.layout.dimension import D
 from scipy.interpolate import interp1d
 import pandas as pd
 import math
 
-def manlio_ft(g,t,g_0=1,g_dot_inf=0,N_f=100,interpolate=True,oversampling=10):
+def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=10):
     """ Calculates the Fourier transform of numeric data.
 
     Takes any numeric time-dependent function g(t) that vanishes fot t<0,
@@ -55,7 +56,7 @@ def manlio_ft(g,t,g_0=1,g_dot_inf=0,N_f=100,interpolate=True,oversampling=10):
          res[w_i]=(zero[w_i]+after)
     return omega, ((res)/(i*omega)**2)
 
-def test():
+def test(df_news):
     i = complex(0,1)
     kt = 1e-6  #输入赋值
     at = 1e6   #输入赋值
@@ -74,14 +75,25 @@ def test():
     plt.show()
     
 
-if __name__ == '__main__':
-    df_news = pd.read_table('data.txt',sep=' ',header = None)
-    test()
-
-
 '''
 输入为kt,at,将原来sigma0和sigmainf输入框改为kt at
 interpolate=true/false,oversampling 次数
 
 在ft位置输出
 '''
+def mot_processing(df, kt, at, interpolate=False, n_times=10):
+    i = complex(0,1)
+    time = df[0]
+    pai = []
+    pai = 1 - df[1]
+    # n_times only used when interpolate = True
+    omega, res_test = manlio_ft(pai, time, interpolate=interpolate, oversampling=n_times)
+    G_star = (kt/(6 * math.pi * at))*(1/(i * omega * res_test) - 1)
+    g_p = np.real(G_star)
+    g_pp = np.imag(G_star)
+
+    return omega.tolist(), g_p.tolist(), g_pp.tolist()
+
+if __name__ == '__main__':
+    df_news = pd.read_table('data.txt',sep=' ',header = None)
+    test(df_news)
