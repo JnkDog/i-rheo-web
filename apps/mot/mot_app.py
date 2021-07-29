@@ -76,7 +76,7 @@ def store_raw_data(content, n_clicks, file_name, kt, at):
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     df = pd.DataFrame()
-    if button_id == "load-example":
+    if button_id == "MOT-load-example":
         path = "example_data/mot/data.txt"
         df = generate_df_from_local(path)
     else:
