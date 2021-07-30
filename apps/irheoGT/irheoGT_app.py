@@ -225,14 +225,3 @@ app.clientside_callback(
     # prevent_initial_call=True
 )
 
-# ================ Loading mask ========================
-
-# @app.callback(
-#     Output("loading-test", "children"),
-#     Input("begin-line-number", "value"),
-#     prevent_initial_call=True,
-# )
-# def loading_test(number):
-#     time.sleep(30)
-#     return number
-
