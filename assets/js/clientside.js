@@ -255,17 +255,17 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             let ftDataTrace0 = {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
                 "name": "G\'",
-                "mode": "makers",
+                "mode": "markers+lines",
                 // "line": {color:"black"},
-                "marker": {color:"black", "symbol": "circle", "size": 6, "maxdisplayed": 200},
+                "marker": {"color": "black", "symbol": "square", "size": 6, "maxdisplayed": 200},
                 "x": ftData.x,
                 "y": ftData.y1,
             }
             let ftDataTrace1 = {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
                 "name": "G\'\'",
-                "mode": "lines",
-                "line": {color:"red"},
+                "mode": "markers+lines",
+                "line": {"color": "red", "symbol": "circle"},
                 "x": ftData.x,
                 "y": ftData.y2,
             }
