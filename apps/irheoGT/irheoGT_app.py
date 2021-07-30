@@ -184,8 +184,9 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
         saving_y_list = data.get("y")[beginLineIdx:]
     else:
         saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
+        saving_file_name = "download_GT_data.txt"
 
-    return (dcc.send_data_frame(saving_df.to_csv, "data.txt", 
+    return (dcc.send_data_frame(saving_df.to_csv, saving_file_name, 
                                 header=False, index=False, 
                                 sep='\t', encoding='utf-8'), 
                                 "Download OK !") 

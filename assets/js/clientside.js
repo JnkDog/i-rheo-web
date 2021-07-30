@@ -14,7 +14,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
                 // "range": [0, 1.0],
                 "rangemode": "tozero", "ticks": "outside"
         },
-    }
+    };
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "Experiental Data",
@@ -23,7 +23,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
                 "size": 10, "maxdisplayed": 200},
         "x": rawData.x,
         "y": rawData.z
-    }
+    };
 
     /**
     * Only oversampling button on and oversamplingData has value to render Oversampling figure.
@@ -41,7 +41,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
                         "size": 6, "maxdisplayed": 200},
             "x": oversamplingData.x,
             "y": oversamplingData.z
-        }
+        };
         
         data.push(rawDataTrace, oversamplingDataTrace);
     } else {
@@ -54,7 +54,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
     return {
         "data" : data,
         "layout": layout
-    }
+    };
 }
 
 motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
@@ -72,7 +72,7 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
                 // "range": [0, 1.0],
                 "rangemode": "tozero", "ticks": "outside"
         },
-    }
+    };
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "Experiental Data",
@@ -84,16 +84,16 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
     }
 
     if (switchValue[0] == true && oversamplingData != undefined) {
-    let oversamplingDataTrace = {
-        "name": "Oversampling Data",
-        "mode": "markers",
-        "marker": {"symbol": "circle-x", 
-                    "size": 6, "maxdisplayed": 200},
-        "x": oversamplingData.x,
-        "y": oversamplingData.y
-    }
+        let oversamplingDataTrace = {
+            "name": "Oversampling Data",
+            "mode": "markers",
+            "marker": {"symbol": "circle-x", 
+                        "size": 6, "maxdisplayed": 200},
+            "x": oversamplingData.x,
+            "y": oversamplingData.y
+        };
 
-    data.push(rawDataTrace, oversamplingDataTrace);
+        data.push(rawDataTrace, oversamplingDataTrace);
     } else {
         // console.log("========= in sigma =============");
         // console.log(rawData)
@@ -104,7 +104,7 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
     return {
         "data" : data,
         "layout": layout
-    }
+    };
 }
 
 motRender = function(ftData, oversampledftData, switchValue=[false]) {
@@ -121,7 +121,7 @@ motRender = function(ftData, oversampledftData, switchValue=[false]) {
                   "type": "log", "title": {"text" : "Moduli (Pa)"},
                   "ticks": "outside"},
         // "colorway": ["green"],
-    }
+    };
     let ftDataTrace0 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "G'",
@@ -129,7 +129,7 @@ motRender = function(ftData, oversampledftData, switchValue=[false]) {
         "line": {color:"black"},
         "x": ftData.x,
         "y": ftData.y1,
-    }
+    };
     let ftDataTrace1 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "G''",
@@ -137,7 +137,7 @@ motRender = function(ftData, oversampledftData, switchValue=[false]) {
         "line": {color:"red"},
         "x": ftData.x,
         "y": ftData.y2,
-    }
+    };
 
     if (switchValue[0] == true && oversampledftData != undefined) {
         let oversampledftDataTrace0 = {
@@ -146,14 +146,14 @@ motRender = function(ftData, oversampledftData, switchValue=[false]) {
             "line": {color:"black"},
             "x": oversampledftData.x,
             "y": oversampledftData.y1,
-        }
+        };
         let oversampledftDataTrace1 = {
             "name": "Oversampled-G''",
             "mode": "lines",
             "line": {color:"red"},
             "x": oversampledftData.x,
             "y": oversampledftData.y2,
-        }
+        };
         
         data.push(oversampledftDataTrace0, oversampledftDataTrace1);
     } else {
@@ -163,7 +163,66 @@ motRender = function(ftData, oversampledftData, switchValue=[false]) {
     return {
         "data" : data,
         "layout": layout
-    }   
+    };
+}
+
+reImFigRender = function(ftData, oversampledftData, switchValue=[false]) {
+    if (ftData == undefined) {
+        return;
+    }
+
+    let data = [];
+    let layout = {
+        "xaxis": {"dtick": 1, "tick0": -12, 
+                  "type": "log", "title": {"text": "Frequency (Hz)"},
+                  "ticks": "outside"},
+        "yaxis": {"dtick": 1, "tick0": -7, 
+                  "type": "log", "title": {"text" : "Moduli (Pa)"},
+                  "ticks": "outside"},
+        // "colorway": ["green"],
+    };
+    let ftDataTrace0 = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "real",
+        "mode": "lines",
+        "line": {color:"black"},
+        "x": ftData.x,
+        "y": ftData.y1,
+    };
+    let ftDataTrace1 = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "imaginary",
+        "mode": "lines",
+        "line": {color:"red"},
+        "x": ftData.x,
+        "y": ftData.y2,
+    };
+
+    if (switchValue[0] == true && oversampledftData != undefined) {
+        let oversampledftDataTrace0 = {
+            "name": "Oversampled-real",
+            "mode": "lines",
+            "line": {color:"black"},
+            "x": oversampledftData.x,
+            "y": oversampledftData.y1,
+        };
+        let oversampledftDataTrace1 = {
+            "name": "Oversampled-imaginary",
+            "mode": "lines",
+            "line": {color:"red"},
+            "x": oversampledftData.x,
+            "y": oversampledftData.y2,
+        };
+        
+        data.push(oversampledftDataTrace0, oversampledftDataTrace1);
+    } else {
+        data.push(ftDataTrace0, ftDataTrace1);  
+    }
+
+    return {
+        "data" : data,
+        "layout": layout
+    };
 }
 
 uploadMessageRecovery = function(rawData) {
@@ -246,7 +305,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             let data = [];
             let layout = {
                 "xaxis": {"dtick": 1, "tick0": -12, 
-                          "type": "log", "title": {"text": "ω [rad/s])"},
+                          "type": "log", "title": {"text": "ω [rad/s]"},
                           "ticks": "outside"},
                 "yaxis": {"dtick": 1, "tick0": -7, 
                           "type": "log", "title": {"text" : "G′ G′′ [Pa]"},
@@ -295,7 +354,8 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 "data" : data,
                 "layout": layout
             }   
-        }
+        },
+        tabChangeFTfigRender: reImFigRender
     },
     clientsideGamma: {
         tabChangeFigRender: gammaRender,
