@@ -72,7 +72,7 @@ import numpy as np
 
 def ftdata(df, gc_0, gc_inf, interpolate=False, oversampling=10):
     i = complex(0, 1)
-    time = np.linspace(1e-2, 1e2, 10000)
+    time = df[0]
     func = df[1]
     g_0 = gc_0
     g_dot_inf = gc_inf
