@@ -316,7 +316,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 "name": "G\'",
                 "mode": "markers+lines",
                 // "line": {color:"black"},
-                "marker": {"color": "black", "symbol": "square", "size": 6, "maxdisplayed": 200},
+                "marker": {"color": "black", "symbol": "square", "size": 7},
                 "x": ftData.x,
                 "y": ftData.y1,
             }
@@ -331,16 +331,17 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
 
             if (switchValue[0] == true && oversampledftData != undefined) {
                 let oversampledftDataTrace0 = {
-                    "name": "OversampledftData0",
-                    "mode": "lines",
+                    "name": "G\'",
+                    "mode": "markers+lines",
                     "line": {color:"black"},
+                    "marker": {"color": "black", "symbol": "square", "size": 5},
                     "x": oversampledftData.x,
                     "y": oversampledftData.y1,
                 }
                 let oversampledftDataTrace1 = {
-                    "name": "OversampledftData1",
-                    "mode": "lines",
-                    "line": {color:"red"},
+                    "name": "G\'\'",
+                    "mode": "markers+lines",
+                    "line": {"color": "red", "symbol": "circle"},
                     "x": oversampledftData.x,
                     "y": oversampledftData.y2,
                 }
