@@ -121,15 +121,11 @@ and the oversampling button clicked with the oversampling ntimes.
     State("oversampling-input", "value")
 )
 def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
-    if n_clicks is None or ntimes is None:
+    if n_clicks is None or data is None or ntimes is None:
         raise PreventUpdate
 
-    df = pd.DataFrame()
-    if data is None:
-        path = "example_data/SingExp6_5.txt"
-        df = generate_df_from_local(path)
-    else:
-        df = convert_lists_to_df(data)
+
+    df = convert_lists_to_df(data)
 
     # avoid floor number
     ntimes = int(ntimes)
