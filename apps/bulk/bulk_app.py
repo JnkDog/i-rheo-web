@@ -1,3 +1,4 @@
+from algorithm.oversample import get_oversampling_data
 import dash
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc
@@ -13,6 +14,10 @@ from components.download.download import download_component_generate
 from components.oversampling.oversampling import oversampling_component_generate
 from components.tab.tabs import tabs_component_generate
 from components.display.loading import Loading
+
+# import algorithm
+from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
+from algorithm.pwft import ftdata
 
 """
 The orginal version is the i-Rheo virtual instrument (VI) LABVIEW.
@@ -56,47 +61,48 @@ Trigger when the experiental data(raw data) uploaded
     # Output("BULKAPP-upload-message", "children"),
     Output("BULKAPP-loading-message", "children"),
     Input("BULKAPP-upload", "contents"),
-    Input("load-example", "n_clicks"),
+    Input("BULKAPPload-example", "n_clicks"),
+    State("BULKAPP-g_0", "value"),
+    State("BULKAPP-g_inf", "value"),
     State("BULKAPP-upload", "filename"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, file_name):
-    # df = generate_df(content)
-
-    # data = {
-    #     "x": df[0],
-    #     "y": df[1],
-    #     "filename": file_name,
-    #     "lines": len(df)
-    # }
-
+def store_raw_data(content, n_clicks,  g_0, g_inf, file_name):
     # Deciding which raw_data used according to the ctx 
-    # ctx = dash.callback_context
-    # button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    ctx = dash.callback_context
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    # df = pd.DataFrame()
-    # if button_id == "load-example":
-    #     path = "xxx"
-    #     df = generate_df_from_local(path)
-    # else:
-    #     df = generate_df(content)
+    df = pd.DataFrame()
+    if button_id == "load-example":
+        path = "./example_data/bulk/example.txt"
+        df = generate_df_from_local(path)
+    else:
+        df = generate_df(content)
 
     data = {
-        "x": [i for i in range(0, 50)],
-        "y": [i for i in range(0, 50)],
-        "z": [i for i in range (50, 100)],
-        "file_name": file_name,
-        "lines": 10
+        "x": df[0],
+        "y": df[1],
+        "z": df[2],
+        "filename": file_name,
+        "lines": len(df)
     }
 
-    # original 
-    # upload_messge = "The upload file {} with {} lines".format(file_name, len(df))
-    # upload_messge = "The upload file {} with {} lines".format(file_name, 1)
+    # default g_0: 1, g_inf: 0
+    g_0 = 1 if g_0 is None else int(g_0)
+    g_inf = 0 if g_inf is None else int(g_inf)
+
+    omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
+
+    ft_data = {
+        "x": omega,
+        "y1": g_p,
+        "y2": g_pp
+    }
 
     """
     Don't pass any string to this return. This component only for loading message.
     """
-    return data, ""
+    return data, ft_data, ""
 
 """
 Trigger when the experiental data(raw data) has already uploaded
@@ -104,24 +110,42 @@ and the oversampling button clicked with the oversampling ntimes.
 """
 @app.callback(
     Output("BULKAPP-oversampling-data-store", "data"),
+    Output("BULKAPP-oversampled-ft-data-store", "data"),
     Input("BULKAPP-oversampling-btn", "n_clicks"),
-    State("BULKAPP-upload", "contents"),
+    State("BULKAPP-g_0", "value"),
+    State("BULKAPP-g_inf", "value"),
+    State("BULKAPP-raw-data-store", "data"),
     State("BULKAPP-oversampling-input", "value")
 )
-def store_oversampling_data(n_clicks, content, ntimes):
-    if n_clicks is None or content is None or ntimes is None:
+def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
+    if n_clicks is None or data is None or ntimes is None:
         raise dash.exceptions.PreventUpdate
 
     # avoid floor number
-    ntimes = int(ntimes)
+    ntimes = int(ntimes)    
+    df = convert_lists_to_df(data)
+    x, y = get_oversampling_data(df, ntimes)
     # x, y = get_oversampling_data(content=content, ntimes=ntimes)
 
     data = {
-        "x" : [1],
-        "y" : [1],
+        "x" : x,
+        "y" : y,
     }
 
-    return data
+    # default g_0: 1, g_inf: 0
+    g_0 = 1 if g_0 is None else int(g_0)
+    g_inf = 0 if g_inf is None else int(g_inf)
+    
+    # This function takes lots of time
+    omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
+
+    oversampled_ft_data = {
+        "x": omega,
+        "y1": g_p,
+        "y2": g_pp
+    }
+
+    return data, oversampled_ft_data
 
 """
 Sigma Renedr

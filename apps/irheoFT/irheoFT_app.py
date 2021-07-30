@@ -121,7 +121,7 @@ and the oversampling button clicked with the oversampling ntimes.
     State("FTAPP-raw-data-store", "data"),
     State("FTAPP-oversampling-input", "value")
 )
-def store_oversampling_data(n_clicks,  g_0, g_inf, data, ntimes):
+def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     if n_clicks is None or data is None or ntimes is None:
         raise dash.exceptions.PreventUpdate
 
