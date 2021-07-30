@@ -251,19 +251,19 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 "yaxis": {"dtick": 1, "tick0": -7, 
                           "type": "log", "title": {"text" : "G′ G′′ [Pa]"},
                           "ticks": "outside"},
-                // "colorway": ["green"],
             }
             let ftDataTrace0 = {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-                "name": "FT Data0",
-                "mode": "lines",
-                "line": {color:"black"},
+                "name": "G\'",
+                "mode": "makers",
+                // "line": {color:"black"},
+                "marker": {color:"black", "symbol": "circle", "size": 6, "maxdisplayed": 200},
                 "x": ftData.x,
                 "y": ftData.y1,
             }
             let ftDataTrace1 = {
                 "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-                "name": "FT Data1",
+                "name": "G\'\'",
                 "mode": "lines",
                 "line": {color:"red"},
                 "x": ftData.x,

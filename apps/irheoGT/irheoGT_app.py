@@ -21,6 +21,7 @@ from components.inputgdot.inputgdot import Inputgdot
 from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import generate_df, generate_df_from_local
 from algorithm.pwft import ftdata
+from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
 
 Layout = dbc.Row([
             dbc.Col([
@@ -69,7 +70,7 @@ Trigger when the experiental data(raw data) uploaded
     prevent_initial_call=True
 )
 def store_raw_data(content, n_clicks, g_0, g_inf, file_name):
-    # Deciding which raw_data used according to the ctx 
+    # Deciding which raw_data used according to the ctx
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
@@ -115,16 +116,24 @@ and the oversampling button clicked with the oversampling ntimes.
     Input("oversampling-btn", "n_clicks"),
     State("g_0", "value"),
     State("g_inf", "value"),
-    State("upload", "contents"),
+    State("raw-data-store", "data"),
+    # State("ft-data-store", "data"),
     State("oversampling-input", "value")
 )
-def store_oversampling_data(n_clicks, g_0, g_inf, content, ntimes):
-    if n_clicks is None or content is None or ntimes is None:
+def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
+    if n_clicks is None or ntimes is None:
         raise PreventUpdate
+
+    df = pd.DataFrame()
+    if data is None:
+        path = "example_data/SingExp6_5.txt"
+        df = generate_df_from_local(path)
+    else:
+        df = convert_lists_to_df(data)
 
     # avoid floor number
     ntimes = int(ntimes)
-    x, y = get_oversampling_data(content=content, ntimes=ntimes)
+    x, y = get_oversampling_data(df, ntimes=ntimes)
 
     data = {
         "x": x,
@@ -134,8 +143,6 @@ def store_oversampling_data(n_clicks, g_0, g_inf, content, ntimes):
     # default g_0: 1, g_inf: 0
     g_0 = 1 if g_0 is None else int(g_0)
     g_inf = 0 if g_inf is None else int(g_inf)
-
-    df = generate_df(content)
     
     # This function takes lots of time
     omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
