@@ -25,6 +25,7 @@ from apps.irheoFT import irheoFT_app
 from apps.bulk import bulk_app
 from apps.notfound import notfound_app
 from apps.wiki import wiki_app
+from apps.bulk import bulk_app
 from components.nav.nav import NavBar
 
 app.layout = html.Div([
@@ -42,6 +43,8 @@ def display_page(pathname):
     pathname = pathname.lower()
     
     # TODO need to modify
+    if pathname == "/bulk":
+        bulk_app.Layout
     if pathname == "/afm":
         # return afm_app.Layout
         return afm_app.Layout

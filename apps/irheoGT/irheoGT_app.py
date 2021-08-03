@@ -20,7 +20,7 @@ from components.inputgdot.inputgdot import Inputgdot
 # import algorithm
 from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import generate_df, generate_df_from_local
-from algorithm.pwft import ftdata
+from algorithm.pwft import ftdata, fast_ftdata
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
 
 Layout = dbc.Row([
@@ -93,7 +93,10 @@ def store_raw_data(content, n_clicks, g_0, g_inf, file_name):
     g_0 = 1 if g_0 is None else int(g_0)
     g_inf = 0 if g_inf is None else int(g_inf)
 
-    omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
+    # slow FT 
+    # omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
+    # fast FT
+    omega, g_p, g_pp = fast_ftdata(df, g_0, g_inf, False)
 
     ft_data = {
         "x": omega,
@@ -141,7 +144,9 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     g_inf = 0 if g_inf is None else int(g_inf)
     
     # This function takes lots of time
-    omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
+    # omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
+    # fast FT
+    omega, g_p, g_pp = fast_ftdata(df, g_0, g_inf, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,

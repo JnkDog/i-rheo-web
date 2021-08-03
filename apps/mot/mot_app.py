@@ -18,7 +18,7 @@ from components.tab.tabs import mot_tabs_generate
 # import algorithm
 from algorithm.mot_At_oversampling import mot_oversampling
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
-from algorithm.mot import mot_processing
+from algorithm.mot import mot_processing, fast_mot_procressing
 from algorithm.pai import pai_processing
 
 # Using your own app name. Can't be same.
@@ -96,7 +96,9 @@ def store_raw_data(content, n_clicks, file_name, kt, at):
     at = 1e6 if at is None else at
 
     # This function takes lots of time
-    omega, g_p, g_pp = mot_processing(df, kt, at, False)
+    # omega, g_p, g_pp = mot_processing(df, kt, at, False)
+    # Fast FT processing
+    omega, g_p, g_pp = fast_mot_procressing(df, kt, at, False)
 
     ft_data = {
         "x": omega,
@@ -139,7 +141,9 @@ def store_oversampling_data(n_clicks, kt, at, data, ntimes):
     at = 1e6 if at is None else at
 
     # This function takes lots of time
-    omega, g_p, g_pp = mot_processing(df, kt, at, True, ntimes)
+    # omega, g_p, g_pp = mot_processing(df, kt, at, True, ntimes)
+    # Fast FT processing
+    omega, g_p, g_pp = fast_mot_procressing(df, kt, at, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
