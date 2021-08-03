@@ -18,7 +18,7 @@ def generate_navbar_item(id, url=None):
     if url:
         href = url
     else:
-        href = "/" + id
+        href = "/" + id.lower()
     
     # TODO needs modify after the project finished
     # if href == "/GT":
@@ -49,7 +49,7 @@ NavBar = html.Header(
                     no_gutters=True,
                 ),
                 # TODO Change the link later
-                href="/GT",
+                href="/gt",
             ),
             html.Div(
                 [
