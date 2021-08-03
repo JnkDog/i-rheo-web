@@ -5,9 +5,10 @@ import pandas as pd
 import time
 import threading
 from multiprocessing import Process
-from multiprocessing import Process, Queue,Lock
+from multiprocessing import Process, Queue, Lock
 from multiprocessing import Pool
 import multiprocessing
+
 res = np.zeros(100, dtype=complex)
 
 def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=10):
@@ -45,8 +46,6 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
     print("-----------------\n",res)
     print(len(res))
     return omega, ((res) / (i * omega) ** 2)
-
-
 
 def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
 

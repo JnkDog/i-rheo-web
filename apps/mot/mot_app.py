@@ -97,7 +97,7 @@ def store_raw_data(content, n_clicks, file_name, kt, at):
 
     # This function takes lots of time
     # omega, g_p, g_pp = mot_processing(df, kt, at, False)
-    # Fast test
+    # Fast FT processing
     omega, g_p, g_pp = fast_mot_procressing(df, kt, at, False)
 
     ft_data = {
@@ -142,7 +142,7 @@ def store_oversampling_data(n_clicks, kt, at, data, ntimes):
 
     # This function takes lots of time
     # omega, g_p, g_pp = mot_processing(df, kt, at, True, ntimes)
-    # Fast test
+    # Fast FT processing
     omega, g_p, g_pp = fast_mot_procressing(df, kt, at, True, ntimes)
 
     oversampled_ft_data = {
