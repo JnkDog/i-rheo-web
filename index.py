@@ -45,9 +45,9 @@ def display_page(pathname):
     # TODO need to modify
     if pathname == "/bulk":
         bulk_app.Layout
-    if pathname == "/afm":
-        # return afm_app.Layout
-        return afm_app.Layout
+    # if pathname == "/afm":
+    #     # return afm_app.Layout
+    #     return afm_app.Layout
     if pathname == "/mot":
         return mot_app.Layout
     if pathname == "/ft":
