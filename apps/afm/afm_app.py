@@ -9,47 +9,37 @@ import pandas as pd
 
 from app import app
 
-# import components
-from components.upload.upload import Upload
-from components.download.download import Download
-from components.oversampling.oversampling import Oversampling
-from components.tab.tabs import Tabs
-from components.display.loading import Loading
-from components.inputgdot.inputgdot import Inputgdot
+# import components and its generation
+from components.upload.upload import upload_component_generate
+from components.download.download import download_component_generate
 
 # import algorithm
-from algorithm.oversample import get_oversampling_data
-from algorithm.read_data import generate_df
-from algorithm.pwft import ftdata
+from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
 
-prefix_app_name = "MOT"
+prefix_app_name = "AFM"
 
 Layout = dbc.Row([
             dbc.Col([
                     html.H5("Support .txt"),
                     html.Div([
-                        Upload, 
-                        dcc.Store(id="raw-data-store"),
-                        dcc.Store(id="oversampling-data-store"),
-                        dcc.Store(id="ft-data-store"),
-                        dcc.Loading(dcc.Store(id="oversampled-ft-data-store"),
+                        upload_component_generate("AFM-upload"), 
+                        dcc.Store(id="AFM-raw-data-store", storage_type="session"),
+                        dcc.Store(id="AFM-oversampling-data-store", storage_type="session"),
+                        dcc.Store(id="AFM-ft-data-store", storage_type="session"),
+                        dcc.Loading(dcc.Store(id="AFM-oversampled-ft-data-store", storage_type="session"),
                                     id="full-screen-mask",
                                     fullscreen=True)
                     ], className="btn-group me-2"),
-                    html.Div([dbc.Button("Load Example data", id="load-example", 
+                    html.Div([dbc.Button("Load Example data", id="AFM-load-example", 
                               color="primary", style={"margin": "5px"})],
                               className="btn-group me-2"),
-                    html.Div(id="upload-message"),
+                    html.Div(id="AFM-upload-message"),
+                    html.Div(id="AFM-loading-message"),
                     html.Hr(),
-                    html.Div([
-                        # html.H5("Example data"),
-                    ]),
+                    afm_oversampling_generate(prefix_app_name),
                     html.Hr(),
-                    Oversampling,
-                    html.Hr(),
-                    Download
+                    download_component_generate(prefix_app_name)
                     ], width=3), 
             dbc.Col(Tabs, width=True),
-            Loading
 ])
 
