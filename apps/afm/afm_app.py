@@ -40,6 +40,60 @@ Layout = dbc.Row([
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
-            dbc.Col(Tabs, width=True),
+            dbc.Col(mot_tabs_generate(prefix_app_name), width=True),
 ])
+
+# ======upload callback========
+@app.callback(
+    Output("AFM-raw-data-store", "data"),  
+    Output("AFM-ft-data-store", "data"),
+    # Output("upload-message", "children"),
+    Output("AFM-loading-message", "children"),
+    Input("AFM-upload", "contents"),
+    Input("AFM-load-example", "n_clicks"),
+    State("AFM-upload", "filename"),
+    # TODO need change later
+    State("AFM-f0", "value"),
+    State("AFM-finf", "value"),
+    prevent_initial_call=True
+)
+def store_raw_data(content, n_clicks, file_name, f0, finf):
+    # Deciding which raw_data used according to the ctx 
+    ctx = dash.callback_context
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    df = pd.DataFrame()
+    if button_id == "AFM-load-example":
+        path = "test_data/AFM/Agarose_gel.txt"
+        df = generate_df_from_local(path)
+    else:
+        df = generate_df(content)
+    
+    # save file_name and lens for message recovering when app changing
+    data = {
+        "x": df[0],
+        "y": df[1],
+        "z": df[2],
+        # "pai": pai_processing(df)["pai"],
+        "filename": file_name,
+        "lines": len(df)
+    }  
+
+    # default f0 = 0 and finf = ?
+    f0 = 0 if f0 is None else f0,
+    finf = 1 if f0 is None else finf,
+
+    # This function takes lots of time
+    # omega, g_p, g_pp = mot_processing(df, kt, at, False)
+    # Fast FT processing
+    omega, g_p, g_pp = (df, f0, finf, False)
+
+    ft_data = {
+        "x": omega,
+        "y1": g_p,
+        "y2": g_pp
+    }
+
+    # return data, upload_messge, ft_data
+    return data, ft_data, ""
 
