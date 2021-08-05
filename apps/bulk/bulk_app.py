@@ -34,7 +34,11 @@ Layout = dbc.Row([
                         upload_component_generate("BULKAPP-upload"),
                         dcc.Store(id="BULKAPP-raw-data-store"),
                         dcc.Store(id="BULKAPP-oversampling-data-store"),
-                        dcc.Store(id="BULKAPP-FT-data-store")
+                        dcc.Store(id="BULKAPP-FT-data-store"),
+                        dcc.Loading(dcc.Store(id="BULKAPP-oversampled-ft-data-store", 
+                                              storage_type="session"),
+                                    id="full-screen-mask",
+                                    fullscreen=True)
                     ], className="btn-group me-2"),
                     html.Div([dbc.Button("Load Example data", id="BULKAPP-load-example", 
                               color="primary", style={"margin": "5px"})],
@@ -121,7 +125,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     if n_clicks is None or data is None or ntimes is None:
         raise dash.exceptions.PreventUpdate
 
-    # avoid floor number
+    # avoid float number
     ntimes = int(ntimes)    
     df = convert_lists_to_df(data)
     x, y = get_oversampling_data(df, ntimes)
@@ -220,7 +224,7 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
     if data is None:
         raise dash.exceptions.PreventUpdate
 
-    # avoid floor number
+    # avoid float number
     beginLineIdx = int(beginLineIdx)
     endLineIdx   = int(endLineIdx)
     if beginLineIdx >= endLineIdx:

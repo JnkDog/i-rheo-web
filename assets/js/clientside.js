@@ -1,3 +1,63 @@
+const RENDER_DATA = {
+    "RAW_DATA": 0,
+    "OVERSAMPLING_DATA": 1
+}
+
+const FTAPP_TIME_DERIVATED = {
+    "NONTIME_DERIVATED": 0,
+    "TIME_DERIVATED": 1
+} 
+
+/**
+* oversamplingSwitchValue, true false
+* timeDerivative, true false
+* totally 4 status
+*/
+figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwitch) => {
+    // if the oversampledftData is null, setting the oversamplingSwitch false even if true
+    if (oversamplingSwitch == true) {
+        oversamplingSwitch = oversampledftData == undefined ? false : true;
+    }
+
+    let setting = {};
+    // setting xaxisText
+    let xaxisText = timeDerivativedSwitch == true ?
+        "Omega [rad/s]" : "Frequency [Hz]";
+    
+    setting["text"] = xaxisText;
+    setting["yaxis"] = {"dtick": 1, "tick0": -7, 
+        "type": "log", "title": {"text" : "R, I"},
+        "ticks": "outside"
+    };
+
+    if (oversamplingSwitch && timeDerivativedSwitch) {
+        setting["x"] = oversampledftData.x;
+        setting["y1"] = oversampledftData.y1;
+        setting["y2"] = oversampledftData.y2;
+    } else if (oversamplingSwitch) {
+        setting["x"] = oversampledftData.x;
+        setting["y1"] = oversampledftData.non_time_y1;
+        setting["y2"] = oversampledftData.non_time_y2;
+        setting["yaxis"] = {"type": "linear", 
+            "title": {"text" : "R, I"},
+             "ticks": "outside"};
+    } else if (timeDerivativedSwitch) {
+        setting["x"] = ftData.x;
+        setting["y1"] = ftData.y1;
+        setting["y2"] = ftData.y2;
+    } else {
+        setting["x"] = ftData.x;
+        setting["y1"] = ftData.non_time_y1;
+        setting["y2"] = ftData.non_time_y2;
+        setting["yaxis"] = {"type": "linear", 
+        "title": {"text" : "R, I"},
+        "ticks": "outside"};
+    }
+
+    return setting;
+}
+
+
 // Function implementation list
 gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
     if (rawData == undefined) {
@@ -166,19 +226,22 @@ motRender = function(ftData, oversampledftData, switchValue=[false]) {
     };
 }
 
-reImFigRender = function(ftData, oversampledftData, switchValue=[false]) {
+reImFigRender = function(ftData, oversampledftData, 
+    oversamplingSwitchValue=[false], timeDerivatived=[false]) {
     if (ftData == undefined) {
         return;
     }
 
+    let setting = figSetting(ftData, oversampledftData, 
+        oversamplingSwitchValue[0], timeDerivatived[0])
+    
+    console.log(setting);
     let data = [];
     let layout = {
         "xaxis": {"dtick": 1, "tick0": -12, 
-                  "type": "log", "title": {"text": "Frequency (Hz)"},
+                  "type": "log", "title": {"text": setting.text},
                   "ticks": "outside"},
-        "yaxis": {"dtick": 1, "tick0": -7, 
-                  "type": "log", "title": {"text" : "Moduli (Pa)"},
-                  "ticks": "outside"},
+        "yaxis": setting.yaxis
         // "colorway": ["green"],
     };
     let ftDataTrace0 = {
@@ -186,32 +249,32 @@ reImFigRender = function(ftData, oversampledftData, switchValue=[false]) {
         "name": "real",
         "mode": "lines",
         "line": {color:"black"},
-        "x": ftData.x,
-        "y": ftData.y1,
+        "x": setting.x,
+        "y": setting.y1,
     };
     let ftDataTrace1 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "imaginary",
         "mode": "lines",
         "line": {color:"red"},
-        "x": ftData.x,
-        "y": ftData.y2,
+        "x": setting.x,
+        "y": setting.y2,
     };
 
-    if (switchValue[0] == true && oversampledftData != undefined) {
+    if (oversamplingSwitchValue[0] == true && oversampledftData != undefined) {
         let oversampledftDataTrace0 = {
             "name": "Oversampled-real",
             "mode": "lines",
             "line": {color:"black"},
-            "x": oversampledftData.x,
-            "y": oversampledftData.y1,
+            "x": setting.x,
+            "y": setting.y1,
         };
         let oversampledftDataTrace1 = {
             "name": "Oversampled-imaginary",
             "mode": "lines",
             "line": {color:"red"},
-            "x": oversampledftData.x,
-            "y": oversampledftData.y2,
+            "x": setting.x,
+            "y": setting.y2,
         };
         
         data.push(oversampledftDataTrace0, oversampledftDataTrace1);

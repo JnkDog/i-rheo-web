@@ -177,10 +177,14 @@ def fast_ftdata(df, gc_0, gc_inf, interpolate=False, oversampling=10):
     g_dot_inf = gc_inf
     N_f = 100
 
-    omega, res_test = fast_manlio_ft(func, time, g_0, g_dot_inf, N_f, interpolate, oversampling)
-    g_p = np.real(res_test*omega*i)
-    g_pp = np.imag(res_test*omega*i)
+    omega, ft_result = fast_manlio_ft(func, time, g_0, g_dot_inf, N_f, interpolate, oversampling)
+    g_p = np.real(ft_result*omega*i)
+    g_pp = np.imag(ft_result*omega*i)
+    
+    non_time_g_p = np.real(ft_result)
+    non_time_g_pp = np.imag(ft_result)
+    
     # print(g_p[0: 100])
     # print(g_pp[0: 100])
-    return omega.tolist(), g_p.tolist(), g_pp.tolist()
+    return omega.tolist(), g_p.tolist(), g_pp.tolist(), non_time_g_p.tolist(), non_time_g_pp.tolist()
 

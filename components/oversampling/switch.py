@@ -17,7 +17,8 @@ Switch = dbc.FormGroup([
 def switch_component_generate(prefix_app_name):
     switch_id = prefix_app_name + SWITCH_ID_SUFFIX
     return dbc.FormGroup([
-            dbc.Checklist(options=[
+            dbc.Checklist(
+            options=[
                 {"label": "oversampling render", "value": True}
             ],
             # value=[False], 
@@ -25,3 +26,19 @@ def switch_component_generate(prefix_app_name):
             switch=True,
             style={"fontSize": "20px"}
     )])
+
+
+def FT_rendering_switch_generate(prefix_app_name):
+    switch_id = prefix_app_name + "-time-derivative"
+    Switch = dbc.FormGroup(
+            dbc.Checklist(
+                options=[
+                    {"label": "time derivative", "value": True}
+                ],
+                id=switch_id,
+                switch=True,
+                style={"fontSize": "20px"}),
+                id="time-derivate-form",
+                className="mt-1")
+
+    return Switch

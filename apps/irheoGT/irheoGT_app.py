@@ -90,8 +90,8 @@ def store_raw_data(content, n_clicks, g_0, g_inf, file_name):
     }
 
     # default g_0: 1, g_inf: 0
-    g_0 = 1 if g_0 is None else int(g_0)
-    g_inf = 0 if g_inf is None else int(g_inf)
+    g_0 = 1 if g_0 is None else float(g_0)
+    g_inf = 0 if g_inf is None else float(g_inf)
 
     # slow FT 
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
@@ -130,7 +130,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
 
     df = convert_lists_to_df(data)
 
-    # avoid floor number
+    # avoid float number
     ntimes = int(ntimes)
     x, y = get_oversampling_data(df, ntimes=ntimes)
 
@@ -140,8 +140,8 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     }
 
     # default g_0: 1, g_inf: 0
-    g_0 = 1 if g_0 is None else int(g_0)
-    g_inf = 0 if g_inf is None else int(g_inf)
+    g_0 = 1 if g_0 is None else float(g_0)
+    g_inf = 0 if g_inf is None else float(g_inf)
     
     # This function takes lots of time
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
@@ -170,7 +170,7 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
     if data is None:
         raise PreventUpdate
 
-    # avoid floor number
+    # avoid float number
     beginLineIdx = int(beginLineIdx)
     endLineIdx = int(endLineIdx)
     if beginLineIdx >= endLineIdx:

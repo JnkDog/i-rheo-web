@@ -114,22 +114,22 @@ Trigger when the experiental data(raw data) has already uploaded
 and the oversampling button clicked with the oversampling ntimes.
 """
 @app.callback(
-    Output("AFM-oversampling-data-store", "data"),
-    Output("AFM-oversampled-ft-data-store", "data"),
-    Input("AFM-oversampling-btn", "n_clicks"),
-    State("AFM-f0", "value"),
-    State("AFM-finf", "value"),
-    State("AFM-raw-data-store", "data"),
-    State("AFM-oversampling-input", "value")
+    Output("MOT-oversampling-data-store", "data"),
+    Output("MOT-oversampled-ft-data-store", "data"),
+    Input("MOT-oversampling-btn", "n_clicks"),
+    State("MOT-kt", "value"),
+    State("MOT-at", "value"),
+    State("MOT-raw-data-store", "data"),
+    State("MOT-oversampling-input", "value")
 )
 def store_oversampling_data(n_clicks, f0, finf, data, ntimes):
     if n_clicks is None or data is None or ntimes is None:
         raise PreventUpdate
 
-    # avoid floor number
+    # avoid float number
     ntimes = int(ntimes)
     df = convert_lists_to_df(data)
-    # x, y = mot_oversampling(df, ntimes)
+    x, y = mot_oversampling(df, ntimes)
 
     data = {
         "x": x,
@@ -137,10 +137,10 @@ def store_oversampling_data(n_clicks, f0, finf, data, ntimes):
     }
 
     # default kt: 1e-6, at: 1e6
-    f0 = 0 if f0 is None else f0
-    finf = 1 if finf is None else finf
+    kt = 1e-6 if kt is None else kt
+    at = 1e6 if at is None else at
 
-    # omega, g_p, g_pp = fast_mot_procressing(df, kt, at, True, ntimes)
+    omega, g_p, g_pp = fast_mot_procressing(df, kt, at, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
@@ -153,19 +153,19 @@ def store_oversampling_data(n_clicks, f0, finf, data, ntimes):
 # ================ Download callback ========================
 
 @app.callback(
-    Output("AFM-download-text", "data"),
-    Output("AFM-download-message", "children"),
-    Input("AFM-download-btn", "n_clicks"),
-    State("AFM-begin-line-number", "value"),
-    State("AFM-end-line-number", "value"),
-    State("AFM-oversampling-data-store", "data"),
+    Output("MOT-download-text", "data"),
+    Output("MOT-download-message", "children"),
+    Input("MOT-download-btn", "n_clicks"),
+    State("MOT-begin-line-number", "value"),
+    State("MOT-end-line-number", "value"),
+    State("MOT-oversampling-data-store", "data"),
     prevent_initial_call=True,
 )
 def download(n_clicks, beginLineIdx, endLineIdx, data):
     if data is None:
         raise PreventUpdate
 
-    # avoid floor number
+    # avoid float number
     beginLineIdx = int(beginLineIdx)
     endLineIdx = int(endLineIdx)
     if beginLineIdx >= endLineIdx:
@@ -180,7 +180,7 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
         saving_y_list = data.get("y")[beginLineIdx:]
     else:
         saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
-        saving_file_name = "download_AFM_data.txt"
+        saving_file_name = "download_MOT_data.txt"
 
     return (dcc.send_data_frame(saving_df.to_csv, saving_file_name, 
                                 header=False, index=False, 
