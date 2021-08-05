@@ -15,7 +15,7 @@ Inputgdot = html.Div([
     dbc.Input(
         id="g_inf",
         type="number",
-        placeholder="Input your g(∞), default 0"
+        placeholder="Input your ġ(∞), default 0"
     )
 ])
 
@@ -33,7 +33,7 @@ def input_gdot_generate(prefix_app_name):
         dbc.Input(
             id=g_inf_id,
             type="number",
-            placeholder="Input your g(∞), default 0"
+            placeholder="Input your ġ(∞), default 0"
         )
     ])
 
