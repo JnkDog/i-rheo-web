@@ -1,3 +1,4 @@
+from numpy import index_exp
 from dash_bootstrap_components._components.Tab import Tab
 import dash_html_components as html
 import dash_core_components as dcc
@@ -28,6 +29,11 @@ MOT_TABS_DICT = {
 FT_TABS_DICT = {
     "1": "Original",
     "2": "Re & Im",
+}
+
+AFM_TABS_DICT = {
+    "1": "Force",
+    "2": "emm"
 }
 
 # This is templates but used in irheo GT
@@ -71,6 +77,18 @@ def mot_tabs_generate(prefix_app_name):
                         tab_id=list(MOT_TABS_DICT.values())[idx])
                         for idx, item in enumerate(Spinner_list)]
     
+    Tabs = dbc.Tabs(children=Tab_list)
+
+    return Tabs
+
+def afm_tabs_generate(prefix_app_name):
+    Spinner_list = [spinner_generate(prefix_app_name+"-"+value)
+                    for value in AFM_TABS_DICT.values()]
+
+    Tab_list = [dbc.Tab(item, label=list(AFM_TABS_DICT.values())[idx],
+                        tab_id=list(AFM_TABS_DICT.values())[idx])
+                        for idx, item in enumerate(Spinner_list)]
+
     Tabs = dbc.Tabs(children=Tab_list)
 
     return Tabs

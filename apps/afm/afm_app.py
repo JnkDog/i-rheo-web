@@ -12,6 +12,7 @@ from app import app
 # import components and its generation
 from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
+from components.tab.tabs import afm_tabs_generate
 
 # import algorithm
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
@@ -36,28 +37,28 @@ Layout = dbc.Row([
                     html.Div(id="AFM-upload-message"),
                     html.Div(id="AFM-loading-message"),
                     html.Hr(),
-                    afm_oversampling_generate(prefix_app_name),
+                    # afm_oversampling_generate(prefix_app_name),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
-            dbc.Col(mot_tabs_generate(prefix_app_name), width=True),
+            dbc.Col(afm_tabs_generate(prefix_app_name), width=True),
 ])
 
 # ======upload callback========
 @app.callback(
     Output("AFM-raw-data-store", "data"),  
-    Output("AFM-ft-data-store", "data"),
+    # Output("AFM-ft-data-store", "data"),
     # Output("upload-message", "children"),
     Output("AFM-loading-message", "children"),
     Input("AFM-upload", "contents"),
     Input("AFM-load-example", "n_clicks"),
     State("AFM-upload", "filename"),
     # TODO need change later
-    State("AFM-f0", "value"),
-    State("AFM-finf", "value"),
+    # State("AFM-f0", "value"),
+    # State("AFM-finf", "value"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, file_name, f0, finf):
+def store_raw_data(content, n_clicks, file_name):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -73,27 +74,61 @@ def store_raw_data(content, n_clicks, file_name, f0, finf):
     data = {
         "x": df[0],
         "y": df[1],
-        "z": df[2],
+        # "z": df[2],
         # "pai": pai_processing(df)["pai"],
         "filename": file_name,
         "lines": len(df)
     }  
 
     # default f0 = 0 and finf = ?
-    f0 = 0 if f0 is None else f0,
-    finf = 1 if f0 is None else finf,
 
-    # This function takes lots of time
-    # omega, g_p, g_pp = mot_processing(df, kt, at, False)
-    # Fast FT processing
-    omega, g_p, g_pp = (df, f0, finf, False)
+    # omega, g_p, g_pp = afm_processing(df, kt, at, False)
 
-    ft_data = {
-        "x": omega,
-        "y1": g_p,
-        "y2": g_pp
-    }
+    # omega, g_p, g_pp = (df, f0, finf, False)
+
+    # ft_data = {
+    #     "x": omega,
+    #     "y1": g_p,
+    #     "y2": g_pp
+    # }
 
     # return data, upload_messge, ft_data
-    return data, ft_data, ""
+    return data, ""
+
+
+# =================== Clientside callback ===================
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideAFM",
+        function_name="tabChangeFigRender"
+    ),
+    Output("AFM-force-display", "figure"),
+    Input("AFM-raw-data-store", "data"),
+    # Input("AFM-oversampling-data-store", "data"),
+    # Input("AFM-oversampling-render-switch", "value"),
+)
+
+# add to the js part and data store part
+# app.clientside_callback(
+#     ClientsideFunction(
+#         namespace="clientsideAfm",
+#         function_name="tabChangeAfmRender"
+#     ),
+#     Output("AFM-Mot-display", "figure"),
+#     Input("AFM-ft-data-store", "data"),
+#     Input("AFM-oversampled-ft-data-store", "data"),
+#     Input("AFM-oversampling-render-switch", "value"),
+#     # prevent_initial_call=True
+# )
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideMessageRec",
+        function_name="uploadMessage"
+    ),
+    Output("AFM-upload-message", "children"),
+    Input("AFM-raw-data-store", "data"),
+    # prevent_initial_call=True
+)
 
