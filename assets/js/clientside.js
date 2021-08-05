@@ -242,7 +242,7 @@ forceRender = function(rawData) {
 
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-        "name": "Experiental Data",
+        "name": "force-time",
         "mode": "markers",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
@@ -399,7 +399,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         tabChangeMotRender: motRender
     },
     clientsideAfm: {
-        tabChangeFigRender: forceRender,
+        tabChangeFigRender: forceRender
     },
     clientsideMessageRec: {
         uploadMessage: uploadMessageRecovery

@@ -100,10 +100,10 @@ def store_raw_data(content, n_clicks, file_name):
 
 app.clientside_callback(
     ClientsideFunction(
-        namespace="clientsideAFM",
+        namespace="clientsideAfm",
         function_name="tabChangeFigRender"
     ),
-    Output("AFM-force-display", "figure"),
+    Output("AFM-Force-display", "figure"),
     Input("AFM-raw-data-store", "data"),
     # Input("AFM-oversampling-data-store", "data"),
     # Input("AFM-oversampling-render-switch", "value"),
@@ -115,7 +115,7 @@ app.clientside_callback(
 #         namespace="clientsideAfm",
 #         function_name="tabChangeAfmRender"
 #     ),
-#     Output("AFM-Mot-display", "figure"),
+#     Output("AFM-ind-display", "figure"),
 #     Input("AFM-ft-data-store", "data"),
 #     Input("AFM-oversampled-ft-data-store", "data"),
 #     Input("AFM-oversampling-render-switch", "value"),

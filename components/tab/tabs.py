@@ -32,8 +32,7 @@ FT_TABS_DICT = {
 }
 
 AFM_TABS_DICT = {
-    "1": "Force",
-    "2": "emm"
+    "1": "Force"
 }
 
 # This is templates but used in irheo GT
@@ -104,3 +103,4 @@ def ft_tabs_generate(prefix_app_name):
     Tabs = dbc.Tabs(children=Tab_list)
 
     return Tabs
+
