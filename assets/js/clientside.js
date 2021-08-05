@@ -462,7 +462,9 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         tabChangeMotRender: motRender
     },
     clientsideAfm: {
-        tabChangeFigRender: forceRender
+        tabChangeFigRender: forceRender,
+        tabChangeIdeRender: ideRender,
+        
     },
     clientsideMessageRec: {
         uploadMessage: uploadMessageRecovery
