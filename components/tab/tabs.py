@@ -27,7 +27,7 @@ MOT_TABS_DICT = {
 }
 
 FT_TABS_DICT = {
-    "1": "Original",
+    "1": "Input",
     "2": "Re & Im",
 }
 

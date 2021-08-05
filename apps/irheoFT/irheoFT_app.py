@@ -97,12 +97,14 @@ def store_raw_data(content, n_clicks, g_0, g_inf,file_name):
 
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
     # fast FT processing
-    omega, g_p, g_pp = fast_ftdata(df, g_0, g_inf, False)
+    omega, g_p, g_pp, non_time_g_p, non_time_g_pp = fast_ftdata(df, g_0, g_inf, False)
 
     ft_data = {
         "x": omega,
         "y1": g_p,
-        "y2": g_pp
+        "y2": g_pp,
+        "non_time_y1": non_time_g_p,
+        "non_time_y2": non_time_g_pp
     }
 
     """
@@ -138,24 +140,26 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     }
 
     # default g_0: 1, g_inf: 0
-    g_0 = 1 if g_0 is None else int(g_0)
-    g_inf = 0 if g_inf is None else int(g_inf)
-    
+    g_0 = 1 if g_0 is None else float(g_0)
+    g_inf = 0 if g_inf is None else float(g_inf)
+
     # This function takes lots of time
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
     # fast FT
-    omega, g_p, g_pp = fast_ftdata(df, g_0, g_inf, True, ntimes)
+    omega, g_p, g_pp, non_time_g_p, non_time_g_pp = fast_ftdata(df, g_0, g_inf, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
         "y1": g_p,
-        "y2": g_pp
+        "y2": g_pp,
+        "non_time_y1": non_time_g_p,
+        "non_time_y2": non_time_g_pp
     }
 
     return data, oversampled_ft_data
 
 """
-Sigma Renedr
+Input(Sigma) Renedr ----- First tab
 Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
@@ -170,24 +174,8 @@ app.clientside_callback(
     # prevent_initial_call=True
 )
 
-# """
-# Gamma Renedr
-# Trigger when the experiental data(raw data) or oversampling data changed
-# """
-# app.clientside_callback(
-#     ClientsideFunction(
-#         namespace="clientsideGamma",
-#         function_name="tabChangeFigRender"
-#     ),
-#     Output("FTAPP-gamma-display", "figure"),
-#     Input("FTAPP-raw-data-store", "data"),
-#     Input("FTAPP-oversampling-data-store", "data"),
-#     Input("FTAPP-oversampling-render-switch", "value"),
-#     prevent_initial_call=True
-# )
-
 """
-Re & Im Renedr
+Re & Im Renedr ----- Second tab
 Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
@@ -199,6 +187,7 @@ app.clientside_callback(
     Input("FTAPP-ft-data-store", "data"),
     Input("FTAPP-oversampled-ft-data-store", "data"),
     Input("FTAPP-oversampling-render-switch", "value"),
+    Input("FTAPP-time-derivative", "value")
     # prevent_initial_call=True
 )
 

@@ -6,7 +6,7 @@ from dash_html_components.Br import Br
 
 from components.oversampling.input import OversamplingInput, oversampling_input_generate
 # from components.oversampling.select import SelectOversampling
-from components.oversampling.switch import Switch, switch_component_generate
+from components.oversampling.switch import Switch, switch_component_generate, FT_rendering_switch_generate
 from components.inputgdot.inputgdot import Inputgdot, input_gdot_generate, mot_input_generate
 
 OVERSAMPLING_BUTTON_SUFFIX = "-oversampling-btn"
@@ -45,7 +45,8 @@ def oversampling_component_generate(prefix_app_name):
                         ]),
                     # html.H5(id="oversampling-message", className="text-warning"),
                     html.P("switch it", className="mb-1"),
-                    switch_component_generate(prefix_app_name)
+                    switch_component_generate(prefix_app_name),
+                    FT_rendering_switch_generate(prefix_app_name)          
     ])
 
     return Oversampling
@@ -64,6 +65,7 @@ def mot_oversampling_generate(prefix_app_name):
                                        color="primary", className="ml-3"),
                         ]),
                     # html.H5(id="oversampling-message", className="text-warning"),
+                    html.P("switch it", className="mb-1"),
                     switch_component_generate(prefix_app_name)
     ])
 
