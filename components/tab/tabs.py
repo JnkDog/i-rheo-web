@@ -22,12 +22,12 @@ TABS_ID_SUFFIX_DICT = {
 
 MOT_TABS_DICT = {
     "1": "A(t)",
-    "2": "pai",
-    "3": "Mot"
+    "2": "Mot",
+    "3": "pai"
 }
 
 FT_TABS_DICT = {
-    "1": "Input",
+    "1": "Original",
     "2": "Re & Im",
 }
 
@@ -50,7 +50,7 @@ Tab_Strain_content = Spinner_strain
 Tabs = dbc.Tabs([
         dbc.Tab(children=Spinner_stress, label="Stress", tab_id="stress"),
         dbc.Tab(children=Spinner_FT, label="Elastic & Viscous", tab_id="elastic & viscous"),
-        # dbc.Tab(children=Spinner_strain, label="Strain", tab_id="strain"),
+        dbc.Tab(children=Spinner_strain, label="Strain", tab_id="strain"),
         # dbc.Tab(children=Spinner_eta, label="Eta", tab_id="eta")
 ], id="fig-tabs")
 

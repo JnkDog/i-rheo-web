@@ -321,6 +321,39 @@ forceRender = function(rawData) {
     };
 }
 
+ideRender = function(rawData) {
+    if (rawData == undefined) {
+        return;
+    }
+
+    let data = [];
+    let layout = {
+        "xaxis": {"dtick": 1, "tick0": -12, 
+                  "type": "log", "title": {"text": "Time (s)"},
+                  "ticks": "outside"},
+        "yaxis": {"dtick": 1, "tick0": -7, 
+                  "type": "log", "title": {"text" : "Force (uN)"},
+                  "ticks": "outside"},
+    };
+
+    let rawDataTrace = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "Identation-time",
+        "mode": "markers",
+        "marker": {"symbol": "circle-open", 
+                "size": 10, "maxdisplayed": 200},
+        "x": rawData.x,
+        "y": rawData.z
+    }
+
+        data.push(rawDataTrace);
+
+    return {
+        "data" : data,
+        "layout": layout
+    };
+}
+
 uploadMessageRecovery = function(rawData) {
     if (rawData == undefined) {
         return;
@@ -464,7 +497,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientsideAfm: {
         tabChangeFigRender: forceRender,
         tabChangeIdeRender: ideRender,
-        
+
     },
     clientsideMessageRec: {
         uploadMessage: uploadMessageRecovery

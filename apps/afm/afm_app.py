@@ -1,3 +1,5 @@
+from os import P_OVERLAY
+from pkg_resources import parse_version
 import dash
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc
@@ -16,6 +18,7 @@ from components.tab.tabs import afm_tabs_generate
 
 # import algorithm
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
+from algorithm.afm import afm_moduli_process
 
 prefix_app_name = "AFM"
 
@@ -54,11 +57,11 @@ Layout = dbc.Row([
     Input("AFM-load-example", "n_clicks"),
     State("AFM-upload", "filename"),
     # TODO need change later
-    # State("AFM-f0", "value"),
-    # State("AFM-finf", "value"),
+    State("AFM-v", "value"),
+    State("AFM-r", "value"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, file_name):
+def store_raw_data(content, n_clicks, file_name, v, r):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -74,26 +77,25 @@ def store_raw_data(content, n_clicks, file_name):
     data = {
         "x": df[0],
         "y": df[1],
-        # "z": df[2],
-        # "pai": pai_processing(df)["pai"],
+        "z": df[2],
+
         "filename": file_name,
         "lines": len(df)
-    }  
+    }
 
-    # default f0 = 0 and finf = ?
+    # default v = 0.5 & r(named δ actually)
+    v = 0.5 if v is None else v
+    r = 20 if r is None else r
 
-    # omega, g_p, g_pp = afm_processing(df, kt, at, False)
+    omega, g_p, g_pp = afm_moduli_process(df, v, r, False)
 
-    # omega, g_p, g_pp = (df, f0, finf, False)
+    ft_data = {
+        "x": omega,
+        "y1": g_p,
+        "y2": g_pp
+    }
 
-    # ft_data = {
-    #     "x": omega,
-    #     "y1": g_p,
-    #     "y2": g_pp
-    # }
-
-    # return data, upload_messge, ft_data
-    return data, ""
+    return data, ft_data, ""
 
 
 # =================== Clientside callback ===================
@@ -109,7 +111,6 @@ app.clientside_callback(
     # Input("AFM-oversampling-render-switch", "value"),
 )
 
-# add to the js part and data store part
 # app.clientside_callback(
 #     ClientsideFunction(
 #         namespace="clientsideAfm",
