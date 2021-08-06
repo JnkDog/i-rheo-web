@@ -18,10 +18,6 @@ from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import convert_lists_to_df, generate_df, generate_df_from_local
 from algorithm.pwft import ftdata, fast_ftdata
 
-"""
-The orginal version is the i-Rheo virtual instrument (VI) LABVIEW.
-"""
-
 # Using your own app name. Can't be same.
 prefix_app_name = "FTAPP"
 

@@ -13,6 +13,7 @@ from app import app
 from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
 from components.oversampling.oversampling import mot_oversampling_generate
+from components.input.parameter import trap_radius_generate
 from components.tab.tabs import mot_tabs_generate
 
 # import algorithm
@@ -45,6 +46,8 @@ Layout = dbc.Row([
                     html.Div(id="MOT-loading-message"),
                     html.Hr(),
                     mot_oversampling_generate(prefix_app_name),
+                    html.Hr(),
+                    trap_radius_generate(prefix_app_name),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 

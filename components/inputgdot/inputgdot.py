@@ -39,6 +39,7 @@ def input_gdot_generate(prefix_app_name):
 
     return Inputgdot
 
+# discard
 def mot_input_generate(prefix_app_name):
     kt_id = prefix_app_name + "-kt"
     at_id = prefix_app_name + "-at"
@@ -53,7 +54,7 @@ def mot_input_generate(prefix_app_name):
         dbc.Input(
             id=at_id,
             type="number",
-            placeholder="Input at, default 1e6"
+            placeholder="Input at, default 1e1"
         )
     ])
 
