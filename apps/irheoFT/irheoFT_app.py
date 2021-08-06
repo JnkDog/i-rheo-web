@@ -3,6 +3,7 @@ from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import time
 import pandas as pd
 
 from app import app
@@ -30,10 +31,8 @@ Layout = dbc.Row([
                         dcc.Store(id="FTAPP-raw-data-store", storage_type="session"),
                         dcc.Store(id="FTAPP-oversampling-data-store", storage_type="session"),
                         dcc.Store(id="FTAPP-ft-data-store", storage_type="session"),
-                        dcc.Loading(dcc.Store(id="FTAPP-oversampled-ft-data-store", 
-                                              storage_type="session"),
-                                    id="full-screen-mask",
-                                    fullscreen=True)
+                        dcc.Loading([dcc.Store(id="FTAPP-oversampled-ft-data-store", storage_type="session")],
+                            id="FTAPP-full-screen-mask", fullscreen=True, debug=True)
                     ], className="btn-group me-2"),
                     html.Div([dbc.Button("Load Example data", id="FTAPP-load-example", 
                               color="primary", style={"margin": "5px"})],
@@ -62,8 +61,8 @@ Trigger when the experiental data(raw data) uploaded
     Output("FTAPP-loading-message", "children"),
     Input("FTAPP-upload", "contents"),
     Input("FTAPP-load-example", "n_clicks"),
-    State("FTAPP-g_0", "value"),
-    State("FTAPP-g_inf", "value"),
+    Input("FTAPP-g_0", "value"),
+    Input("FTAPP-g_inf", "value"),
     State("FTAPP-upload", "filename"),
     prevent_initial_call=True
 )
@@ -77,6 +76,9 @@ def store_raw_data(content, n_clicks, g_0, g_inf,file_name):
         path = "./example_data/ft/example.txt"
         df = generate_df_from_local(path)
     else:
+        if content is None:
+            raise dash.exceptions.PreventUpdate
+        
         df = generate_df(content)
 
     # save file_name and lens for message recovering when app changing
@@ -90,7 +92,7 @@ def store_raw_data(content, n_clicks, g_0, g_inf,file_name):
     # default g_0: 1, g_inf: 0
     g_0 = 1 if g_0 is None else float(g_0)
     g_inf = 0 if g_inf is None else float(g_inf)
-
+    
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
     # fast FT processing
     omega, g_p, g_pp, non_time_g_p, non_time_g_pp = fast_ftdata(df, g_0, g_inf, False)
@@ -116,13 +118,15 @@ and the oversampling button clicked with the oversampling ntimes.
     Output("FTAPP-oversampling-data-store", "data"),
     Output("FTAPP-oversampled-ft-data-store", "data"),
     Input("FTAPP-oversampling-btn", "n_clicks"),
-    State("FTAPP-g_0", "value"),
-    State("FTAPP-g_inf", "value"),
+    Input("FTAPP-g_0", "value"),
+    Input("FTAPP-g_inf", "value"),
     State("FTAPP-raw-data-store", "data"),
     State("FTAPP-oversampling-input", "value")
 )
 def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
-    if n_clicks is None or data is None or ntimes is None:
+    if n_clicks is None or data is None or ntimes is None:   
+        # return None, None  
+        # time.sleep(10)   
         raise dash.exceptions.PreventUpdate
 
     # avoid float number
@@ -235,3 +239,28 @@ def download(n_clicks, beginLineIdx, endLineIdx, data):
                                 sep='\t', encoding='utf-8'), 
                                 "Download OK !") 
 
+# ================ Loading address ========================
+
+# @app.callback(
+#     Output("FTAPP-full-screen-mask", "loading_state"),
+#     Input("FTAPP-oversampled-ft-data-store", "data"),
+#     prevent_initial_call=True,
+# )
+# def screen_loading(data):
+#     # print(loading)
+#     loading_state = {
+#         "component_name": "FTAPP-oversampled-ft-data-store",
+#         "prop_name": "data"
+#     }
+
+#     if data is None:
+#         loading_state["is_loading"] = False
+#         print(loading_state)
+#         time.sleep(10)
+#         return loading_state  
+
+#     # print()
+#     loading_state["is_loading"] = True
+
+#     print(loading_state)
+#     return loading_state

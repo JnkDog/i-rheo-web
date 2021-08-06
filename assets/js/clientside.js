@@ -234,8 +234,7 @@ reImFigRender = function(ftData, oversampledftData,
 
     let setting = figSetting(ftData, oversampledftData, 
         oversamplingSwitchValue[0], timeDerivatived[0])
-    
-    console.log(setting);
+  
     let data = [];
     let layout = {
         "xaxis": {"dtick": 1, "tick0": -12, 
@@ -327,7 +326,7 @@ uploadMessageRecovery = function(rawData) {
     }
 
     const filename = rawData.filename;
-    const len    = rawData.lines;
+    const len = rawData.lines;
 
     return `The upload file ${filename} 
             with ${len} lines`;
@@ -346,7 +345,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                           "type": "log", "title": {"text": "Time [s]"}, 
                           "ticks": "outside" 
                 },
-                "yaxis": {"title": {"text" : "G(t) [Pa]"}, "range": [0, 1.0],
+                "yaxis": {"title": {"text" : "Input"}, "range": [0, 1.0],
                           "rangemode": "tozero", "ticks": "outside"
                 },
             }
@@ -463,8 +462,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     },
     clientsideAfm: {
         tabChangeFigRender: forceRender,
-        tabChangeIdeRender: ideRender,
-        
+        // tabChangeIdeRender: ideRender,
     },
     clientsideMessageRec: {
         uploadMessage: uploadMessageRecovery
