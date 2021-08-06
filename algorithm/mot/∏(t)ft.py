@@ -11,7 +11,7 @@ import multiprocessing
 import math
 res = np.zeros(100, dtype=complex)
 
-def manlio_ft(g, t, g_0=0, g_dot_inf=0, N_f=100, interpolate=True, oversampling=10):
+def manlio_ft(g, t, g_0, g_dot_inf, interpolate, oversampling, N_f = 100):
 
     g = np.array(g)
     t = np.array(t)
@@ -57,14 +57,12 @@ def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
         return after
 
 
-def test():
+def test(k, a, g_0, g_dot_inf,interpolate, oversampling):
     i = complex(0, 1)
-    k = 1e-6  #input
-    a = 1e-6   #input
     func = df_news[1]  
     time = df_news[0]
     
-    omega, res_test = manlio_ft(func, time, N_f=100, interpolate=True)
+    omega, res_test = manlio_ft(func, time, g_0, g_dot_inf, interpolate, oversampling)
     G_star = (k/(6 * math.pi * a))*(1/(i * omega * res_test) - 1)  
     g_pp = np.imag(G_star)
     plt.plot(omega, g_pp, '-o', lw=3, color='royalblue', label='$G^{II}$')
@@ -78,8 +76,7 @@ def test():
 if __name__ == '__main__':
     start=time.time()
     df_news = pd.read_table('SingExp6_5.txt', sep='\t', header=None)
-    #df_news = pd.read_table('Data.txt', sep = ' ', header = None)
-    test()
+    test(k=1e-6,a=1e-6,g_0=0, g_dot_inf=0,interpolate=True, oversampling=10)
     end=time.time()
     print("\ntime",end-start)
 
