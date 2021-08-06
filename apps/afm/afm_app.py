@@ -93,9 +93,7 @@ def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf):
     linf = 0 if linf is None else linf
     ind0 = 1 if ind0 is None else ind0
     indinf = 0 if indinf is None else indinf
-    print(r)
-    print(type(r))
-    print(type(20))
+
     omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, False)
 
     ft_data = {
