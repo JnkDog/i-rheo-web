@@ -73,8 +73,8 @@ def afm_oversampling_generate(prefix_app_name):
 def mot_oversampling_generate(prefix_app_name):
     button_id = prefix_app_name + OVERSAMPLING_BUTTON_SUFFIX
     Oversampling = html.Div([
-                   html.H5("Input kt and at"),
-                   mot_input_generate(prefix_app_name),
+                   html.H5("Boundary conditions"),
+                   input_gdot_generate(prefix_app_name),
                    html.Br(),
                    dbc.InputGroup(
                         # id="oversampling-control-components",

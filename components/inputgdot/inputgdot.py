@@ -40,6 +40,7 @@ def input_gdot_generate(prefix_app_name):
 
     return Inputgdot
 
+<<<<<<< HEAD
 
 def afm_parameter_input_generate(prefix_app_name):
     r_id = prefix_app_name + "-r"
@@ -54,6 +55,9 @@ def afm_parameter_input_generate(prefix_app_name):
     return AFMInput
 
 
+=======
+# discard
+>>>>>>> 6239afa39db86d908a39dd376b1c1b7ad373a633
 def mot_input_generate(prefix_app_name):
     kt_id = prefix_app_name + "-kt"
     at_id = prefix_app_name + "-at"
@@ -68,7 +72,7 @@ def mot_input_generate(prefix_app_name):
         dbc.Input(
             id=at_id,
             type="number",
-            placeholder="Input at, default 1e6"
+            placeholder="Input at, default 1e1"
         )
     ])
 
