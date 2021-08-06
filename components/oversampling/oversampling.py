@@ -7,7 +7,7 @@ from dash_html_components.Br import Br
 from components.oversampling.input import OversamplingInput, oversampling_input_generate
 # from components.oversampling.select import SelectOversampling
 from components.oversampling.switch import Switch, switch_component_generate, FT_rendering_switch_generate
-from components.inputgdot.inputgdot import Inputgdot, input_gdot_generate, mot_input_generate, afm_parameter_input_generate
+from components.inputgdot.inputgdot import Inputgdot, input_gdot_generate, mot_input_generate, afm_parameter_input_generate, afm_dot_input_generate
 
 OVERSAMPLING_BUTTON_SUFFIX = "-oversampling-btn"
 
@@ -55,7 +55,10 @@ def oversampling_component_generate(prefix_app_name):
 def afm_oversampling_generate(prefix_app_name):
     button_id = prefix_app_name + OVERSAMPLING_BUTTON_SUFFIX
     Oversampling = html.Div([
-        html.H5("Input parameter radius and v"),
+        html.H5("Boundary conditions"),
+        afm_dot_input_generate(prefix_app_name),
+        html.Br(),
+        html.H5("Input parameter Radius and V"),
         afm_parameter_input_generate(prefix_app_name),
         html.Br(),
         dbc.InputGroup(

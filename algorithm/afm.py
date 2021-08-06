@@ -67,27 +67,18 @@ def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
         return after
 
 
-def afm_moduli_process(df, radius=20, v=0.5, interpolate=False, ntimes=10):
+def afm_moduli_process(df, radius=20, v=0.5, load0=1, loadinf=0, ind0=1, indinf=0, interpolate=False, ntimes=10):
     i = complex(0, 1)
-    # print(df)
     times = df[0]
-    # print("times")
     force = df[1]
     inden = df[2]
 
     N_f = 100
     At = ((8*(radius**(1/2)))/(3*(1-v)))*(inden**(3/2))
-    # print(At)
-    # start=time.time()
-    # print(start)
-    omega1, res_test1 = manlio_ft(force, times, 1, 0, N_f, interpolate, ntimes)
-    omega2, res_test2 = manlio_ft(At, times, 1, 0, N_f, interpolate, ntimes)
+    # print("a")
+    omega1, res_test1 = manlio_ft(force, times, load0, loadinf, N_f, interpolate, ntimes)
+    omega2, res_test2 = manlio_ft(At, times, ind0, indinf, N_f, interpolate, ntimes)
     G_star = res_test1/res_test2
-    # end=time.time()
-    # print("\ntime", end-start)
-
-    # print(G_star)
-    # print(1/(i * omega * res_test))
 
     g_p = np.real(G_star)
     g_pp = np.imag(G_star)

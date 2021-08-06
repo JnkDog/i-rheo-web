@@ -58,11 +58,15 @@ Layout = dbc.Row([
     Input("AFM-load-example", "n_clicks"),
     State("AFM-upload", "filename"),
     # TODO need change later
-    # State("AFM-v", "value"),
-    # State("AFM-r", "value"),
+    State("AFM-r", "value"),
+    State("AFM-v", "value"),
+    State("AFM-load0", "value"),
+    State("AFM-loadinf", "value"),
+    State("AFM-indentation0", "value"),
+    State("AFM-indentationinf", "value"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, file_name):
+def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -82,12 +86,17 @@ def store_raw_data(content, n_clicks, file_name):
         "filename": file_name,
         "lines": len(df)
     }
-    print(data["lines"])
     # default v = 0.5 & r(named δ actually)
-    v = 0.5  # if v is None else v
-    r = 20   # if r is None else r
-
-    omega, g_p, g_pp = afm_moduli_process(df, r, v, False)
+    v = 0.5 if v is None else v
+    r = 20 if r is None else r
+    l0 = 1 if l0 is None else l0
+    linf = 0 if linf is None else linf
+    ind0 = 1 if ind0 is None else ind0
+    indinf = 0 if indinf is None else indinf
+    print(r)
+    print(type(r))
+    print(type(20))
+    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, False)
 
     ft_data = {
         "x1": omega,
@@ -102,12 +111,16 @@ def store_raw_data(content, n_clicks, file_name):
     # Output("AFM-oversampling-data-store", "data"),
     Output("AFM-oversampled-ft-data-store", "data"),
     Input("AFM-oversampling-btn", "n_clicks"),
-    # State("AFM-v", "value"),
-    # State("AFM-r", "value"),
+    State("AFM-r", "value"),
+    State("AFM-v", "value"),
+    State("AFM-load0", "value"),
+    State("AFM-loadinf", "value"),
+    State("AFM-indentation0", "value"),
+    State("AFM-indentationinf", "value"),
     State("AFM-raw-data-store", "data"),
     State("AFM-oversampling-input", "value")
 )
-def store_oversampling_data(n_clicks, data, ntimes):
+def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes):
     if n_clicks is None or data is None or ntimes is None:
         raise PreventUpdate
 
@@ -119,7 +132,7 @@ def store_oversampling_data(n_clicks, data, ntimes):
 
     # ftdata = data
 
-    omega, g_p, g_pp = afm_moduli_process(df, 20, 0.5, True, ntimes)
+    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
@@ -128,6 +141,45 @@ def store_oversampling_data(n_clicks, data, ntimes):
     }
 
     return oversampled_ft_data
+
+
+# =================== Download Callback =====================
+@app.callback(
+    Output("AFM-download-text", "data"),
+    Output("AFM-download-message", "children"),
+    Input("AFM-download-btn", "n_clicks"),
+    State("AFM-begin-line-number", "value"),
+    State("AFM-end-line-number", "value"),
+    State("AFM-oversampled-ft-data-store", "data"),
+    prevent_initial_call=True,
+)
+def download(n_clicks, beginLineIdx, endLineIdx, data):
+    if data is None:
+        raise PreventUpdate
+
+    # avoid float number
+    beginLineIdx = int(beginLineIdx)
+    endLineIdx = int(endLineIdx)
+    if beginLineIdx >= endLineIdx:
+        return None, "Invaild parameters"
+
+    try:
+        saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
+        saving_y_list = data.get("y1")[beginLineIdx:endLineIdx+1]
+        saving_z_list = data.get("y2")[beginLineIdx:endLineIdx+1]
+    except:
+        # if the idx is out of range, say, endLineIdx > len(x)
+        saving_x_list = data.get("x")[beginLineIdx:]
+        saving_y_list = data.get("y1")[beginLineIdx:]
+        saving_z_list = data.get("y2")[beginLineIdx:]
+    else:
+        saving_df = pd.DataFrame({"x": saving_x_list, "y1": saving_y_list, "y2": saving_z_list})
+        saving_file_name = "download_AFM_data.txt"
+
+    return (dcc.send_data_frame(saving_df.to_csv, saving_file_name, 
+                                header=False, index=False, 
+                                sep='\t', encoding='utf-8'), 
+                                "Download OK !") 
 
 
 # =================== Clientside callback ===================

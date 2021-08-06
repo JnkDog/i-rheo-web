@@ -40,7 +40,6 @@ def input_gdot_generate(prefix_app_name):
 
     return Inputgdot
 
-<<<<<<< HEAD
 
 def afm_parameter_input_generate(prefix_app_name):
     r_id = prefix_app_name + "-r"
@@ -50,14 +49,31 @@ def afm_parameter_input_generate(prefix_app_name):
         dbc.Input(id=r_id, type="number", placeholder="Input radius, default 20"),
         html.Br(),
         dbc.Input(id=v_id, type="number", placeholder="Input v, default 0.5"),
+        html.Br(),
     ])
 
     return AFMInput
 
 
-=======
-# discard
->>>>>>> 6239afa39db86d908a39dd376b1c1b7ad373a633
+def afm_dot_input_generate(prefix_app_name):
+    ind0_id = prefix_app_name + "-indentation0"
+    indinf_id = prefix_app_name + "-indentationinf"
+    load0_id = prefix_app_name + "-load0"
+    loadinf_id = prefix_app_name + "-loadinf"
+
+    AFMDotInput = html.Div([
+        dbc.Input(id=load0_id, type="number", placeholder="Input Load(0), default 1"),
+        html.Br(),
+        dbc.Input(id=loadinf_id, type="number", placeholder="Input Load(inf), default 0"),
+        html.Br(),
+        dbc.Input(id=ind0_id, type="number", placeholder="Input Indentation(0), default 1"),
+        html.Br(),
+        dbc.Input(id=indinf_id, type="number", placeholder="Input Indentation(∞), default 0"),
+    ])
+    
+    return AFMDotInput
+
+
 def mot_input_generate(prefix_app_name):
     kt_id = prefix_app_name + "-kt"
     at_id = prefix_app_name + "-at"
