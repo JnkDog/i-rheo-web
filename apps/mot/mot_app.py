@@ -17,10 +17,10 @@ from components.input.parameter import trap_radius_generate
 from components.tab.tabs import mot_tabs_generate
 
 # import algorithm
-from algorithm.mot_At_oversampling import mot_oversampling
+from algorithm.mot.mot_At_oversampling import mot_oversampling
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
-from algorithm.mot import mot_processing, fast_mot_procressing
-from algorithm.pai import pai_processing
+from algorithm.mot.mot import fast_mot_procressing
+from algorithm.mot.pai import pai_processing
 
 # Using your own app name. Can't be same.
 prefix_app_name = "MOT"
