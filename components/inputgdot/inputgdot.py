@@ -19,6 +19,7 @@ Inputgdot = html.Div([
     )
 ])
 
+
 def input_gdot_generate(prefix_app_name):
     g_0_id   = prefix_app_name + "-g_0"
     g_inf_id = prefix_app_name + "-g_inf"
@@ -38,6 +39,20 @@ def input_gdot_generate(prefix_app_name):
     ])
 
     return Inputgdot
+
+
+def afm_parameter_input_generate(prefix_app_name):
+    r_id = prefix_app_name + "-r"
+    v_id = prefix_app_name + "-v"
+
+    AFMInput = html.Div([
+        dbc.Input(id=r_id, type="number", placeholder="Input radius, default 20"),
+        html.Br(),
+        dbc.Input(id=v_id, type="number", placeholder="Input v, default 0.5"),
+    ])
+
+    return AFMInput
+
 
 def mot_input_generate(prefix_app_name):
     kt_id = prefix_app_name + "-kt"

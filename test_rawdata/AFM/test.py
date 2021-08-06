@@ -1,7 +1,3 @@
-def oversample_function(df, ntimes):
-
-    return df[0], df[1], df[2]
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
@@ -9,7 +5,7 @@ import pandas as pd
 import time
 import threading
 from multiprocessing import Process
-from multiprocessing import Process, Queue, Lock
+from multiprocessing import Process, Queue,Lock
 from multiprocessing import Pool
 import multiprocessing
 import math
@@ -34,23 +30,25 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
     zero = i * omega * g_0 + (1 - np.exp(-i * omega * t[1])) * ((g[1] - g_0) / t[1]) \
            + g_dot_inf * np.exp(-i * omega * t[N_t - 1])
 
-    # print(len(omega))
-    # print(N_t)
-    res = multiprocessing.Manager().list()
+
+    #print(len(omega))
+    #print(N_t)
+    res= multiprocessing.Manager().list()
     for xxx in range(100):
         res.append(i)
-    lock = multiprocessing.Manager().Lock()
-    pool = multiprocessing.Pool(processes=5)
+    lock=multiprocessing.Manager().Lock()
+    pool = multiprocessing.Pool(processes = 5)
     for w_i, w in enumerate(omega):
         after = 0
         pool.apply_async(calcu, (N_t,g,t,i,w,w_i,lock,zero,res))  
 
-        # res[w_i] = (zero[w_i] + after)
+        #res[w_i] = (zero[w_i] + after)
     pool.close()
     pool.join()
-    # print("-----------------\n",res)
-    # print(len(res))
+    #print("-----------------\n",res)
+    #print(len(res))
     return omega, ((res) / (i * omega) ** 2)
+
 
 
 def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
@@ -63,47 +61,45 @@ def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
         lock.acquire()
         res[w_i]=after+zero[w_i]
         lock.release()
-    
+
+        
         return after
 
 
-def afm_moduli_process(df, radius=20, v=0.5, interpolate=False, ntimes=10):
+def test():
     i = complex(0, 1)
-    # print(df)
-    times = df[0]
-    # print("times")
-    force = df[1]
-    inden = df[2]
-
-    N_f = 100
+    time = df_news[0]
+    force = df_news[1]
+    inden = df_news[2]
+    radius = 20
+    v = 0.5
     At = ((8*(radius**(1/2)))/(3*(1-v)))*(inden**(3/2))
-    # print(At)
-    # start=time.time()
-    # print(start)
-    omega1, res_test1 = manlio_ft(force, times, 1, 0, N_f, interpolate, ntimes)
-    omega2, res_test2 = manlio_ft(At, times, 1, 0, N_f, interpolate, ntimes)
+ 
+    omega1, res_test1 = manlio_ft(force, time, N_f=100, interpolate=False)
+    omega2, res_test2 = manlio_ft(At, time, N_f=100, interpolate=False)
     G_star = res_test1/res_test2
-    # end=time.time()
-    # print("\ntime", end-start)
-
     # print(G_star)
-    # print(1/(i * omega * res_test))
+
+   
+    #print(1/(i * omega * res_test))
 
     g_p = np.real(G_star)
     g_pp = np.imag(G_star)
    
-    return omega1, g_p, g_pp
-    # plt.plot(omega1, g_p, '-o', lw=3, color='red', label='$G^{I}$')
-    # plt.plot(omega2, g_pp, '-o', lw=3, color='royalblue', label='$G^{II}$')
-    # plt.xscale('log')
-    # plt.xlabel('Frequency (Hz)')
-    # plt.ylabel('Moduli (Pa)')
-    # plt.legend()
-    # plt.show()
+
+    plt.plot(omega1, g_p, '-o', lw=3, color='red', label='$G^{I}$')
+    plt.plot(omega2, g_pp, '-o', lw=3, color='royalblue', label='$G^{II}$')
+    plt.xscale('log')
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Moduli (Pa)')
+    plt.legend()
+    plt.show()
     
 
-# if __name__ == '__main__':
-#     
-#     df_news = pd.read_table('Agarose gel.txt',sep='	',header = None)
-#     test()
-#     
+if __name__ == '__main__':
+    start=time.time()
+    df_news = pd.read_table('test_rawdata/AFM/a.txt', sep='	', header=None)
+    test()
+    end=time.time()
+    print("\ntime", end-start)
+

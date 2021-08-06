@@ -34,7 +34,7 @@ FT_TABS_DICT = {
 AFM_TABS_DICT = {
     "1": "Force",
     "2": "Indentation",
-    "3": "G"
+    "3": "Classic-Moduli"
 }
 
 # This is templates but used in irheo GT

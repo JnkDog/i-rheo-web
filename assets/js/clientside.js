@@ -321,7 +321,7 @@ forceRender = function(rawData) {
     };
 }
 
-ideRender = function(rawData) {
+identationRender = function(rawData) {
     if (rawData == undefined) {
         return;
     }
@@ -347,6 +347,74 @@ ideRender = function(rawData) {
     }
 
         data.push(rawDataTrace);
+
+    return {
+        "data" : data,
+        "layout": layout
+    };
+}
+
+afmRender = function(ftData, oversampledData, switchValue=[false]) {
+    if (ftData == undefined) {
+        return;
+    }
+
+    let data = [];
+    let layout = {
+        "xaxis": {"tick0": -2, "dtick": 1,
+                "type": "log", 
+                "title": {"text": "t (sec)"}, 
+                "ticks": "outside" 
+        },
+        "yaxis": {"title": {"text" : "A(t)"}, 
+                // "range": [0, 1.0],
+                "rangemode": "tozero", "ticks": "outside"
+        },
+    };
+    let ftDataTrace1 = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "Experiental Data",
+        "mode": "markers",
+        "marker": {"symbol": "circle-open", 
+                "size": 10, "maxdisplayed": 200},
+        "x": ftData.x,
+        "y": ftData.y1
+    }
+    let ftDataTrace2 = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "Experiental Data",
+        "mode": "markers",
+        "marker": {"symbol": "circle-open", 
+                "size": 10, "maxdisplayed": 200},
+        "x": ftData.x,
+        "y": ftData.y2
+    }
+
+    if (switchValue[0] == true && oversampledData != undefined) {
+        let oversampledDataTrace1 = {
+            "name": "Oversampling Data",
+            "mode": "markers",
+            "marker": {"symbol": "circle-x", 
+                        "size": 6, "maxdisplayed": 200},
+            "x": oversampledData.x,
+            "y": oversampledData.y1
+        };
+        let oversampledDataTrace2 = {
+            "name": "Oversampling Data",
+            "mode": "markers",
+            "marker": {"symbol": "circle-x", 
+                        "size": 6, "maxdisplayed": 200},
+            "x": oversampledData.x,
+            "y": oversampledData.y2
+        };
+
+        data.push(oversampledDataTrace1, oversampledDataTrace2);
+    } else {
+        // console.log("========= in sigma =============");
+        // console.log(rawData)
+        // data = rawData;
+        data.push(ftDataTrace1, ftDataTrace2);
+    }
 
     return {
         "data" : data,
@@ -495,9 +563,9 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         tabChangeMotRender: motRender
     },
     clientsideAfm: {
-        tabChangeFigRender: forceRender,
-        tabChangeIdeRender: ideRender,
-
+        tabChangeForRender: forceRender,
+        tabChangeIdeRender: identationRender,
+        tabChangeFunRender: afmRender,
     },
     clientsideMessageRec: {
         uploadMessage: uploadMessageRecovery
