@@ -43,11 +43,14 @@ Layout = dbc.Row([
                     html.Div(id="FTAPP-loading-message"),
                     html.Hr(),
                     oversampling_component_generate(prefix_app_name),
-                    vertical_axis_swith(prefix_app_name),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3),
-            dbc.Col(ft_tabs_generate(prefix_app_name), width=True),
+            dbc.Col([
+                    ft_tabs_generate(prefix_app_name),
+                    vertical_axis_swith(prefix_app_name),
+                    ],
+                    width=True),
             # Loading
 ])
 
