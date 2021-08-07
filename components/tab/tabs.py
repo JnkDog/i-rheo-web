@@ -21,9 +21,8 @@ TABS_ID_SUFFIX_DICT = {
 }
 
 MOT_TABS_DICT = {
-    "1": "A(t)",
-    "2": "pai",
-    "3": "Mot"
+    "1": "Input",
+    "2": "Classic Moduli"
 }
 
 FT_TABS_DICT = {
@@ -71,8 +70,9 @@ def tabs_component_generate(prefix_app_name):
     return Tabs
 
 def mot_tabs_generate(prefix_app_name):
-    Spinner_list = [spinner_generate(prefix_app_name+"-"+value)
-                    for value in MOT_TABS_DICT.values()]
+    Spinner_list = [
+        spinner_generate(prefix_app_name+"-"+value) for value in ["A(t)", "Mot"]
+    ]
     
     Tab_list = [dbc.Tab(item, label=list(MOT_TABS_DICT.values())[idx],
                         tab_id=list(MOT_TABS_DICT.values())[idx])

@@ -53,7 +53,7 @@ def fast_manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversamp
     pool = multiprocessing.Pool(processes = 5)
     for w_i, w in enumerate(omega):
         #维持执行的进程总数为processes，当一个进程执行完毕后会添加新的进程进去
-        pool.apply_async(calcu, (N_t,g, t, i, w, w_i, lock, zero, res))   
+        pool.apply_async(calcu, (N_t, g, t, i, w, w_i, lock, zero, res))   
 
     pool.close()
     pool.join()
@@ -73,28 +73,45 @@ def mot_integrated_processing(df, k, a, g_0, g_dot_inf,interpolate=False, n_time
     x = df[0]
     y = df[1]
 
-    omega, ft_result = fast_manlio_ft(y, x, g_0=1, g_dot_inf=0, interpolate=interpolate, oversampling=n_times)
+    omega, ft_result = fast_manlio_ft(y, x, g_0, g_dot_inf, interpolate=interpolate, oversampling=n_times)
     # k a only works in g_p g_pp 
     pai_t_G_star = pai_t_G_star_processing(k, a, omega, ft_result)
     a_t_G_start = a_t_G_star_processing(k, a, omega, ft_result)
     
-    pai_g_p = np.real(pai_t_G_star)
-    pai_g_pp = np.imag(pai_t_G_star)
-
-    a_t_g_p = np.real(a_t_G_start)
-    a_t_g_pp = np.imag(a_t_G_start)
+    # Due to the complex is tuple, it cannot be serilized, it needs sliced to real and imag
+    pai_g_p, a_t_g_p, ft_result_real   = list(map(np.real, [pai_t_G_star, a_t_G_start, ft_result]))
+    pai_g_pp, a_t_g_pp, ft_result_imag = list(map(np.imag, [pai_t_G_star, a_t_G_start, ft_result]))
     
-    return omega.tolist(), pai_g_p.tolist(), pai_g_pp.tolist(), a_t_g_p.tolist(), a_t_g_pp.tolist(), ft_result.tolist()
+    return omega.tolist(), pai_g_p.tolist(), pai_g_pp.tolist(),\
+            a_t_g_p.tolist(), a_t_g_pp.tolist(), \
+            ft_result_real.tolist(), ft_result_imag.tolist()
 
+"""
+k, a only influence the gp gpp not the FT 
+"""
 def chenged_G_start_to_g(k, a, data):
-    ft_result = np.asarray(data["ft_result"]) 
+    ft_complex = combine_as_complex(data)
     omega = np.asarray(data["x"]) 
 
     # k a only works in g_p g_pp 
-    pai_t_G_star = pai_t_G_star_processing(k, a, omega, ft_result)
-    a_t_G_start = a_t_G_star_processing(k, a, omega, ft_result)
+    pai_t_G_star = pai_t_G_star_processing(k, a, omega, ft_complex)
+    a_t_G_start = a_t_G_star_processing(k, a, omega, ft_complex)
 
     pai_g_p, a_t_g_p = list(map(np.real, [pai_t_G_star, a_t_G_start]))
     pai_g_pp, a_t_g_pp = list(map(np.imag, [pai_t_G_star, a_t_G_start]))
 
     return  pai_g_p.tolist(), pai_g_pp.tolist(), a_t_g_p.tolist(), a_t_g_pp.tolist()
+
+
+"""
+Combine the real_list and imag_list to complex_ndarray
+"""
+def combine_as_complex(data):
+    ft_real  = data["ft_real"] 
+    ft_image = data["ft_imag"]
+
+    # combine as complex with the real and imag
+    ft_complex = np.array(ft_real, dtype=complex)
+    ft_complex.imag = ft_image
+
+    return ft_complex

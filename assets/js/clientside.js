@@ -6,7 +6,12 @@ const RENDER_DATA = {
 const FTAPP_TIME_DERIVATED = {
     "NONTIME_DERIVATED": 0,
     "TIME_DERIVATED": 1
-} 
+}
+
+const FUNCTION_TYPE = {
+    "AT"   : 0,
+    "PAI_T": 1
+}
 
 /**
 * oversamplingSwitchValue, true false
@@ -167,9 +172,22 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
     };
 }
 
-motRender = function(ftData, oversampledftData, switchValue=[false]) {
+motRender = function(ftData, oversampledftData, switchValue=[false], functionFlag) {
     if (ftData == undefined) {
         return;
+    }
+
+    // TODO : according function flag to decide the fig
+    let x, y1, y2;
+
+    if (functionFlag == FUNCTION_TYPE.AT) {
+        x  = ftData.x;
+        y1 = ftData.at_y1;
+        y2 = ftData.at_y2;
+    } else {
+        x  = ftData.x;
+        y1 = ftData.pai_y1;
+        y2 = ftData.pai_y2;
     }
 
     let data = [];
@@ -187,32 +205,42 @@ motRender = function(ftData, oversampledftData, switchValue=[false]) {
         "name": "G'",
         "mode": "lines",
         "line": {color:"black"},
-        "x": ftData.x,
-        "y": ftData.y1,
+        "x": x,
+        "y": y1,
     };
     let ftDataTrace1 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "G''",
         "mode": "lines",
         "line": {color:"red"},
-        "x": ftData.x,
-        "y": ftData.y2,
+        "x": x,
+        "y": y2,
     };
 
     if (switchValue[0] == true && oversampledftData != undefined) {
+        if (functionFlag == FUNCTION_TYPE.AT) {
+            x  = oversampledftData.x;
+            y1 = oversampledftData.at_y1;
+            y2 = oversampledftData.at_y2;
+        } else {
+            x  = oversampledftData.x;
+            y1 = oversampledftData.pai_y1;
+            y2 = oversampledftData.pai_y2;
+        }
+        
         let oversampledftDataTrace0 = {
             "name": "Oversampled-G'",
             "mode": "lines",
             "line": {color:"black"},
-            "x": oversampledftData.x,
-            "y": oversampledftData.y1,
+            "x": x,
+            "y": y1,
         };
         let oversampledftDataTrace1 = {
             "name": "Oversampled-G''",
             "mode": "lines",
             "line": {color:"red"},
-            "x": oversampledftData.x,
-            "y": oversampledftData.y2,
+            "x": x,
+            "y": y2,
         };
         
         data.push(oversampledftDataTrace0, oversampledftDataTrace1);

@@ -57,6 +57,7 @@ def mot_oversampling_generate(prefix_app_name):
                    html.H5("Boundary conditions"),
                    input_gdot_generate(prefix_app_name),
                    html.Br(),
+                   html.H5("Oversampling operation"),
                    dbc.InputGroup(
                         # id="oversampling-control-components",
                         children=[
