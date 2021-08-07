@@ -28,7 +28,7 @@ def input_gdot_generate(prefix_app_name):
         dbc.Input(
             id=g_0_id,
             type="number",
-            placeholder="Input your g(0), default 1"
+            placeholder="Input your g(0), default 1 as A(t), 0 as ∏(t)"
         ),
         html.Br(),
         dbc.Input(
