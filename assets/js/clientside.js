@@ -13,7 +13,7 @@ const FTAPP_TIME_DERIVATED = {
 * timeDerivative, true false
 * totally 4 status
 */
-figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwitch) => {
+figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwitch, verticalAxisSwitch) => {
     // if the oversampledftData is null, setting the oversamplingSwitch false even if true
     if (oversamplingSwitch == true) {
         oversamplingSwitch = oversampledftData == undefined ? false : true;
@@ -52,6 +52,12 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
         setting["yaxis"] = {"type": "linear", 
         "title": {"text" : "R, I"},
         "ticks": "outside"};
+    }
+
+    if (verticalAxisSwitch) {
+        setting["yaxis"]["type"] = "linear";
+    } else {
+        setting["yaxis"]["type"] = "log";
     }
 
     return setting;
@@ -227,21 +233,20 @@ motRender = function(ftData, oversampledftData, switchValue=[false]) {
 }
 
 reImFigRender = function(ftData, oversampledftData, 
-    oversamplingSwitchValue=[false], timeDerivatived=[false]) {
+    oversamplingSwitchValue=[false], timeDerivatived=[false], verticalAxisSwitch=[false]) {
     if (ftData == undefined) {
         return;
     }
 
     let setting = figSetting(ftData, oversampledftData, 
-        oversamplingSwitchValue[0], timeDerivatived[0])
-  
+        oversamplingSwitchValue[0], timeDerivatived[0], verticalAxisSwitch[0])
+    
     let data = [];
     let layout = {
         "xaxis": {"dtick": 1, "tick0": -12, 
                   "type": "log", "title": {"text": setting.text},
                   "ticks": "outside"},
         "yaxis": setting.yaxis
-        // "colorway": ["green"],
     };
     let ftDataTrace0 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 

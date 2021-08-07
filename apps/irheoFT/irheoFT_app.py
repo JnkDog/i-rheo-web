@@ -13,6 +13,7 @@ from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
 from components.oversampling.oversampling import oversampling_component_generate
 from components.tab.tabs import ft_tabs_generate
+from components.loglinearswitch.axisSwitch import vertical_axis_swith
 
 # import algorithm
 from algorithm.oversample import get_oversampling_data
@@ -42,9 +43,10 @@ Layout = dbc.Row([
                     html.Div(id="FTAPP-loading-message"),
                     html.Hr(),
                     oversampling_component_generate(prefix_app_name),
+                    vertical_axis_swith(prefix_app_name),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
-                    ], width=3), 
+                    ], width=3),
             dbc.Col(ft_tabs_generate(prefix_app_name), width=True),
             # Loading
 ])
@@ -187,7 +189,8 @@ app.clientside_callback(
     Input("FTAPP-ft-data-store", "data"),
     Input("FTAPP-oversampled-ft-data-store", "data"),
     Input("FTAPP-oversampling-render-switch", "value"),
-    Input("FTAPP-time-derivative", "value")
+    Input("FTAPP-time-derivative", "value"),
+    Input("FTAPP-vertical-axis-switch", "value")
     # prevent_initial_call=True
 )
 
