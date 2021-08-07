@@ -1,5 +1,5 @@
 def oversample_function(df, ntimes):
-
+    # used for test
     return df[0], df[1], df[2]
 
 import numpy as np
@@ -15,20 +15,23 @@ import multiprocessing
 import math
 res = np.zeros(100, dtype=complex)
 
-def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=10):
 
+def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=10):
     g = np.array(g)
     t = np.array(t)
     epsilon = 1e-5
+
     if interpolate is True:
         gi = interp1d(t, g, kind='cubic', fill_value='extrapolate')
         t_new = np.logspace(min(np.log10(t+epsilon)), max(np.log10(t+epsilon)), len(t) * oversampling)  # re-sample t in log space
         g = gi(t_new)  # get new g(t) taken at log-space sampled t
         t = t_new
+
     i = complex(0, 1)
     min_omega = 1 / max(t)
     max_omega = 1 / min(t)
     N_t = len(t)
+
     omega = np.logspace(np.log10(min_omega), np.log10(max_omega), N_f)
 
     zero = i * omega * g_0 + (1 - np.exp(-i * omega * t[1])) * ((g[1] - g_0) / t[1]) \
@@ -37,10 +40,13 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
     # print(len(omega))
     # print(N_t)
     res = multiprocessing.Manager().list()
+
     for xxx in range(100):
         res.append(i)
+
     lock = multiprocessing.Manager().Lock()
     pool = multiprocessing.Pool(processes=5)
+
     for w_i, w in enumerate(omega):
         after = 0
         pool.apply_async(calcu, (N_t,g,t,i,w,w_i,lock,zero,res))  
@@ -53,22 +59,21 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
     return omega, ((res) / (i * omega) ** 2)
 
 
-def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
-
-        after=0
+def calcu(N_t, g, t, i, w, w_i, lock, zero,  res):
+        after = 0
         for k in range(2, N_t):
             after += ((g[k] - g[k - 1]) / (t[k] - t[k - 1])) * (np.exp(-i * w *t[k - 1]) - np.exp(-i * w * t[k]))
-        #print(after)
+        # print(after)
         
         lock.acquire()
-        res[w_i]=after+zero[w_i]
+        res[w_i] = after+zero[w_i]
         lock.release()
     
         return after
 
 
 def afm_moduli_process(df, radius=20, v=0.5, load0=1, loadinf=0, ind0=1, indinf=0, interpolate=False, ntimes=10):
-    i = complex(0, 1)
+    i = complex(0, 1)  # 这行有用嘛？
     times = df[0]
     force = df[1]
     inden = df[2]
