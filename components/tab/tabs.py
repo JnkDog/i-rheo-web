@@ -21,14 +21,8 @@ TABS_ID_SUFFIX_DICT = {
 }
 
 MOT_TABS_DICT = {
-<<<<<<< HEAD
     "1": "Input",
     "2": "Classic Moduli"
-=======
-    "1": "A(t)",
-    "2": "Mot",
-    "3": "pai"
->>>>>>> 48e745d4c85679fc38b930bc5f012a3c85454ea7
 }
 
 FT_TABS_DICT = {
