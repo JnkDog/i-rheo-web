@@ -16,6 +16,7 @@ from components.oversampling.oversampling import Oversampling
 from components.tab.tabs import Tabs
 from components.display.loading import Loading
 from components.inputgdot.inputgdot import Inputgdot
+from components.loglinearswitch.axisSwitch import vertical_axis_swith
 
 # import algorithm
 from algorithm.oversample import get_oversampling_data
@@ -47,7 +48,10 @@ Layout = dbc.Row([
                     html.Hr(),
                     Download
                     ], width=3), 
-            dbc.Col(Tabs, width=True),
+            dbc.Col([
+                    Tabs,
+                    vertical_axis_swith("GT")],
+                    width=True),
             Loading
 ])
 
@@ -221,6 +225,7 @@ app.clientside_callback(
     Input("ft-data-store", "data"),
     Input("oversampled-ft-data-store", "data"),
     Input("oversampling-render-switch", "value"),
+    Input("GT-vertical-axis-switch", "value"),
     # prevent_initial_call=True
 )
 

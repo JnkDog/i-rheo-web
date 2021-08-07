@@ -16,7 +16,7 @@ from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
 from components.tab.tabs import afm_tabs_generate
 from components.oversampling.oversampling import afm_oversampling_generate   # use for test
-
+from components.loglinearswitch.axisSwitch import vertical_axis_swith
 
 # import algorithm
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
@@ -46,8 +46,11 @@ Layout = dbc.Row([
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
-            dbc.Col(afm_tabs_generate(prefix_app_name), width=True),
-])
+            dbc.Col([
+                    afm_tabs_generate(prefix_app_name),
+                    vertical_axis_swith(prefix_app_name)
+                    ], width=True),
+            ])
 
 # ======upload callback========
 @app.callback(
@@ -213,6 +216,7 @@ app.clientside_callback(
     Input("AFM-ft-data-store", "data"),
     Input("AFM-oversampled-ft-data-store", "data"),
     Input("AFM-oversampling-render-switch", "value"),
+    Input("AFM-vertical-axis-switch", "value"),
     # prevent_initial_call=True
 )
 

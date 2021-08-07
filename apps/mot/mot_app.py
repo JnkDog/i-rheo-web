@@ -17,6 +17,8 @@ from components.oversampling.oversampling import mot_oversampling_generate
 from components.input.parameter import stiffness_radius_generate
 from components.tab.tabs import mot_tabs_generate
 from components.radio.radio import MOTRadioitems
+from components.loglinearswitch.axisSwitch import vertical_axis_swith
+
 
 # import algorithm
 from algorithm.mot.mot_At_oversampling import mot_oversampling
@@ -70,7 +72,11 @@ Layout = dbc.Row([
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
-            dbc.Col(mot_tabs_generate(prefix_app_name), width=True),
+            dbc.Col([
+                    mot_tabs_generate(prefix_app_name),
+                    vertical_axis_swith(prefix_app_name),
+                    ],
+                    width=True),
             # Loading
 ])
 
@@ -318,6 +324,7 @@ app.clientside_callback(
     Input("MOT-oversampled-ft-data-store", "data"),
     Input("MOT-oversampling-render-switch", "value"),
     Input("MOT-radioitems-input", "value"),
+    Input("MOT-vertical-axis-switch", "value"),
     # prevent_initial_call=True
 )
 

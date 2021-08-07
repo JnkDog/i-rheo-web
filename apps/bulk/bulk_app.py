@@ -14,6 +14,7 @@ from components.download.download import download_component_generate
 from components.oversampling.oversampling import oversampling_component_generate
 from components.tab.tabs import tabs_component_generate
 from components.display.loading import Loading
+from components.loglinearswitch.axisSwitch import vertical_axis_swith
 
 # import algorithm
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
@@ -51,7 +52,11 @@ Layout = dbc.Row([
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
-            dbc.Col(tabs_component_generate(prefix_app_name), width=True),
+            dbc.Col([
+                    tabs_component_generate(prefix_app_name),
+                    vertical_axis_swith(prefix_app_name)
+                    ]
+                    ,width=True),
             # Loading
 ])
 
@@ -180,6 +185,7 @@ app.clientside_callback(
     Input("BULKAPP-raw-data-store", "data"),
     Input("BULKAPP-oversampling-data-store", "data"),
     Input("BULKAPP-oversampling-render-switch", "value"),
+    Input("BULKAPP-vertical-axis-switch", "value"),
     prevent_initial_call=True
 )
 

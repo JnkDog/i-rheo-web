@@ -70,7 +70,7 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
 
 
 // Function implementation list
-gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
+gammaRender = function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch=[false]) {
     if (rawData == undefined) {
         return;
     }
@@ -83,6 +83,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
         },
         "yaxis": {"title": {"text" : "γ [-]"}, 
                 // "range": [0, 1.0],
+                "type": "log",
                 "rangemode": "tozero", "ticks": "outside"
         },
     };
@@ -122,13 +123,18 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false]) {
         data.push(rawDataTrace);
     }
 
+    if (verticalAxisSwitch) {
+        layout["yaxis"]["type"] = "linear"
+    } else {
+        layout["yaxis"]["type"] = "log"
+    }
     return {
         "data" : data,
         "layout": layout
     };
 }
 
-motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
+motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch=[false]) {
     if (rawData == undefined) {
         return;
     }
@@ -141,6 +147,7 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
         },
         "yaxis": {"title": {"text" : "A(t)"}, 
                 // "range": [0, 1.0],
+                "type": "log",
                 "rangemode": "tozero", "ticks": "outside"
         },
     };
@@ -170,6 +177,12 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false]) {
         // console.log(rawData)
         // data = rawData;
         data.push(rawDataTrace);
+    }
+
+    if (verticalAxisSwitch) {
+        layout["yaxis"]["type"] = "linear"
+    } else {
+        layout["yaxis"]["type"] = "log"
     }
 
     return {
@@ -386,7 +399,7 @@ identationRender = function(rawData) {
     };
 }
 
-afmRender = function(ftData, oversampledData, switchValue=[false]) {
+afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisSwitch=[false]) {
     if (ftData == undefined) {
         return;
     }
@@ -398,8 +411,8 @@ afmRender = function(ftData, oversampledData, switchValue=[false]) {
                 "title": {"text": "t (sec)"}, 
                 "ticks": "outside" 
         },
-        "yaxis": {"title": {"text" : "A(t)"}, 
-                // "range": [0, 1.0],
+        "yaxis": {"title": {"text" : "A(t)"},
+                "type": "log",
                 "rangemode": "tozero", "ticks": "outside"
         },
     };
@@ -439,6 +452,12 @@ afmRender = function(ftData, oversampledData, switchValue=[false]) {
             "x": oversampledData.x,
             "y": oversampledData.y2
         };
+
+        if (verticalAxisSwitch) {
+            layout["yaxis"]["type"] = "linear"
+        } else {
+            layout["yaxis"]["type"] = "log"
+        }
 
         data.push(oversampledDataTrace1, oversampledDataTrace2);
     } else {
@@ -526,13 +545,21 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         }
     },
     clientsideFT:{
-        tabChangeFigRender: function(ftData, oversampledftData, switchValue=[false]) {
+        tabChangeFigRender: function(ftData, oversampledftData, switchValue=[false], verticalAxisSwitch=[false]) {
             if (ftData == undefined) {
                 return;
             }
 
             let data = [];
-            let layout = {
+            let layoutlinear = {
+                "xaxis": {"dtick": 1, "tick0": -12, 
+                          "type": "log", "title": {"text": "ω [rad/s]"},
+                          "ticks": "outside"},
+                "yaxis": {"dtick": 1, "tick0": -7, 
+                          "type": "linear", "title": {"text" : "G′ G′′ [Pa]"},
+                          "ticks": "outside"},
+            }
+            let layoutlog = {
                 "xaxis": {"dtick": 1, "tick0": -12, 
                           "type": "log", "title": {"text": "ω [rad/s]"},
                           "ticks": "outside"},
@@ -579,7 +606,13 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             } else {
                 data.push(ftDataTrace0, ftDataTrace1);  
             }
-
+            
+            let layout = []
+            if (verticalAxisSwitch) {
+                layout = layoutlinear
+            } else {
+                layout = layoutlog
+            }
             return {
                 "data" : data,
                 "layout": layout
