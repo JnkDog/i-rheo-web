@@ -1,3 +1,5 @@
+from os import P_OVERLAY
+from pkg_resources import parse_version
 import dash
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc
@@ -13,9 +15,12 @@ from app import app
 from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
 from components.tab.tabs import afm_tabs_generate
+from components.oversampling.oversampling import afm_oversampling_generate   # use for test
+
 
 # import algorithm
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
+from algorithm.afm import afm_moduli_process, oversample_function
 
 prefix_app_name = "AFM"
 
@@ -33,11 +38,11 @@ Layout = dbc.Row([
                     ], className="btn-group me-2"),
                     html.Div([dbc.Button("Load Example data", id="AFM-load-example", 
                               color="primary", style={"margin": "5px"})],
-                              className="btn-group me-2"),
+                              className="btn-group me-2"),  
                     html.Div(id="AFM-upload-message"),
                     html.Div(id="AFM-loading-message"),
                     html.Hr(),
-                    # afm_oversampling_generate(prefix_app_name),
+                    afm_oversampling_generate(prefix_app_name),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
@@ -47,18 +52,21 @@ Layout = dbc.Row([
 # ======upload callback========
 @app.callback(
     Output("AFM-raw-data-store", "data"),  
-    # Output("AFM-ft-data-store", "data"),
-    # Output("upload-message", "children"),
+    Output("AFM-ft-data-store", "data"),
     Output("AFM-loading-message", "children"),
     Input("AFM-upload", "contents"),
     Input("AFM-load-example", "n_clicks"),
     State("AFM-upload", "filename"),
     # TODO need change later
-    # State("AFM-f0", "value"),
-    # State("AFM-finf", "value"),
+    State("AFM-r", "value"),
+    State("AFM-v", "value"),
+    State("AFM-load0", "value"),
+    State("AFM-loadinf", "value"),
+    State("AFM-indentation0", "value"),
+    State("AFM-indentationinf", "value"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, file_name):
+def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -74,34 +82,111 @@ def store_raw_data(content, n_clicks, file_name):
     data = {
         "x": df[0],
         "y": df[1],
-        # "z": df[2],
-        # "pai": pai_processing(df)["pai"],
+        "z": df[2],
         "filename": file_name,
         "lines": len(df)
-    }  
+    }
+    # default v = 0.5 & r(named δ actually)
+    v = 0.5 if v is None else v
+    r = 20 if r is None else r
+    l0 = 1 if l0 is None else l0
+    linf = 0 if linf is None else linf
+    ind0 = 1 if ind0 is None else ind0
+    indinf = 0 if indinf is None else indinf
 
-    # default f0 = 0 and finf = ?
+    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, False)
 
-    # omega, g_p, g_pp = afm_processing(df, kt, at, False)
+    ft_data = {
+        "x1": omega,
+        "y1": g_p,
+        "y2": g_pp
+    }
 
-    # omega, g_p, g_pp = (df, f0, finf, False)
+    return data, ft_data, ""
 
-    # ft_data = {
-    #     "x": omega,
-    #     "y1": g_p,
-    #     "y2": g_pp
-    # }
 
-    # return data, upload_messge, ft_data
-    return data, ""
+@app.callback(
+    # Output("AFM-oversampling-data-store", "data"),
+    Output("AFM-oversampled-ft-data-store", "data"),
+    Input("AFM-oversampling-btn", "n_clicks"),
+    State("AFM-r", "value"),
+    State("AFM-v", "value"),
+    State("AFM-load0", "value"),
+    State("AFM-loadinf", "value"),
+    State("AFM-indentation0", "value"),
+    State("AFM-indentationinf", "value"),
+    State("AFM-raw-data-store", "data"),
+    State("AFM-oversampling-input", "value")
+)
+def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes):
+    if n_clicks is None or data is None or ntimes is None:
+        raise PreventUpdate
+
+    # avoid float number
+    ntimes = int(ntimes)
+    df = convert_lists_to_df(data)
+    # oversample force and identation data
+    # x, y, z = oversample_function(df, ntimes)
+
+    # ftdata = data
+
+    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, True, ntimes)
+
+    oversampled_ft_data = {
+        "x": omega,
+        "y1": g_p,
+        "y2": g_pp
+    }
+
+    return oversampled_ft_data
+
+
+# =================== Download Callback =====================
+@app.callback(
+    Output("AFM-download-text", "data"),
+    Output("AFM-download-message", "children"),
+    Input("AFM-download-btn", "n_clicks"),
+    State("AFM-begin-line-number", "value"),
+    State("AFM-end-line-number", "value"),
+    State("AFM-oversampled-ft-data-store", "data"),
+    prevent_initial_call=True,
+)
+def download(n_clicks, beginLineIdx, endLineIdx, data):
+    if data is None:
+        raise PreventUpdate
+
+    # avoid float number
+    beginLineIdx = int(beginLineIdx)
+    endLineIdx = int(endLineIdx)
+    if beginLineIdx >= endLineIdx:
+        return None, "Invaild parameters"
+
+    try:
+        saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
+        saving_y_list = data.get("y1")[beginLineIdx:endLineIdx+1]
+        saving_z_list = data.get("y2")[beginLineIdx:endLineIdx+1]
+    except:
+        # if the idx is out of range, say, endLineIdx > len(x)
+        saving_x_list = data.get("x")[beginLineIdx:]
+        saving_y_list = data.get("y1")[beginLineIdx:]
+        saving_z_list = data.get("y2")[beginLineIdx:]
+    else:
+        saving_df = pd.DataFrame({"x": saving_x_list, "y1": saving_y_list, "y2": saving_z_list})
+        saving_file_name = "download_AFM_data.txt"
+
+    return (dcc.send_data_frame(saving_df.to_csv, saving_file_name, 
+                                header=False, index=False, 
+                                sep='\t', encoding='utf-8'), 
+                                "Download OK !") 
 
 
 # =================== Clientside callback ===================
 
+# ouput force fig
 app.clientside_callback(
     ClientsideFunction(
         namespace="clientsideAfm",
-        function_name="tabChangeFigRender"
+        function_name="tabChangeForRender"
     ),
     Output("AFM-Force-display", "figure"),
     Input("AFM-raw-data-store", "data"),
@@ -109,18 +194,27 @@ app.clientside_callback(
     # Input("AFM-oversampling-render-switch", "value"),
 )
 
-# add to the js part and data store part
-# app.clientside_callback(
-#     ClientsideFunction(
-#         namespace="clientsideAfm",
-#         function_name="tabChangeAfmRender"
-#     ),
-#     Output("AFM-ind-display", "figure"),
-#     Input("AFM-ft-data-store", "data"),
-#     Input("AFM-oversampled-ft-data-store", "data"),
-#     Input("AFM-oversampling-render-switch", "value"),
-#     # prevent_initial_call=True
-# )
+# output identation fig
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideAfm",
+        function_name="tabChangeIdeRender"
+    ),
+    Output("AFM-Indentation-display", "figure"),
+    Input("AFM-raw-data-store", "data"),
+)
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace="clientsideAfm",
+        function_name="tabChangeFunRender"
+    ),
+    Output("AFM-Classic-Moduli-display", "figure"),
+    Input("AFM-ft-data-store", "data"),
+    Input("AFM-oversampled-ft-data-store", "data"),
+    Input("AFM-oversampling-render-switch", "value"),
+    # prevent_initial_call=True
+)
 
 app.clientside_callback(
     ClientsideFunction(

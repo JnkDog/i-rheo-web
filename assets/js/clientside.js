@@ -18,7 +18,7 @@ const FUNCTION_TYPE = {
 * timeDerivative, true false
 * totally 4 status
 */
-figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwitch) => {
+figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwitch, verticalAxisSwitch) => {
     // if the oversampledftData is null, setting the oversamplingSwitch false even if true
     if (oversamplingSwitch == true) {
         oversamplingSwitch = oversampledftData == undefined ? false : true;
@@ -57,6 +57,12 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
         setting["yaxis"] = {"type": "linear", 
         "title": {"text" : "R, I"},
         "ticks": "outside"};
+    }
+
+    if (verticalAxisSwitch) {
+        setting["yaxis"]["type"] = "linear";
+    } else {
+        setting["yaxis"]["type"] = "log";
     }
 
     return setting;
@@ -255,21 +261,20 @@ motRender = function(ftData, oversampledftData, switchValue=[false], functionFla
 }
 
 reImFigRender = function(ftData, oversampledftData, 
-    oversamplingSwitchValue=[false], timeDerivatived=[false]) {
+    oversamplingSwitchValue=[false], timeDerivatived=[false], verticalAxisSwitch=[false]) {
     if (ftData == undefined) {
         return;
     }
 
     let setting = figSetting(ftData, oversampledftData, 
-        oversamplingSwitchValue[0], timeDerivatived[0])
-  
+        oversamplingSwitchValue[0], timeDerivatived[0], verticalAxisSwitch[0])
+    
     let data = [];
     let layout = {
         "xaxis": {"dtick": 1, "tick0": -12, 
                   "type": "log", "title": {"text": setting.text},
                   "ticks": "outside"},
         "yaxis": setting.yaxis
-        // "colorway": ["green"],
     };
     let ftDataTrace0 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
@@ -341,6 +346,107 @@ forceRender = function(rawData) {
     }
 
         data.push(rawDataTrace);
+
+    return {
+        "data" : data,
+        "layout": layout
+    };
+}
+
+identationRender = function(rawData) {
+    if (rawData == undefined) {
+        return;
+    }
+
+    let data = [];
+    let layout = {
+        "xaxis": {"dtick": 1, "tick0": -12, 
+                  "type": "log", "title": {"text": "Time (s)"},
+                  "ticks": "outside"},
+        "yaxis": {"dtick": 1, "tick0": -7, 
+                  "type": "log", "title": {"text" : "Force (uN)"},
+                  "ticks": "outside"},
+    };
+
+    let rawDataTrace = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "Identation-time",
+        "mode": "markers",
+        "marker": {"symbol": "circle-open", 
+                "size": 10, "maxdisplayed": 200},
+        "x": rawData.x,
+        "y": rawData.z
+    }
+
+        data.push(rawDataTrace);
+
+    return {
+        "data" : data,
+        "layout": layout
+    };
+}
+
+afmRender = function(ftData, oversampledData, switchValue=[false]) {
+    if (ftData == undefined) {
+        return;
+    }
+
+    let data = [];
+    let layout = {
+        "xaxis": {"tick0": -2, "dtick": 1,
+                "type": "log", 
+                "title": {"text": "t (sec)"}, 
+                "ticks": "outside" 
+        },
+        "yaxis": {"title": {"text" : "A(t)"}, 
+                // "range": [0, 1.0],
+                "rangemode": "tozero", "ticks": "outside"
+        },
+    };
+    let ftDataTrace1 = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "Experiental Data",
+        "mode": "markers",
+        "marker": {"symbol": "circle-open", 
+                "size": 10, "maxdisplayed": 200},
+        "x": ftData.x,
+        "y": ftData.y1
+    }
+    let ftDataTrace2 = {
+        "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+        "name": "Experiental Data",
+        "mode": "markers",
+        "marker": {"symbol": "circle-open", 
+                "size": 10, "maxdisplayed": 200},
+        "x": ftData.x,
+        "y": ftData.y2
+    }
+
+    if (switchValue[0] == true && oversampledData != undefined) {
+        let oversampledDataTrace1 = {
+            "name": "Oversampling Data",
+            "mode": "markers",
+            "marker": {"symbol": "circle-x", 
+                        "size": 6, "maxdisplayed": 200},
+            "x": oversampledData.x,
+            "y": oversampledData.y1
+        };
+        let oversampledDataTrace2 = {
+            "name": "Oversampling Data",
+            "mode": "markers",
+            "marker": {"symbol": "circle-x", 
+                        "size": 6, "maxdisplayed": 200},
+            "x": oversampledData.x,
+            "y": oversampledData.y2
+        };
+
+        data.push(oversampledDataTrace1, oversampledDataTrace2);
+    } else {
+        // console.log("========= in sigma =============");
+        // console.log(rawData)
+        // data = rawData;
+        data.push(ftDataTrace1, ftDataTrace2);
+    }
 
     return {
         "data" : data,
@@ -489,8 +595,9 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         tabChangeMotRender: motRender
     },
     clientsideAfm: {
-        tabChangeFigRender: forceRender,
-        // tabChangeIdeRender: ideRender,
+        tabChangeForRender: forceRender,
+        tabChangeIdeRender: identationRender,
+        tabChangeFunRender: afmRender,
     },
     clientsideMessageRec: {
         uploadMessage: uploadMessageRecovery

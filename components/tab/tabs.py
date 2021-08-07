@@ -21,19 +21,25 @@ TABS_ID_SUFFIX_DICT = {
 }
 
 MOT_TABS_DICT = {
+<<<<<<< HEAD
     "1": "Input",
     "2": "Classic Moduli"
+=======
+    "1": "A(t)",
+    "2": "Mot",
+    "3": "pai"
+>>>>>>> 48e745d4c85679fc38b930bc5f012a3c85454ea7
 }
 
 FT_TABS_DICT = {
-    "1": "Input",
+    "1": "Original",
     "2": "Re & Im",
 }
 
 AFM_TABS_DICT = {
     "1": "Force",
     "2": "Indentation",
-    "3": "G"
+    "3": "Classic-Moduli"
 }
 
 # This is templates but used in irheo GT
@@ -49,7 +55,7 @@ Tab_Strain_content = Spinner_strain
 Tabs = dbc.Tabs([
         dbc.Tab(children=Spinner_stress, label="Stress", tab_id="stress"),
         dbc.Tab(children=Spinner_FT, label="Elastic & Viscous", tab_id="elastic & viscous"),
-        # dbc.Tab(children=Spinner_strain, label="Strain", tab_id="strain"),
+        dbc.Tab(children=Spinner_strain, label="Strain", tab_id="strain"),
         # dbc.Tab(children=Spinner_eta, label="Eta", tab_id="eta")
 ], id="fig-tabs")
 

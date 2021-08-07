@@ -24,6 +24,9 @@ def generate_df_from_local(path):
 def convert_lists_to_df(data):
     x = data.get("x")
     y = data.get("y")
+    if data.get("z"):
+        z = data.get("z")
+        return pd.DataFrame(list(zip(x, y, z)))
 
     df = pd.DataFrame(list(zip(x, y)))
 
