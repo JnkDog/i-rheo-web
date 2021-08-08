@@ -306,6 +306,7 @@ app.clientside_callback(
     Input("MOT-raw-data-store", "data"),
     Input("MOT-oversampling-data-store", "data"),
     Input("MOT-oversampling-render-switch", "value"),
+    Input("MOT-vertical-axis-switch", "value"),
     # Due to the dcc.Stroe's storage_type is session
     # if prevent_initial_call=True, the fig cannot show
     # prevent_initial_call=True

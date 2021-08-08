@@ -45,7 +45,7 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
         setting["y2"] = oversampledftData.non_time_y2;
         setting["yaxis"] = {"type": "linear", 
             "title": {"text" : "R, I"},
-             "ticks": "outside"};
+            "ticks": "outside"};
     } else if (timeDerivativedSwitch) {
         setting["x"] = ftData.x;
         setting["y1"] = ftData.y1;
@@ -123,7 +123,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false], verticalA
         data.push(rawDataTrace);
     }
 
-    if (verticalAxisSwitch) {
+    if (verticalAxisSwitch[0]) {
         layout["yaxis"]["type"] = "linear"
     } else {
         layout["yaxis"]["type"] = "log"
@@ -179,7 +179,7 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalA
         data.push(rawDataTrace);
     }
 
-    if (verticalAxisSwitch) {
+    if (verticalAxisSwitch[0]) {
         layout["yaxis"]["type"] = "linear"
     } else {
         layout["yaxis"]["type"] = "log"
@@ -191,12 +191,13 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalA
     };
 }
 
-motRender = function(ftData, oversampledftData, switchValue=[false], functionFlag) {
+motRender = function(ftData, oversampledftData, switchValue=[false], 
+                     functionFlag, verticalAxisSwitch = [false])  
+{
     if (ftData == undefined) {
         return;
     }
 
-    // TODO : according function flag to decide the fig
     let x, y1, y2;
 
     if (functionFlag == FUNCTION_TYPE.AT) {
@@ -265,6 +266,12 @@ motRender = function(ftData, oversampledftData, switchValue=[false], functionFla
         data.push(oversampledftDataTrace0, oversampledftDataTrace1);
     } else {
         data.push(ftDataTrace0, ftDataTrace1);  
+    }
+
+    if (verticalAxisSwitch[0]) {
+        layout["yaxis"]["type"] = "linear"
+    } else {
+        layout["yaxis"]["type"] = "log"
     }
 
     return {
@@ -453,7 +460,7 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
             "y": oversampledData.y2
         };
 
-        if (verticalAxisSwitch) {
+        if (verticalAxisSwitch[0]) {
             layout["yaxis"]["type"] = "linear"
         } else {
             layout["yaxis"]["type"] = "log"
@@ -551,7 +558,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             }
 
             let data = [];
-            let layoutlinear = {
+            let layoutLinear = {
                 "xaxis": {"dtick": 1, "tick0": -12, 
                           "type": "log", "title": {"text": "ω [rad/s]"},
                           "ticks": "outside"},
@@ -559,7 +566,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                           "type": "linear", "title": {"text" : "G′ G′′ [Pa]"},
                           "ticks": "outside"},
             }
-            let layoutlog = {
+            let layoutLog = {
                 "xaxis": {"dtick": 1, "tick0": -12, 
                           "type": "log", "title": {"text": "ω [rad/s]"},
                           "ticks": "outside"},
@@ -607,11 +614,11 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 data.push(ftDataTrace0, ftDataTrace1);  
             }
             
-            let layout = []
-            if (verticalAxisSwitch) {
-                layout = layoutlinear
+            let layout = [];
+            if (verticalAxisSwitch[0]) {
+                layout = layoutlinear;
             } else {
-                layout = layoutlog
+                layout = layoutlog;
             }
             return {
                 "data" : data,

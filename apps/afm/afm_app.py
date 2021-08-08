@@ -1,5 +1,3 @@
-from os import P_OVERLAY
-from pkg_resources import parse_version
 import dash
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc

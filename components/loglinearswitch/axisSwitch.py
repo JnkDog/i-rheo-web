@@ -15,7 +15,7 @@ def vertical_axis_swith(prefix_app_name):
                 id=switch_id,
                 switch=True,
                 style={"margin": "auto", "fontSize": "20px"}),
-            style={"display": "flex", "justify-content": "center", "align-items": "center", "height": "1vh"},    # id="time-derivate-form",
+            style={"display": "flex", "justifyContent": "center", "alignItems": "center", "height": "1vh"},    # id="time-derivate-form",
             className="mt-1")
              
     return Switch
