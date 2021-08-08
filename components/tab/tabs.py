@@ -49,7 +49,7 @@ Tab_Strain_content = Spinner_strain
 Tabs = dbc.Tabs([
         dbc.Tab(children=Spinner_stress, label="Stress", tab_id="stress"),
         dbc.Tab(children=Spinner_FT, label="Elastic & Viscous", tab_id="elastic & viscous"),
-        dbc.Tab(children=Spinner_strain, label="Strain", tab_id="strain"),
+        # dbc.Tab(children=Spinner_strain, label="Strain", tab_id="strain"),
         # dbc.Tab(children=Spinner_eta, label="Eta", tab_id="eta")
 ], id="fig-tabs")
 
