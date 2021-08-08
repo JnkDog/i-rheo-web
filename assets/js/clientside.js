@@ -359,7 +359,7 @@ forceRender = function(rawData) {
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "force-time",
-        "mode": "markers",
+        "mode": "lines",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
         "x": rawData.x,
@@ -392,7 +392,7 @@ identationRender = function(rawData) {
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "Identation-time",
-        "mode": "markers",
+        "mode": "lines",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
         "x": rawData.x,
