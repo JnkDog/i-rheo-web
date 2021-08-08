@@ -128,9 +128,14 @@ def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes
     df = convert_lists_to_df(data)
     # oversample force and identation data
     # x, y, z = oversample_function(df, ntimes)
-
     # ftdata = data
-
+    v = 0.5 if v is None else v
+    r = 20 if r is None else r
+    l0 = 1 if l0 is None else l0
+    linf = 0 if linf is None else linf
+    ind0 = 1 if ind0 is None else ind0
+    indinf = 0 if indinf is None else indinf
+    
     omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, True, ntimes)
 
     oversampled_ft_data = {
