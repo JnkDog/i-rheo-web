@@ -4,6 +4,7 @@ import dash_bootstrap_components as dbc
 from dash_html_components.Br import Br
 
 from components.input.input import input_component_generate
+from components.oversampling.select import download_selection_generate
 
 INPUT_ID_SUFFIX_DICT = {
     "BEGIN_INPUT": "-begin-line-number",
@@ -31,15 +32,15 @@ end_line_input_cfg = {
 }
 
 # This is templates but used in irheo GT
-BeginLineInput = input_component_generate(**begin_line_input_cfg)
-EndLineInput   = input_component_generate(**end_line_input_cfg)
+# BeginLineInput = input_component_generate(**begin_line_input_cfg)
+# EndLineInput   = input_component_generate(**end_line_input_cfg)
 
 # This is templates but used in irheo GT
 Download = html.Div([
          html.H5("Download Data"),
-         BeginLineInput,
+        #  BeginLineInput,
          html.Br(),
-         EndLineInput,
+        #  EndLineInput,
          html.Br(),
          html.Button("Download File", id="download-btn", 
                      className="btn btn-primary"), 
@@ -47,33 +48,30 @@ Download = html.Div([
          html.Div(id="download-message")   
 ])
 
-
-# TODO provides a Downlaod genereate function
 def download_component_generate(prefix_app_name):
-    BeginLineInput = input_component_generate(
-                     prefix_app_name
-                     +INPUT_ID_SUFFIX_DICT["BEGIN_INPUT"],
-                     placeholder="Type cut bottom number ...")
-    EndLineInput   = input_component_generate(
-                     prefix_app_name
-                     +INPUT_ID_SUFFIX_DICT["END_INPUT"],
-                     placeholder="Type cut top number ...")
+    # BeginLineInput = input_component_generate(
+    #                  prefix_app_name
+    #                  +INPUT_ID_SUFFIX_DICT["BEGIN_INPUT"],
+    #                  placeholder="Type cut bottom number ...")
+    # EndLineInput   = input_component_generate(
+    #                  prefix_app_name
+    #                  +INPUT_ID_SUFFIX_DICT["END_INPUT"],
+    #                  placeholder="Type cut top number ...")
 
     btn_id      = prefix_app_name + OUTPUT_ID_SUFFIX_DICT["BUTTON"]
     message_id  = prefix_app_name + OUTPUT_ID_SUFFIX_DICT["MESSAGE"]
     download_id = prefix_app_name + OUTPUT_ID_SUFFIX_DICT["TEXT"]
     
+    Selection = download_selection_generate(prefix_app_name)
+
     Download = html.Div([
-         html.H5("Download Data"),
-         BeginLineInput,
-         html.Br(),
-         EndLineInput,
-         html.Br(),
-         html.Button("Download File", id=btn_id, 
-                     className="btn btn-primary", 
-                     style={"marginTop": "10px"}), 
-         dcc.Download(id=download_id),
-         html.Div(id=message_id)   
+        html.H5("Download Data"),
+        dbc.InputGroup([
+            Selection,
+            html.Button("Download File", id=btn_id, className="btn btn-primary")
+        ]),
+        dcc.Download(id=download_id),
+        html.Div(id=message_id)   
     ])
 
     return Download

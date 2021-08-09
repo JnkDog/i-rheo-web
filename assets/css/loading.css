@@ -3,7 +3,7 @@
 } */
 
 *[data-dash-is-loading="true"]::before{
-    content: "FT will take long time, please be patient ...";
+    content: "The system is in operation, please be patient ...";
     display: inline-block;
     color: megenta;
     visibility: visible;

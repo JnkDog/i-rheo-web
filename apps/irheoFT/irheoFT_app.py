@@ -3,7 +3,7 @@ from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-import time
+from enum import Enum, unique
 import pandas as pd
 
 from app import app
@@ -23,6 +23,13 @@ from algorithm.pwft import ftdata, fast_ftdata
 # Using your own app name. Can't be same.
 prefix_app_name = "FTAPP"
 
+# Selection options
+@unique
+class DOWNLOAD_OPTIONS(Enum):
+    OVERSAMPLED_RAW_DATA  = 0
+    FT_RAW_DATA = 1
+    FT_OVERSAMPLED_DATA = 2
+
 # TODO need modify and change the algorithm plus with function
 Layout = dbc.Row([
             dbc.Col([
@@ -33,7 +40,7 @@ Layout = dbc.Row([
                         dcc.Store(id="FTAPP-oversampling-data-store", storage_type="session"),
                         dcc.Store(id="FTAPP-ft-data-store", storage_type="session"),
                         dcc.Loading([dcc.Store(id="FTAPP-oversampled-ft-data-store", storage_type="session")],
-                            id="FTAPP-full-screen-mask", fullscreen=True, debug=True)
+                            id="FTAPP-full-screen-mask", fullscreen=True)
                     ], className="btn-group me-2"),
                     html.Div([dbc.Button("Load Example data", id="FTAPP-load-example", 
                               color="primary", style={"margin": "5px"})],
@@ -139,7 +146,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     df = convert_lists_to_df(data)
     x, y = get_oversampling_data(df, ntimes)
 
-    data = {
+    oversampled_data = {
         "x": x,
         "y": y,
     }
@@ -161,7 +168,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
         "non_time_y2": non_time_g_pp
     }
 
-    return data, oversampled_ft_data
+    return oversampled_data, oversampled_ft_data
 
 """
 Input(Sigma) Renedr ----- First tab
@@ -213,37 +220,46 @@ app.clientside_callback(
     Output("FTAPP-download-text", "data"),
     Output("FTAPP-download-message", "children"),
     Input("FTAPP-download-btn", "n_clicks"),
-    State("FTAPP-begin-line-number", "value"),
-    State("FTAPP-end-line-number", "value"),
+    State("FTAPP-downlaod-selection", "value"),
+    State("FTAPP-raw-data-store","data"),
     State("FTAPP-oversampling-data-store", "data"),
+    State("FTAPP-ft-data-store", "data"),
+    State("FTAPP-oversampled-ft-data-store", "data"),
     prevent_initial_call=True,
 )
-def download(n_clicks, beginLineIdx, endLineIdx, data):
-    if data is None:
+def download(n_clicks, option, raw_data, oversampled_raw_data, ft_raw_data, ft_oversampled_data):
+    if option is None or raw_data is None:
         raise dash.exceptions.PreventUpdate
+    
+    # Covert the option from string to int
+    option = int(option)
+    file_suffix_name = raw_data.get("filename")
+    saved_file_name = ""
+    saved_data_df = pd.DataFrame()
 
-    # avoid float number
-    beginLineIdx = int(beginLineIdx)
-    endLineIdx   = int(endLineIdx)
-    if beginLineIdx >= endLineIdx:
-        return None, "Invaild parameters"
-
-    try:
-        saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
-        saving_y_list = data.get("y")[beginLineIdx:endLineIdx+1]
-    except:
-        # if the idx is out of range, say, endLineIdx > len(x)
-        saving_x_list = data.get("x")[beginLineIdx:]
-        saving_y_list = data.get("y")[beginLineIdx:]
+    if option == DOWNLOAD_OPTIONS.OVERSAMPLED_RAW_DATA.value \
+        and oversampled_raw_data is not None:
+        saved_file_name = "Oversampled_raw_data_" + file_suffix_name
+        saved_data_df = pd.DataFrame(oversampled_raw_data)
+    elif option == DOWNLOAD_OPTIONS.FT_RAW_DATA.value \
+        and ft_raw_data is not None:
+        saved_file_name = "FT_raw_data_" + file_suffix_name
+        saved_data_df = pd.DataFrame(ft_raw_data)
+    elif option == DOWNLOAD_OPTIONS.FT_OVERSAMPLED_DATA.value \
+        and ft_oversampled_data is not None:
+        saved_file_name = "FT_oversampled_data_" + file_suffix_name
+        saved_data_df = pd.DataFrame(ft_oversampled_data)
     else:
-        saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
-        # saving_file_name = data.get("file_name") + "_Complex Moduli.txt"
-        saving_file_name = "download_FT_data.txt"
+        return None, "No data available!"
 
-    return (dcc.send_data_frame(saving_df.to_csv,saving_file_name, 
+    return (dcc.send_data_frame(saved_data_df.to_csv, saved_file_name, 
                                 header=False, index=False, 
                                 sep='\t', encoding='utf-8'), 
                                 "Download OK !") 
+
+# =================== Normal function ===================
+
+
 
 # ================ Loading address ========================
 
