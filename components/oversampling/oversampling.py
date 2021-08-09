@@ -2,6 +2,7 @@ from dash_bootstrap_components._components.Button import Button
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
+from dash_html_components.B import B
 from dash_html_components.Br import Br
 
 from components.oversampling.input import OversamplingInput, oversampling_input_generate
@@ -25,7 +26,7 @@ Oversampling = html.Div([
                        color="primary", className="ml-3"),
     ]),
     # html.H5(id="oversampling-message", className="text-warning"),
-    html.P("switch it", className="mb-1"),
+    # html.P("switch it", className="mb-1"),
     Switch
 ])
 
@@ -44,7 +45,8 @@ def oversampling_component_generate(prefix_app_name):
                                        color="primary", className="ml-3"),
                         ]),
                     # html.H5(id="oversampling-message", className="text-warning"),
-                    html.P("switch it", className="mb-1"),
+                    # html.P("switch it", className="mb-1"),
+                    html.Br(),
                     switch_component_generate(prefix_app_name),
                     FT_rendering_switch_generate(prefix_app_name)          
     ])
@@ -67,7 +69,8 @@ def afm_oversampling_generate(prefix_app_name):
                 dbc.Button("oversampling", id=button_id, color="primary", className="ml-3"),
             ]
         ),
-        html.P("switch it", className="mb-1"),
+        # html.P("switch it", className="mb-1"),
+        html.Br(),
         switch_component_generate(prefix_app_name)
     ])
 
@@ -88,7 +91,8 @@ def mot_oversampling_generate(prefix_app_name):
                                        color="primary", className="ml-3"),
                         ]),
                     # html.H5(id="oversampling-message", className="text-warning"),
-                    html.P("switch it", className="mb-1"),
+                    # html.P("switch it", className="mb-1"),
+                    html.Br(),
                     switch_component_generate(prefix_app_name)
     ])
 

@@ -77,7 +77,8 @@ def afm_moduli_process(df, radius=20, v=0.5, load0=1, loadinf=0, ind0=1, indinf=
     times = df[0]
     force = df[1]
     inden = df[2]
-
+    # print(radius)
+    # print(v)
     N_f = 100
     At = ((8*(radius**(1/2)))/(3*(1-v)))*(inden**(3/2))
     # print("a")

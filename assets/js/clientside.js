@@ -45,7 +45,7 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
         setting["y2"] = oversampledftData.non_time_y2;
         setting["yaxis"] = {"type": "linear", 
             "title": {"text" : "R, I"},
-            "ticks": "outside"};
+             "ticks": "outside"};
     } else if (timeDerivativedSwitch) {
         setting["x"] = ftData.x;
         setting["y1"] = ftData.y1;
@@ -191,13 +191,14 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalA
     };
 }
 
-motRender = function(ftData, oversampledftData, switchValue=[false], 
-                     functionFlag, verticalAxisSwitch = [false])  
+motRender = function(ftData, oversampledftData, switchValue=[false],
+                     functionFlag, verticalAxisSwitch = [false])
 {
     if (ftData == undefined) {
         return;
     }
 
+    // TODO : according function flag to decide the fig
     let x, y1, y2;
 
     if (functionFlag == FUNCTION_TYPE.AT) {
@@ -358,7 +359,7 @@ forceRender = function(rawData) {
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "force-time",
-        "mode": "markers",
+        "mode": "lines",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
         "x": rawData.x,
@@ -384,14 +385,14 @@ identationRender = function(rawData) {
                   "type": "log", "title": {"text": "Time (s)"},
                   "ticks": "outside"},
         "yaxis": {"dtick": 1, "tick0": -7, 
-                  "type": "log", "title": {"text" : "Force (uN)"},
+                  "type": "log", "title": {"text" : "Indentation (nm)"},
                   "ticks": "outside"},
     };
 
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
         "name": "Identation-time",
-        "mode": "markers",
+        "mode": "lines",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
         "x": rawData.x,
@@ -415,18 +416,25 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
     let layout = {
         "xaxis": {"tick0": -2, "dtick": 1,
                 "type": "log", 
-                "title": {"text": "t (sec)"}, 
+                "title": {"text": "time (t)"}, 
                 "ticks": "outside" 
         },
-        "yaxis": {"title": {"text" : "A(t)"},
+        "yaxis": {"title": {"text" : "AFM result"},
                 "type": "log",
                 "rangemode": "tozero", "ticks": "outside"
         },
     };
+
+    if (verticalAxisSwitch[0]) {
+        layout["yaxis"]["type"] = "linear"
+    } else {
+        layout["yaxis"]["type"] = "log"
+    }
+
     let ftDataTrace1 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-        "name": "Experiental Data",
-        "mode": "markers",
+        "name": "Data1",
+        "mode": "lines",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
         "x": ftData.x,
@@ -434,8 +442,8 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
     }
     let ftDataTrace2 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-        "name": "Experiental Data",
-        "mode": "markers",
+        "name": "Data2",
+        "mode": "lines",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
         "x": ftData.x,
@@ -459,12 +467,6 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
             "x": oversampledData.x,
             "y": oversampledData.y2
         };
-
-        if (verticalAxisSwitch[0]) {
-            layout["yaxis"]["type"] = "linear"
-        } else {
-            layout["yaxis"]["type"] = "log"
-        }
 
         data.push(oversampledDataTrace1, oversampledDataTrace2);
     } else {
@@ -616,9 +618,9 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             
             let layout = [];
             if (verticalAxisSwitch[0]) {
-                layout = layoutlinear;
+                layout = layoutLinear;
             } else {
-                layout = layoutlog;
+                layout = layoutLog;
             }
             return {
                 "data" : data,
