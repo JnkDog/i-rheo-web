@@ -49,7 +49,7 @@ def afm_parameter_input_generate(prefix_app_name):
         dbc.Input(id=r_id, type="number", placeholder="Input radius, default 20"),
         html.Br(),
         dbc.Input(id=v_id, type="number", placeholder="Input v, default 0.5"),
-        html.Br(),
+        # html.Br(),
     ])
 
     return AFMInput
