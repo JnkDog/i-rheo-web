@@ -29,10 +29,18 @@ from algorithm.mot.mot_two_function import mot_integrated_processing, chenged_G_
 # Using your own app name. Can't be same.
 prefix_app_name = "MOT"
 
+# Function type At or Pait
 @unique
 class FUNTION_TYPE(Enum):
     AT  = 0
     PAI = 1
+
+# Selection options
+@unique
+class DOWNLOAD_OPTIONS(Enum):
+    OVERSAMPLED_RAW_DATA  = 0
+    FT_RAW_DATA = 1
+    FT_OVERSAMPLED_DATA = 2
 
 BOUNDARY_COMPONENTS_ID = [
     "MOT-g_0",
@@ -261,33 +269,40 @@ def store_oversampling_data(n_clicks, g_0, g_inf, kt, at, func_flag, raw_data,
     Output("MOT-download-text", "data"),
     Output("MOT-download-message", "children"),
     Input("MOT-download-btn", "n_clicks"),
-    State("MOT-begin-line-number", "value"),
-    State("MOT-end-line-number", "value"),
+    State("MOT-downlaod-selection", "value"),
+    State("MOT-raw-data-store","data"),
     State("MOT-oversampling-data-store", "data"),
+    State("MOT-ft-data-store", "data"),
+    State("MOT-oversampled-ft-data-store", "data"),
     prevent_initial_call=True,
 )
-def download(n_clicks, beginLineIdx, endLineIdx, data):
-    if data is None:
+def download(n_clicks, option, raw_data, oversampled_raw_data, ft_raw_data, ft_oversampled_data):
+    if option is None or raw_data is None:
         raise PreventUpdate
 
-    # avoid float number
-    beginLineIdx = int(beginLineIdx)
-    endLineIdx = int(endLineIdx)
-    if beginLineIdx >= endLineIdx:
-        return None, "Invaild parameters"
+    # TODO need fix later
+    # Covert the option from string to int
+    option = int(option)
+    file_suffix_name = raw_data.get("filename")
+    saved_file_name = ""
+    saved_data_df = pd.DataFrame()
 
-    try:
-        saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
-        saving_y_list = data.get("y")[beginLineIdx:endLineIdx+1]
-    except:
-        # if the idx is out of range, say, endLineIdx > len(x)
-        saving_x_list = data.get("x")[beginLineIdx:]
-        saving_y_list = data.get("y")[beginLineIdx:]
+    if option == DOWNLOAD_OPTIONS.OVERSAMPLED_RAW_DATA.value \
+        and oversampled_raw_data is not None:
+        saved_file_name = "Oversampled_raw_data_" + file_suffix_name
+        saved_data_df = pd.DataFrame(oversampled_raw_data)
+    elif option == DOWNLOAD_OPTIONS.FT_RAW_DATA.value \
+        and ft_raw_data is not None:
+        saved_file_name = "FT_raw_data_" + file_suffix_name
+        saved_data_df = pd.DataFrame(ft_raw_data)
+    elif option == DOWNLOAD_OPTIONS.FT_OVERSAMPLED_DATA.value \
+        and ft_oversampled_data is not None:
+        saved_file_name = "FT_oversampled_data_" + file_suffix_name
+        saved_data_df = pd.DataFrame(ft_oversampled_data)
     else:
-        saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
-        saving_file_name = "download_MOT_data.txt"
+        return None, "No data available!"
 
-    return (dcc.send_data_frame(saving_df.to_csv, saving_file_name, 
+    return (dcc.send_data_frame(saved_data_df.to_csv, saved_file_name, 
                                 header=False, index=False, 
                                 sep='\t', encoding='utf-8'), 
                                 "Download OK !") 

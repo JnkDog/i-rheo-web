@@ -8,8 +8,15 @@ downlaod_options_list = [
     {"label": "FT oversampled data", "value": 2},
 ]
 
+# It is used in irheo GT
+DownloadSelection = dbc.Select(
+    id="download-selection",
+    options=downlaod_options_list,
+    placeholder="Choose a type ..."
+)
+
 def download_selection_generate(prefix_app_name):
-    id = prefix_app_name+"-downlaod-selection"   
+    id = prefix_app_name+"-download-selection"   
     DownloadSelection = dbc.Select(
         id=id,
         options=downlaod_options_list,

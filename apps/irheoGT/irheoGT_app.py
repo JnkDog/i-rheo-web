@@ -4,8 +4,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
-import plotly.express as px
 import pandas as pd
+from enum import Enum, unique
 
 from app import app
 
@@ -21,8 +21,15 @@ from components.loglinearswitch.axisSwitch import vertical_axis_swith
 # import algorithm
 from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import generate_df, generate_df_from_local
-from algorithm.pwft import ftdata, fast_ftdata
+from algorithm.pwft import fast_ftdata
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
+
+# Selection options
+@unique
+class DOWNLOAD_OPTIONS(Enum):
+    OVERSAMPLED_RAW_DATA  = 0
+    FT_RAW_DATA = 1
+    FT_OVERSAMPLED_DATA = 2
 
 Layout = dbc.Row([
             dbc.Col([
@@ -165,33 +172,39 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     Output("download-text", "data"),
     Output("download-message", "children"),
     Input("download-btn", "n_clicks"),
-    State("begin-line-number", "value"),
-    State("end-line-number", "value"),
+    State("downlaod-selection", "value"),
+    State("raw-data-store","data"),
     State("oversampling-data-store", "data"),
+    State("ft-data-store", "data"),
+    State("oversampled-ft-data-store", "data"),
     prevent_initial_call=True,
 )
-def download(n_clicks, beginLineIdx, endLineIdx, data):
-    if data is None:
+def download(n_clicks, option, raw_data, oversampled_raw_data, ft_raw_data, ft_oversampled_data):
+    if option is None or raw_data is None:
         raise PreventUpdate
 
-    # avoid float number
-    beginLineIdx = int(beginLineIdx)
-    endLineIdx = int(endLineIdx)
-    if beginLineIdx >= endLineIdx:
-        return None, "Invaild parameters"
+    # Covert the option from string to int
+    option = int(option)
+    file_suffix_name = raw_data.get("filename")
+    saved_file_name = ""
+    saved_data_df = pd.DataFrame()
 
-    try:
-        saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
-        saving_y_list = data.get("y")[beginLineIdx:endLineIdx+1]
-    except:
-        # if the idx is out of range, say, endLineIdx > len(x)
-        saving_x_list = data.get("x")[beginLineIdx:]
-        saving_y_list = data.get("y")[beginLineIdx:]
+    if option == DOWNLOAD_OPTIONS.OVERSAMPLED_RAW_DATA.value \
+        and oversampled_raw_data is not None:
+        saved_file_name = "Oversampled_raw_data_" + file_suffix_name
+        saved_data_df = pd.DataFrame(oversampled_raw_data)
+    elif option == DOWNLOAD_OPTIONS.FT_RAW_DATA.value \
+        and ft_raw_data is not None:
+        saved_file_name = "FT_raw_data_" + file_suffix_name
+        saved_data_df = pd.DataFrame(ft_raw_data)
+    elif option == DOWNLOAD_OPTIONS.FT_OVERSAMPLED_DATA.value \
+        and ft_oversampled_data is not None:
+        saved_file_name = "FT_oversampled_data_" + file_suffix_name
+        saved_data_df = pd.DataFrame(ft_oversampled_data)
     else:
-        saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
-        saving_file_name = "download_GT_data.txt"
+        return None, "No data available!"
 
-    return (dcc.send_data_frame(saving_df.to_csv, saving_file_name, 
+    return (dcc.send_data_frame(saved_data_df.to_csv, saved_file_name, 
                                 header=False, index=False, 
                                 sep='\t', encoding='utf-8'), 
                                 "Download OK !") 

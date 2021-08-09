@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from dash_html_components.Br import Br
 
 from components.input.input import input_component_generate
-from components.oversampling.select import download_selection_generate
+from components.selection.select import download_selection_generate, DownloadSelection
 
 INPUT_ID_SUFFIX_DICT = {
     "BEGIN_INPUT": "-begin-line-number",
@@ -18,18 +18,18 @@ OUTPUT_ID_SUFFIX_DICT = {
 }
 
 # This is templates but used in irheo GT
-begin_line_input_cfg = {
-    "id": "begin-line-number",
-    "placeholder": "Type begin number ...",
-    "type": "number"
-}
+# begin_line_input_cfg = {
+#     "id": "begin-line-number",
+#     "placeholder": "Type begin number ...",
+#     "type": "number"
+# }
 
 # This is templates but used in irheo GT
-end_line_input_cfg = {
-    "id": "end-line-number",
-    "placeholder": "Type end number ...",
-    "type": "number"
-}
+# end_line_input_cfg = {
+#     "id": "end-line-number",
+#     "placeholder": "Type end number ...",
+#     "type": "number"
+# }
 
 # This is templates but used in irheo GT
 # BeginLineInput = input_component_generate(**begin_line_input_cfg)
@@ -37,15 +37,13 @@ end_line_input_cfg = {
 
 # This is templates but used in irheo GT
 Download = html.Div([
-         html.H5("Download Data"),
-        #  BeginLineInput,
-         html.Br(),
-        #  EndLineInput,
-         html.Br(),
-         html.Button("Download File", id="download-btn", 
-                     className="btn btn-primary"), 
-         dcc.Download(id="download-text"),
-         html.Div(id="download-message")   
+    html.H5("Download Data"),
+    dbc.InputGroup([
+        DownloadSelection,
+        html.Button("Download File", id="download-btn", className="btn btn-primary")
+    ]),
+    dcc.Download(id="download-text"),
+    html.Div(id="download-message")   
 ])
 
 def download_component_generate(prefix_app_name):

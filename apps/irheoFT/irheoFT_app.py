@@ -220,7 +220,7 @@ app.clientside_callback(
     Output("FTAPP-download-text", "data"),
     Output("FTAPP-download-message", "children"),
     Input("FTAPP-download-btn", "n_clicks"),
-    State("FTAPP-downlaod-selection", "value"),
+    State("FTAPP-download-selection", "value"),
     State("FTAPP-raw-data-store","data"),
     State("FTAPP-oversampling-data-store", "data"),
     State("FTAPP-ft-data-store", "data"),

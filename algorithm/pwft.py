@@ -184,7 +184,5 @@ def fast_ftdata(df, gc_0, gc_inf, interpolate=False, oversampling=10):
     non_time_g_p = np.real(ft_result)
     non_time_g_pp = np.imag(ft_result)
     
-    # print(g_p[0: 100])
-    # print(g_pp[0: 100])
     return omega.tolist(), g_p.tolist(), g_pp.tolist(), non_time_g_p.tolist(), non_time_g_pp.tolist()
 
