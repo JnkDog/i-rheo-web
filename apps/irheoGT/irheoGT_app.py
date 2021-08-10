@@ -157,7 +157,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     # This function takes lots of time
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
     # fast FT
-    omega, g_p, g_pp = fast_ftdata(df, g_0, g_inf, True, ntimes)
+    omega, g_p, g_pp, _ , _ = fast_ftdata(df, g_0, g_inf, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
