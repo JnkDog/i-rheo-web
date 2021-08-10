@@ -15,7 +15,8 @@ i = complex(0, 1)
 def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
         after=0
         for k in range(2, N_t):
-            after += ((g[k] - g[k - 1]) / (t[k] - t[k - 1])) * (np.exp(-i * w *t[k - 1]) - np.exp(-i * w * t[k]))
+            after += ((g[k] - g[k - 1]) / (t[k] - t[k - 1])) \
+                     * (np.exp(-i * w *t[k - 1]) - np.exp(-i * w * t[k]))
         # print(after)
         
         lock.acquire()

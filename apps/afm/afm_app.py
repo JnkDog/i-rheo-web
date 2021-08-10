@@ -65,7 +65,7 @@ Layout = dbc.Row([
     State("AFM-loadinf", "value"),
     State("AFM-indentation0", "value"),
     State("AFM-indentationinf", "value"),
-    State("AFM-oversamping-Nf", "value"),
+    State("AFM-oversampling-Nf", "value"),
     prevent_initial_call=True
 )
 def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf, N_f):
@@ -88,6 +88,7 @@ def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf, N
         "filename": file_name,
         "lines": len(df)
     }
+
     # default v = 0.5 & r(named δ actually)
     v = 0.5 if v is None else v
     r = 20 if r is None else r
@@ -95,7 +96,7 @@ def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf, N
     linf = 0 if linf is None else linf
     ind0 = 1 if ind0 is None else ind0
     indinf = 0 if indinf is None else indinf
-    N_f = 100 if N_f is None else N_f
+    N_f = 100 if N_f is None else int(N_f)
 
     omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, False)
 
@@ -138,7 +139,7 @@ def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes
     linf = 0 if linf is None else linf
     ind0 = 1 if ind0 is None else ind0
     indinf = 0 if indinf is None else indinf
-    N_f = 100 if N_f is None else N_f
+    N_f = 100 if N_f is None else int(N_f)
 
     omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, True, ntimes)
 

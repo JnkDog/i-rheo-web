@@ -116,7 +116,8 @@ Trigger when the experiental data(raw data) uploaded
     State("MOT-ft-data-store", "data"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, func_flag, file_name, prev_raw_data, prev_ft_data):
+def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, func_flag, file_name, 
+                   prev_raw_data, prev_ft_data):
     # PreventUpdate without data
     data_null_prevents_updated(prev_raw_data, prev_ft_data)
 
@@ -274,13 +275,15 @@ def store_oversampling_data(n_clicks, g_0, g_inf, kt, at, func_flag, raw_data,
     State("MOT-oversampling-data-store", "data"),
     State("MOT-ft-data-store", "data"),
     State("MOT-oversampled-ft-data-store", "data"),
+    State("MOT-radioitems-input", "value"),
     prevent_initial_call=True,
 )
-def download(n_clicks, option, raw_data, oversampled_raw_data, ft_raw_data, ft_oversampled_data):
+def download(n_clicks, option, raw_data, oversampled_raw_data, 
+             ft_raw_data, ft_oversampled_data, func_flag):
     if option is None or raw_data is None:
         raise PreventUpdate
 
-    # TODO need fix later
+    # TODO At or Pai t's download data convert...
     # Covert the option from string to int
     option = int(option)
     file_suffix_name = raw_data.get("filename")
@@ -291,14 +294,25 @@ def download(n_clicks, option, raw_data, oversampled_raw_data, ft_raw_data, ft_o
         and oversampled_raw_data is not None:
         saved_file_name = "Oversampled_raw_data_" + file_suffix_name
         saved_data_df = pd.DataFrame(oversampled_raw_data)
+
     elif option == DOWNLOAD_OPTIONS.FT_RAW_DATA.value \
         and ft_raw_data is not None:
-        saved_file_name = "FT_raw_data_" + file_suffix_name
-        saved_data_df = pd.DataFrame(ft_raw_data)
+        if func_flag == FUNTION_TYPE.AT.value:
+            saved_file_name = "FT_raw_data_A(t)_" + file_suffix_name
+            saved_data_df = pd.DataFrame(ft_raw_data)
+        else:
+            saved_file_name = "FT_raw_data_∏(t)_" + file_suffix_name
+            saved_data_df = pd.DataFrame(ft_raw_data)
+
     elif option == DOWNLOAD_OPTIONS.FT_OVERSAMPLED_DATA.value \
         and ft_oversampled_data is not None:
-        saved_file_name = "FT_oversampled_data_" + file_suffix_name
-        saved_data_df = pd.DataFrame(ft_oversampled_data)
+        if func_flag == FUNTION_TYPE.AT.value:
+            saved_file_name = "FT_raw_data_A(t)_" + file_suffix_name
+            saved_data_df = pd.DataFrame(ft_raw_data)
+        else:
+            saved_file_name = "FT_raw_data_∏(t)_" + file_suffix_name
+            saved_data_df = pd.DataFrame(ft_raw_data)
+
     else:
         return None, "No data available!"
 
