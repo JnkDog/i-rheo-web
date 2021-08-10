@@ -3,7 +3,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 from dash_html_components.Div import Div
 
-WEB_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
+WEB_LOGO = "assets/imgs/UoG_icon.png"
 BAR_ITEMS = ["MOT", "AFM", "BULK", "GT", "FT"]
 
 """
@@ -43,7 +43,7 @@ NavBar = html.Header(
                 dbc.Row(
                     [
                         dbc.Col(html.Img(src=WEB_LOGO, height="30px")),
-                        dbc.Col(dbc.NavbarBrand("Navbar", className="ml-2")),
+                        dbc.Col(dbc.NavbarBrand("", className="ml-2")),
                     ],
                     align="center",
                     no_gutters=True,
