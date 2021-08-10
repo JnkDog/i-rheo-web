@@ -42,7 +42,7 @@ NavBar = html.Header(
                 # Use row and col to control vertical alignment of logo / brand
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src=WEB_LOGO, height="30px")),
+                        dbc.Col(html.Img(src=WEB_LOGO, height="40px")),
                         dbc.Col(dbc.NavbarBrand("", className="ml-2")),
                     ],
                     align="center",
@@ -68,43 +68,6 @@ NavBar = html.Header(
     ),
     className="p-3 bg-dark text-white"
 )
-
-
-
-# bulma version
-# just like react to create component
-# NavBar = html.Nav(
-#     className='navbar is-white',
-#     children=html.Div([
-#         html.A(
-#             className="navbar-item",
-#             children=[
-#                 html.Img(src="assets/imgs/icon.png", style={'maxHeight': '70px'}, className="py-2 px-2"),   
-#             ],
-#         ),
-#         html.A(
-#             # mobile phone
-#             className="navbar-burger",
-#             id="burger",
-#             children=[html.Span(),html.Span(),html.Span()]
-#         ),
-#         html.Div(
-#             className="navbar-menu", 
-#             id="nav-links",
-#             children=html.Div(
-#                 className="navbar-end",
-#                 # children for words
-#                 # every link for each app
-#                 children=[  html.A(className="navbar-item", children="My Count"), 
-#                             html.A(className="navbar-item", children="Shopping  Cart")
-#                         ]
-#             ) 
-#         )
-#     ],
-#     className="navbar-brand")
-# )
-
-
 
 
 
