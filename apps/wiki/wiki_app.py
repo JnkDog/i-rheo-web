@@ -5,21 +5,32 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 
+from components.paper.reference import AllPapers, PaperMarkDown
+
+NavDiv = html.Div([
+    dcc.Link(
+        'Navigate to Manlio\'s LinkedIn', href="https://www.linkedin.com/in/manlio-tassieri-b94a7127/",
+        refresh=True,
+        style={'fontFamily': 'Times New Roman, Times, serif', 'fontWeight': 'bold'},
+        className="mr-5"
+    ),
+    dcc.Link(
+        'Navigate to Manlio\'s Twitetr', href="https://twitter.com/ManlioTassieri",
+        refresh=True,
+        style={'fontFamily': 'Times New Roman, Times, serif', 'fontWeight': 'bold'},
+        # className="center-block"
+    ),
+])
+
+PaperList = html.Div([
+    html.H2("Related articles", className="text-center"),
+    html.Div(PaperMarkDown)
+])
 
 Layout = html.Div(
     children=[
-        html.Br(),
-        dcc.Link(
-            'Navigate to Manlio\'s LinkedIn', href="https://www.linkedin.com/in/manlio-tassieri-b94a7127/",
-            refresh=True,
-            style={'font-family': 'Times New Roman, Times, serif', 'font-weight': 'bold'}
-        ),
-        html.Br(),
-        dcc.Link(
-            'Navigate to Manlio\'s Twitetr', href="https://twitter.com/ManlioTassieri",
-            refresh=True,
-            style={'font-family': 'Times New Roman, Times, serif', 'font-weight': 'bold'}
-        )
+        NavDiv,
+        PaperList
     ],
-    className="bd-content ps-lg-4",
+    # className="container"
 )
