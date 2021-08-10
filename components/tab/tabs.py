@@ -22,7 +22,7 @@ TABS_ID_SUFFIX_DICT = {
 
 MOT_TABS_DICT = {
     "1": "Input",
-    "2": "Classic Moduli"
+    "2": "Viscoelastic moduli"
 }
 
 FT_TABS_DICT = {
@@ -34,6 +34,12 @@ AFM_TABS_DICT = {
     "1": "Force",
     "2": "Indentation",
     "3": "Classic-Moduli"
+}
+
+AFM_TABS_LABEL_DICT = {
+    "1": "Force",
+    "2": "Indentation",
+    "3": "Viscoelastic moduli"
 }
 
 # This is templates but used in irheo GT
@@ -86,7 +92,7 @@ def afm_tabs_generate(prefix_app_name):
     Spinner_list = [spinner_generate(prefix_app_name+"-"+value)
                     for value in AFM_TABS_DICT.values()]
 
-    Tab_list = [dbc.Tab(item, label=list(AFM_TABS_DICT.values())[idx],
+    Tab_list = [dbc.Tab(item, label=list(AFM_TABS_LABEL_DICT.values())[idx],
                         tab_id=list(AFM_TABS_DICT.values())[idx])
                         for idx, item in enumerate(Spinner_list)]
 
