@@ -75,8 +75,8 @@ Layout = dbc.Row([
                     html.Div(id="MOT-loading-message"),
                     html.Hr(),
                     mot_oversampling_generate(prefix_app_name),
-                    html.Hr(),
-                    stiffness_radius_generate(prefix_app_name),
+                    # html.Hr(),
+                    # stiffness_radius_generate(prefix_app_name),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
@@ -107,6 +107,7 @@ Trigger when the experiental data(raw data) uploaded
     # Trap stiffness and radius
     Input("MOT-kt", "value"),
     Input("MOT-at", "value"),
+    State("MOT-oversampling-Nf", "value"),
     # Decide the A(t) or ∏(t)
     State("MOT-radioitems-input", "value"),
     State("MOT-upload", "filename"),
@@ -116,7 +117,7 @@ Trigger when the experiental data(raw data) uploaded
     State("MOT-ft-data-store", "data"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, func_flag, file_name, 
+def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, N_f, func_flag, file_name, 
                    prev_raw_data, prev_ft_data):
     # PreventUpdate without data
     data_null_prevents_updated(prev_raw_data, prev_ft_data)
@@ -144,6 +145,8 @@ def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, func_flag, file_name,
 
     g_inf = 0 if g_inf is None else float(g_inf)
 
+    N_f = 100 if N_f is None else int(N_f)
+
     trigger_id = get_trigger_id()
 
     # mot_integrated_processing could take a lot of time depending your PC
@@ -153,13 +156,13 @@ def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, func_flag, file_name,
         path = "example_data/mot/data.txt"
         df = generate_df_from_local(path)
         raw_data, ft_raw_data = \
-            upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, file_name)
+            upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, N_f, file_name)
 
     # upload the data from users
     elif trigger_id == "MOT-upload":
         df = generate_df(content)
         raw_data, ft_raw_data = \
-            upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, file_name)
+            upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, N_f, file_name)
 
     # only trigger when 
     elif trigger_id in STIFFNESS_RADIUS_COMPONENTS_ID:
@@ -170,7 +173,7 @@ def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, func_flag, file_name,
 
     elif trigger_id in BOUNDARY_COMPONENTS_ID:
         df = convert_lists_to_df(prev_raw_data)
-        replacement_elements = mot_integrated_processing(df, kt, at, g_0, g_inf, False)
+        replacement_elements = mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, False)
         replacement_keys = ["x", "pai_y1", "pai_y2", "at_y1", "at_y2", "ft_real", "ft_imag"]
         ft_raw_data = replace_dict_value(prev_ft_data, replacement_elements, replacement_keys)
         raw_data = prev_raw_data
@@ -198,19 +201,20 @@ and the oversampling button clicked with the oversampling ntimes.
     State("MOT-raw-data-store", "data"),
     # Get ntimes
     State("MOT-oversampling-input", "value"),
+    State("MOT-oversampling-Nf", "value"),
     # Get the modified time to avoid inital time operating
     # State("MOT-ft-data-store", "modified_timestamp"),
     State("MOT-oversampling-data-store", "data"),
     State("MOT-oversampled-ft-data-store", "data"),
 )
 def store_oversampling_data(n_clicks, g_0, g_inf, kt, at, func_flag, raw_data, 
-                            ntimes, prev_oversampled_data, prev_oversampled_ft_data):
+                            ntimes, N_f, prev_oversampled_data, prev_oversampled_ft_data):
     if raw_data is None or ntimes is None:
         raise PreventUpdate
 
     # avoid float number
     ntimes = int(ntimes)
-
+    N_f = 100 if N_f is None else int(N_f)
     """
     Boundary conditions (aka. Oversampling parameters)
     default g_0   : 1 as A(t), 0 as ∏(t)
@@ -239,7 +243,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, kt, at, func_flag, raw_data,
     if trigger_id == "MOT-oversampling-btn":
         df = convert_lists_to_df(raw_data)
         oversampled_data, ft_oversampled_data = \
-            oversampling_button_workflow(df, kt, at, g_0, g_inf, ntimes)
+            oversampling_button_workflow(df, kt, at, g_0, g_inf, N_f, ntimes)
     
     elif trigger_id in STIFFNESS_RADIUS_COMPONENTS_ID:
         # upload the data but without oversampling need to prevent update
@@ -257,7 +261,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, kt, at, func_flag, raw_data,
             raise PreventUpdate
 
         df = convert_lists_to_df(raw_data)
-        replacement_elements = mot_integrated_processing(df, kt, at, g_0, g_inf, False)
+        replacement_elements = mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, False)
         replacement_keys = ["x", "pai_y1", "pai_y2", "at_y1", "at_y2", "ft_real", "ft_imag"]
         ft_oversampled_data = replace_dict_value(prev_oversampled_ft_data, replacement_elements, replacement_keys)
         oversampled_data = prev_oversampled_data
@@ -396,7 +400,7 @@ def replace_dict_value(dict, replacement, replacement_keys):
 
 
 # only the upload button and example button trigger this
-def upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, file_name):
+def upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, N_f, file_name):
     # save file_name and lens for message recovering when app changing
     raw_data = {
         "x": df[0],
@@ -406,7 +410,7 @@ def upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, file_name):
     }
 
     omega, pai_g_p, pai_g_pp, a_t_g_p, a_t_g_pp, ft_real, ft_imag = \
-        mot_integrated_processing(df, kt, at, g_0, g_inf, False)
+        mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, False)
     
     ft_raw_data = {
         "x": omega,
@@ -420,7 +424,7 @@ def upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, file_name):
 
     return raw_data, ft_raw_data
 
-def oversampling_button_workflow(df, kt, at, g_0, g_inf, ntimes):
+def oversampling_button_workflow(df, kt, at, g_0, g_inf, N_f, ntimes):
     x, y = mot_oversampling(df, ntimes)
 
     oversampled_data = {
@@ -429,7 +433,7 @@ def oversampling_button_workflow(df, kt, at, g_0, g_inf, ntimes):
     }
 
     omega, pai_g_p, pai_g_pp, a_t_g_p, a_t_g_pp, ft_real, ft_imag \
-        = mot_integrated_processing(df, kt, at, g_0, g_inf, True, ntimes)
+        = mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, True, ntimes)
 
     ft_oversampled_data = {
         "x": omega,

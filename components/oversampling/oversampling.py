@@ -9,6 +9,7 @@ from components.oversampling.input import OversamplingInput, oversampling_input_
 # from components.oversampling.select import SelectOversampling
 from components.oversampling.switch import Switch, switch_component_generate, FT_rendering_switch_generate
 from components.inputgdot.inputgdot import Inputgdot, input_gdot_generate, mot_input_generate, afm_parameter_input_generate, afm_dot_input_generate
+from components.input.parameter import stiffness_radius_generate
 
 OVERSAMPLING_BUTTON_SUFFIX = "-oversampling-btn"
 REOVERSAMPLING_BUTTON_SUFFIX = "-refresh-btn"
@@ -21,39 +22,37 @@ Oversampling = html.Div([
     Inputgdot,
     html.Br(),
     html.H5("Oversampling operation"),
-    dbc.InputGroup(
-        id="oversampling-control-components",
-        children=[
-            OversamplingInput,
-            dbc.Button("oversampling", id="oversampling-btn", 
-                       color="primary", className="ml-3"),
-    ]),
+    # dbc.InputGroup(
+    #     id="oversampling-control-components",
+    #     children=[
+    #         OversamplingInput,
+    #         dbc.Button("oversampling", id="oversampling-btn", 
+    #                    color="primary", className="ml-3"),
+    # ]),
     # html.H5(id="oversampling-message", className="text-warning"),
     # html.P("switch it", className="mb-1"),
+    # oversampling_control(),
     Switch
 ])
 
+def FT_render_add(prefix_app_name):
+    if (prefix_app_name == "FTAPP"):
+        return FT_rendering_switch_generate(prefix_app_name)
 
 def oversampling_component_generate(prefix_app_name):
     button_id = prefix_app_name + OVERSAMPLING_BUTTON_SUFFIX
+    secondbutton_id = prefix_app_name + REOVERSAMPLING_BUTTON_SUFFIX       
+
     Oversampling = html.Div([
-                   html.H5("Boundary conditions"),
-                   input_gdot_generate(prefix_app_name),
-                   html.Br(),
-                   html.H5("Oversampling operation"),
-                   dbc.InputGroup(
-                        # id="oversampling-control-components",
-                        children=[
-                            oversampling_input_generate(prefix_app_name),
-                            dbc.Button("oversampling", id=button_id, 
-                                       color="primary", className="ml-3"),
-                        ]),
-                    # html.H5(id="oversampling-message", className="text-warning"),
-                    # html.P("switch it", className="mb-1"),
-                    html.Br(),
-                    switch_component_generate(prefix_app_name),
-                    FT_rendering_switch_generate(prefix_app_name)          
-    ])
+                            html.H5("Boundary conditions"),
+                            input_gdot_generate(prefix_app_name),
+                            html.Br(),
+                            html.H5("Oversampling operation"),
+                            oversampling_control(prefix_app_name, button_id, secondbutton_id),
+                            html.Br(),
+                            switch_component_generate(prefix_app_name),
+                            FT_render_add(prefix_app_name),
+                            ])
 
     return Oversampling
 
@@ -119,20 +118,23 @@ def afm_oversampling_generate(prefix_app_name):
 
 def mot_oversampling_generate(prefix_app_name):
     button_id = prefix_app_name + OVERSAMPLING_BUTTON_SUFFIX
+    secondbutton_id = prefix_app_name + REOVERSAMPLING_BUTTON_SUFFIX
     Oversampling = html.Div([
                    html.H5("Boundary conditions"),
                    input_gdot_generate(prefix_app_name),
                    html.Br(),
+                   stiffness_radius_generate(prefix_app_name),
                    html.H5("Oversampling operation"),
-                   dbc.InputGroup(
-                        # id="oversampling-control-components",
-                        children=[
-                            oversampling_input_generate(prefix_app_name),
-                            dbc.Button("oversampling", id=button_id, 
-                                       color="primary", className="ml-3"),
-                        ]),
+                #    dbc.InputGroup(
+                #         # id="oversampling-control-components",
+                #         children=[
+                #             oversampling_input_generate(prefix_app_name),
+                #             dbc.Button("oversampling", id=button_id, 
+                #                        color="primary", className="ml-3"),
+                #         ]),
                     # html.H5(id="oversampling-message", className="text-warning"),
                     # html.P("switch it", className="mb-1"),
+                    oversampling_control(prefix_app_name, button_id, secondbutton_id),
                     html.Br(),
                     switch_component_generate(prefix_app_name)
     ])

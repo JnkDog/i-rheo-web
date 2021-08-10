@@ -45,7 +45,7 @@ def fast_manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversamp
            + g_dot_inf * np.exp(-i * omega * t[N_t - 1])
 
     res = multiprocessing.Manager().list()
-    for idx in range(100):
+    for idx in range(N_f):
         res.append(i)
 
     # setting a lock
@@ -69,12 +69,12 @@ def a_t_G_star_processing(k, a, omega, ft_result):
     G_star = (k/(6 * math.pi * a))*(1/(1 - i * omega * ft_result) - 1)
     return G_star
 
-def mot_integrated_processing(df, k, a, g_0, g_dot_inf,interpolate=False, n_times=10):
+def mot_integrated_processing(df, k, a, g_0, g_dot_inf, N_f, interpolate=False, n_times=10):
     # The input value is k, a, g_0, g_dot_inf
     x = df[0]
     y = df[1]
 
-    omega, ft_result = fast_manlio_ft(y, x, g_0, g_dot_inf, interpolate=interpolate, oversampling=n_times)
+    omega, ft_result = fast_manlio_ft(y, x, g_0, g_dot_inf, N_f, interpolate=interpolate, oversampling=n_times)
     # k a only works in g_p g_pp 
     pai_t_G_star = pai_t_G_star_processing(k, a, omega, ft_result)
     a_t_G_start = a_t_G_star_processing(k, a, omega, ft_result)

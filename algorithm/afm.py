@@ -36,12 +36,10 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
 
     zero = i * omega * g_0 + (1 - np.exp(-i * omega * t[1])) * ((g[1] - g_0) / t[1]) \
            + g_dot_inf * np.exp(-i * omega * t[N_t - 1])
-
-    # print(len(omega))
-    # print(N_t)
+    
     res = multiprocessing.Manager().list()
 
-    for xxx in range(100):
+    for xxx in range(N_f):
         res.append(i)
 
     lock = multiprocessing.Manager().Lock()
@@ -77,27 +75,18 @@ def afm_moduli_process(df, radius=20, v=0.5, load0=1, loadinf=0, ind0=1, indinf=
     times = df[0]
     force = df[1]
     inden = df[2]
-    # print(radius)
-    # print(v)
     # N_f = 100
     At = ((8*(radius**(1/2)))/(3*(1-v)))*(inden**(3/2))
-    # print("a")
+
     omega1, res_test1 = manlio_ft(force, times, load0, loadinf, N_f, interpolate, ntimes)
     omega2, res_test2 = manlio_ft(At, times, ind0, indinf, N_f, interpolate, ntimes)
     G_star = res_test1/res_test2
-
+    # print("get result")
     g_p = np.real(G_star)
     g_pp = np.imag(G_star)
-   
+
     return omega1, g_p, g_pp
-    # plt.plot(omega1, g_p, '-o', lw=3, color='red', label='$G^{I}$')
-    # plt.plot(omega2, g_pp, '-o', lw=3, color='royalblue', label='$G^{II}$')
-    # plt.xscale('log')
-    # plt.xlabel('Frequency (Hz)')
-    # plt.ylabel('Moduli (Pa)')
-    # plt.legend()
-    # plt.show()
-    
+
 
 # if __name__ == '__main__':
 #     

@@ -152,7 +152,7 @@ def fast_manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversamp
            + g_dot_inf * np.exp(-i * omega * t[N_t - 1])
 
     res = multiprocessing.Manager().list()
-    for idx in range(100):
+    for idx in range(N_f):
         res.append(i)
 
     # setting a lock
@@ -169,15 +169,12 @@ def fast_manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversamp
     # print(len(res))
     return omega, ((res) / (i * omega) ** 2)
 
-def fast_ftdata(df, gc_0, gc_inf, interpolate=False, oversampling=10):
+def fast_ftdata(df, g_0, g_inf, N_f, interpolate=False, oversampling=10):
     i = complex(0, 1)
     time = df[0]
     func = df[1]
-    g_0 = gc_0
-    g_dot_inf = gc_inf
-    N_f = 100
 
-    omega, ft_result = fast_manlio_ft(func, time, g_0, g_dot_inf, N_f, interpolate, oversampling)
+    omega, ft_result = fast_manlio_ft(func, time, g_0, g_inf, N_f, interpolate, oversampling)
     g_p = np.real(ft_result*omega*i)
     g_pp = np.imag(ft_result*omega*i)
     

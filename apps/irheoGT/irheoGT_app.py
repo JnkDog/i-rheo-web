@@ -12,7 +12,8 @@ from app import app
 # import components
 from components.upload.upload import Upload
 from components.download.download import Download
-from components.oversampling.oversampling import Oversampling
+# from components.oversampling.oversampling import Oversampling
+from components.oversampling.oversampling import oversampling_component_generate
 from components.tab.tabs import Tabs
 from components.display.loading import Loading
 from components.inputgdot.inputgdot import Inputgdot
@@ -27,9 +28,12 @@ from algorithm.read_data import generate_df, generate_df_from_local, convert_lis
 # Selection options
 @unique
 class DOWNLOAD_OPTIONS(Enum):
-    OVERSAMPLED_RAW_DATA  = 0
+    OVERSAMPLED_RAW_DATA = 0
     FT_RAW_DATA = 1
     FT_OVERSAMPLED_DATA = 2
+
+
+prefix_app_name = "GT"
 
 Layout = dbc.Row([
             dbc.Col([
@@ -51,7 +55,7 @@ Layout = dbc.Row([
                     # This is just for show the loading message
                     html.Div(id="loading-message"),
                     html.Hr(),
-                    Oversampling,
+                    oversampling_component_generate(prefix_app_name),
                     html.Hr(),
                     Download
                     ], width=3), 
@@ -75,12 +79,13 @@ Trigger when the experiental data(raw data) uploaded
     Input("upload", "contents"),
     Input("load-example", "n_clicks"),
     # The g_0 and g_inf are not used ... 
-    State("g_0", "value"),
-    State("g_inf", "value"),
+    State("GT-g_0", "value"),
+    State("GT-g_inf", "value"),
+    State("GT-oversampling-Nf", "value"),
     State("upload", "filename"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, g_0, g_inf, file_name):
+def store_raw_data(content, n_clicks, g_0, g_inf, N_f, file_name):
     # Deciding which raw_data used according to the ctx
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -103,11 +108,12 @@ def store_raw_data(content, n_clicks, g_0, g_inf, file_name):
     # default g_0: 1, g_inf: 0
     g_0 = 1 if g_0 is None else float(g_0)
     g_inf = 0 if g_inf is None else float(g_inf)
+    N_f = 100 if N_f is None else int(N_f)
 
     # slow FT 
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
     # fast FT
-    omega, g_p, g_pp, _, _ = fast_ftdata(df, g_0, g_inf, False)
+    omega, g_p, g_pp, _, _ = fast_ftdata(df, g_0, g_inf, N_f, False)
 
     ft_data = {
         "x": omega,
@@ -127,22 +133,23 @@ and the oversampling button clicked with the oversampling ntimes.
 @app.callback(
     Output("oversampling-data-store", "data"),
     Output("oversampled-ft-data-store", "data"),
-    Input("oversampling-btn", "n_clicks"),
-    State("g_0", "value"),
-    State("g_inf", "value"),
+    Input("GT-oversampling-btn", "n_clicks"),
+    State("GT-g_0", "value"),
+    State("GT-g_inf", "value"),
     State("raw-data-store", "data"),
     # State("ft-data-store", "data"),
-    State("oversampling-input", "value")
+    State("GT-oversampling-input", "value"),
+    State("GT-oversampling-Nf", "value"),
 )
-def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
+def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes, N_f):
     if n_clicks is None or data is None or ntimes is None:
         raise PreventUpdate
-
 
     df = convert_lists_to_df(data)
 
     # avoid float number
     ntimes = int(ntimes)
+    N_f = 100 if N_f is None else int(N_f)
     x, y = get_oversampling_data(df, ntimes=ntimes)
 
     data = {
@@ -157,7 +164,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     # This function takes lots of time
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
     # fast FT
-    omega, g_p, g_pp = fast_ftdata(df, g_0, g_inf, True, ntimes)
+    omega, g_p, g_pp, _, _ = fast_ftdata(df, g_0, g_inf, N_f, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
@@ -173,7 +180,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     Output("download-message", "children"),
     Input("download-btn", "n_clicks"),
     State("downlaod-selection", "value"),
-    State("raw-data-store","data"),
+    State("raw-data-store", "data"),
     State("oversampling-data-store", "data"),
     State("ft-data-store", "data"),
     State("oversampled-ft-data-store", "data"),
@@ -222,7 +229,7 @@ app.clientside_callback(
     Output("sigma-display", "figure"),
     Input("raw-data-store", "data"),
     Input("oversampling-data-store", "data"),
-    Input("oversampling-render-switch", "value"),
+    Input("GT-oversampling-render-switch", "value"),
     # Due to the dcc.Stroe's storage_type is session
     # if prevent_initial_call=True, the fig cannot show
     # prevent_initial_call=True
@@ -237,7 +244,7 @@ app.clientside_callback(
     Output("FT-display", "figure"),
     Input("ft-data-store", "data"),
     Input("oversampled-ft-data-store", "data"),
-    Input("oversampling-render-switch", "value"),
+    Input("GT-oversampling-render-switch", "value"),
     Input("GT-vertical-axis-switch", "value"),
     # prevent_initial_call=True
 )

@@ -75,10 +75,11 @@ Trigger when the experiental data(raw data) uploaded
     Input("FTAPP-load-example", "n_clicks"),
     Input("FTAPP-g_0", "value"),
     Input("FTAPP-g_inf", "value"),
+    State("FTAPP-oversampling-Nf", "value"),
     State("FTAPP-upload", "filename"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, g_0, g_inf,file_name):
+def store_raw_data(content, n_clicks, g_0, g_inf, N_f, file_name):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -104,10 +105,10 @@ def store_raw_data(content, n_clicks, g_0, g_inf,file_name):
     # default g_0: 1, g_inf: 0
     g_0 = 1 if g_0 is None else float(g_0)
     g_inf = 0 if g_inf is None else float(g_inf)
-    
+    N_f = 100 if N_f is None else int(N_f)
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
     # fast FT processing
-    omega, g_p, g_pp, non_time_g_p, non_time_g_pp = fast_ftdata(df, g_0, g_inf, False)
+    omega, g_p, g_pp, non_time_g_p, non_time_g_pp = fast_ftdata(df, g_0, g_inf, N_f, False)
 
     ft_data = {
         "x": omega,
@@ -133,16 +134,18 @@ and the oversampling button clicked with the oversampling ntimes.
     Input("FTAPP-g_0", "value"),
     Input("FTAPP-g_inf", "value"),
     State("FTAPP-raw-data-store", "data"),
-    State("FTAPP-oversampling-input", "value")
+    State("FTAPP-oversampling-input", "value"),
+    State("FTAPP-oversampling-Nf", "value")
 )
-def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
-    if n_clicks is None or data is None or ntimes is None:   
+def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes, N_f):
+    if n_clicks is None or data is None or ntimes is None:
         # return None, None  
         # time.sleep(10)   
         raise dash.exceptions.PreventUpdate
 
     # avoid float number
     ntimes = int(ntimes)
+    N_f = 100 if N_f is None else int(N_f)
     df = convert_lists_to_df(data)
     x, y = get_oversampling_data(df, ntimes)
 
@@ -158,7 +161,7 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
     # This function takes lots of time
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
     # fast FT
-    omega, g_p, g_pp, non_time_g_p, non_time_g_pp = fast_ftdata(df, g_0, g_inf, True, ntimes)
+    omega, g_p, g_pp, non_time_g_p, non_time_g_pp = fast_ftdata(df, g_0, g_inf, N_f, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
