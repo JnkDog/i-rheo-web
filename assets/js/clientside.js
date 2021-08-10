@@ -13,6 +13,11 @@ const FUNCTION_TYPE = {
     "PAI_T": 1
 }
 
+const VERTICAL_AXIS_TYPE = {
+    "LOG": 0,
+    "LINEAR": 1
+}
+
 /**
 * oversamplingSwitchValue, true false
 * timeDerivative, true false
@@ -59,7 +64,7 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
         "ticks": "outside"};
     }
 
-    if (verticalAxisSwitch) {
+    if (verticalAxisSwitch ==VERTICAL_AXIS_TYPE.LINEAR) {
         setting["yaxis"]["type"] = "linear";
     } else {
         setting["yaxis"]["type"] = "log";
@@ -70,7 +75,7 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
 
 
 // Function implementation list
-gammaRender = function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch=[false]) {
+gammaRender = function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch) {
     if (rawData == undefined) {
         return;
     }
@@ -123,7 +128,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false], verticalA
         data.push(rawDataTrace);
     }
 
-    if (verticalAxisSwitch[0]) {
+    if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
         layout["yaxis"]["type"] = "linear"
     } else {
         layout["yaxis"]["type"] = "log"
@@ -134,7 +139,7 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false], verticalA
     };
 }
 
-motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch=[false]) {
+motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch) {
     if (rawData == undefined) {
         return;
     }
@@ -179,7 +184,7 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalA
         data.push(rawDataTrace);
     }
 
-    if (verticalAxisSwitch[0]) {
+    if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
         layout["yaxis"]["type"] = "linear"
     } else {
         layout["yaxis"]["type"] = "log"
@@ -192,7 +197,7 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalA
 }
 
 motRender = function(ftData, oversampledftData, switchValue=[false],
-                     functionFlag, verticalAxisSwitch = [false])
+                     functionFlag, verticalAxisSwitch)
 {
     if (ftData == undefined) {
         return;
@@ -269,7 +274,7 @@ motRender = function(ftData, oversampledftData, switchValue=[false],
         data.push(ftDataTrace0, ftDataTrace1);  
     }
 
-    if (verticalAxisSwitch[0]) {
+    if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
         layout["yaxis"]["type"] = "linear"
     } else {
         layout["yaxis"]["type"] = "log"
@@ -282,13 +287,13 @@ motRender = function(ftData, oversampledftData, switchValue=[false],
 }
 
 reImFigRender = function(ftData, oversampledftData, 
-    oversamplingSwitchValue=[false], timeDerivatived=[false], verticalAxisSwitch=[false]) {
+    oversamplingSwitchValue=[false], timeDerivatived=[false], verticalAxisSwitch) {
     if (ftData == undefined) {
         return;
     }
 
     let setting = figSetting(ftData, oversampledftData, 
-        oversamplingSwitchValue[0], timeDerivatived[0], verticalAxisSwitch[0])
+        oversamplingSwitchValue[0], timeDerivatived[0], verticalAxisSwitch)
     
     let data = [];
     let layout = {
@@ -407,7 +412,7 @@ identationRender = function(rawData) {
     };
 }
 
-afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisSwitch=[false]) {
+afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisSwitch) {
     if (ftData == undefined) {
         return;
     }
@@ -425,7 +430,7 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
         },
     };
 
-    if (verticalAxisSwitch[0]) {
+    if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
         layout["yaxis"]["type"] = "linear"
     } else {
         layout["yaxis"]["type"] = "log"
@@ -554,7 +559,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         }
     },
     clientsideFT:{
-        tabChangeFigRender: function(ftData, oversampledftData, switchValue=[false], verticalAxisSwitch=[false]) {
+        tabChangeFigRender: function(ftData, oversampledftData, switchValue=[false], verticalAxisSwitch) {
             if (ftData == undefined) {
                 return;
             }
@@ -617,7 +622,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             }
             
             let layout = [];
-            if (verticalAxisSwitch[0]) {
+            if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
                 layout = layoutLinear;
             } else {
                 layout = layoutLog;

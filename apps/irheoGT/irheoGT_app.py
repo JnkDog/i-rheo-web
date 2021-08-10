@@ -107,7 +107,7 @@ def store_raw_data(content, n_clicks, g_0, g_inf, file_name):
     # slow FT 
     # omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
     # fast FT
-    omega, g_p, g_pp = fast_ftdata(df, g_0, g_inf, False)
+    omega, g_p, g_pp, _, _ = fast_ftdata(df, g_0, g_inf, False)
 
     ft_data = {
         "x": omega,
