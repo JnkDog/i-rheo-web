@@ -72,14 +72,14 @@ def calcu(N_t, g, t, i, w, w_i, lock, zero,  res):
         return after
 
 
-def afm_moduli_process(df, radius=20, v=0.5, load0=1, loadinf=0, ind0=1, indinf=0, interpolate=False, ntimes=10):
+def afm_moduli_process(df, radius=20, v=0.5, load0=1, loadinf=0, ind0=1, indinf=0, N_f=100, interpolate=False, ntimes=10):
     i = complex(0, 1)  # 这行有用嘛？
     times = df[0]
     force = df[1]
     inden = df[2]
     # print(radius)
     # print(v)
-    N_f = 100
+    # N_f = 100
     At = ((8*(radius**(1/2)))/(3*(1-v)))*(inden**(3/2))
     # print("a")
     omega1, res_test1 = manlio_ft(force, times, load0, loadinf, N_f, interpolate, ntimes)

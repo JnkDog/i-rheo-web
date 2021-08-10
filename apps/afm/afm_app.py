@@ -13,7 +13,7 @@ from app import app
 from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
 from components.tab.tabs import afm_tabs_generate
-from components.oversampling.oversampling import afm_oversampling_generate   # use for test
+from components.oversampling.oversampling import afm_oversampling_generate, oversampling_control  # use for test
 from components.loglinearswitch.axisSwitch import vertical_axis_swith
 
 # import algorithm
@@ -65,9 +65,10 @@ Layout = dbc.Row([
     State("AFM-loadinf", "value"),
     State("AFM-indentation0", "value"),
     State("AFM-indentationinf", "value"),
+    State("AFM-oversamping-Nf", "value"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf):
+def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf, N_f):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -94,8 +95,9 @@ def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf):
     linf = 0 if linf is None else linf
     ind0 = 1 if ind0 is None else ind0
     indinf = 0 if indinf is None else indinf
+    N_f = 100 if N_f is None else N_f
 
-    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, False)
+    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, False)
 
     ft_data = {
         "x1": omega,
@@ -117,9 +119,10 @@ def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf):
     State("AFM-indentation0", "value"),
     State("AFM-indentationinf", "value"),
     State("AFM-raw-data-store", "data"),
-    State("AFM-oversampling-input", "value")
+    State("AFM-oversampling-input", "value"),
+    State("AFM-oversampling-Nf", "value"),
 )
-def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes):
+def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes, N_f):
     if n_clicks is None or data is None or ntimes is None:
         raise PreventUpdate
 
@@ -135,8 +138,9 @@ def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes
     linf = 0 if linf is None else linf
     ind0 = 1 if ind0 is None else ind0
     indinf = 0 if indinf is None else indinf
-    
-    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, True, ntimes)
+    N_f = 100 if N_f is None else N_f
+
+    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
