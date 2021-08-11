@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output, State
 from dash_html_components.Div import Div
 
 WEB_LOGO = "assets/imgs/UoG_icon.png"
-BAR_ITEMS = ["MOT", "AFM", "BULK", "GT", "FT"]
+BAR_ITEMS = ["INDEX", "MOT", "AFM", "BULK", "GT", "FT"]
 
 """
 id (string; Must)

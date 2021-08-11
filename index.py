@@ -36,7 +36,7 @@ app.layout = html.Div([
     html.Div(id="page-content")
 ], className="container-fluid")
 
-Layout = html.Div([
+IndexLayout = html.Div([
     html.Div(html.H1("Support to Use the Website"), style={"text-align": "center"}),
     html.Br(),
     supportIntro.GeneralHelp,
@@ -62,8 +62,8 @@ def display_page(pathname):
     pathname = pathname.lower()
     
     # TODO need to modify
-    if pathname == "/":
-        return Layout
+    if pathname == "/" or pathname == "/index":
+        return IndexLayout
     if pathname == "/bulk":
         bulk_app.Layout
     if pathname == "/afm":
