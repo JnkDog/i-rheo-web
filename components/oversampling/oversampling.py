@@ -84,7 +84,7 @@ def oversampling_control(prefix_app_name, button_id, secondbutton_id):
                         # width=2
                     ),
                     dbc.Col(
-                        html.Div(dbc.Button("Refresh", id=secondbutton_id, color="secondary")),
+                        html.Div(dbc.Button("Refresh", id=secondbutton_id, color="primary")),
                         # width=2,
                     ),
                 ],

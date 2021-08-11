@@ -20,7 +20,7 @@ NavDiv = html.Div([
         style={'fontFamily': 'Times New Roman, Times, serif', 'fontWeight': 'bold'},
         # className="center-block"
     ),
-])
+], className="text-center")
 
 PaperList = html.Div([
     html.H2("Related articles", className="text-center"),

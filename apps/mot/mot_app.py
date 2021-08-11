@@ -25,6 +25,7 @@ from algorithm.mot.mot_At_oversampling import mot_oversampling
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
 from algorithm.mot.mot import fast_mot_procressing
 from algorithm.mot.mot_two_function import mot_integrated_processing, chenged_G_start_to_g
+from algorithm.saving_process import combine_as_complex, six_decimal_saving
 
 # Using your own app name. Can't be same.
 prefix_app_name = "MOT"
@@ -274,51 +275,38 @@ def store_oversampling_data(n_clicks, g_0, g_inf, kt, at, func_flag, raw_data,
     Output("MOT-download-text", "data"),
     Output("MOT-download-message", "children"),
     Input("MOT-download-btn", "n_clicks"),
-    State("MOT-downlaod-selection", "value"),
+    # State("MOT-downlaod-selection", "value"),
     State("MOT-raw-data-store","data"),
-    State("MOT-oversampling-data-store", "data"),
-    State("MOT-ft-data-store", "data"),
+    # State("MOT-oversampling-data-store", "data"),
+    # State("MOT-ft-data-store", "data"),
     State("MOT-oversampled-ft-data-store", "data"),
     State("MOT-radioitems-input", "value"),
     prevent_initial_call=True,
 )
-def download(n_clicks, option, raw_data, oversampled_raw_data, 
-             ft_raw_data, ft_oversampled_data, func_flag):
-    if option is None or raw_data is None:
-        raise PreventUpdate
+def download(n_clicks, raw_data, ft_oversampled_data, func_flag):
+    if ft_oversampled_data is None:
+        return None, "No data available!"
+
+    file_suffix_name = raw_data.get("filename")
+    saved_file_name = "Oversampled_" + file_suffix_name
 
     # TODO At or Pai t's download data convert...
     # Covert the option from string to int
-    option = int(option)
-    file_suffix_name = raw_data.get("filename")
-    saved_file_name = ""
-    saved_data_df = pd.DataFrame()
-
-    if option == DOWNLOAD_OPTIONS.OVERSAMPLED_RAW_DATA.value \
-        and oversampled_raw_data is not None:
-        saved_file_name = "Oversampled_raw_data_" + file_suffix_name
-        saved_data_df = pd.DataFrame(oversampled_raw_data)
-
-    elif option == DOWNLOAD_OPTIONS.FT_RAW_DATA.value \
-        and ft_raw_data is not None:
-        if func_flag == FUNTION_TYPE.AT.value:
-            saved_file_name = "FT_raw_data_A(t)_" + file_suffix_name
-            saved_data_df = pd.DataFrame(ft_raw_data)
-        else:
-            saved_file_name = "FT_raw_data_∏(t)_" + file_suffix_name
-            saved_data_df = pd.DataFrame(ft_raw_data)
-
-    elif option == DOWNLOAD_OPTIONS.FT_OVERSAMPLED_DATA.value \
-        and ft_oversampled_data is not None:
-        if func_flag == FUNTION_TYPE.AT.value:
-            saved_file_name = "FT_raw_data_A(t)_" + file_suffix_name
-            saved_data_df = pd.DataFrame(ft_raw_data)
-        else:
-            saved_file_name = "FT_raw_data_∏(t)_" + file_suffix_name
-            saved_data_df = pd.DataFrame(ft_raw_data)
-
+    if int(func_flag) == FUNTION_TYPE.AT.value:
+        complex_list = combine_as_complex(
+            ft_oversampled_data["at_y1"],
+            ft_oversampled_data["at_y2"]
+        )
     else:
-        return None, "No data available!"
+        complex_list = combine_as_complex(
+            ft_oversampled_data["pai_y1"],
+            ft_oversampled_data["pai_y2"]
+        )
+    
+    saved_data_df = pd.DataFrame(six_decimal_saving({
+        "x": ft_oversampled_data["x"],
+        "y": complex_list
+    }))
 
     return (dcc.send_data_frame(saved_data_df.to_csv, saved_file_name, 
                                 header=False, index=False, 
