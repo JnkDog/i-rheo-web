@@ -1,7 +1,6 @@
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
-from dash_html_components.Br import Br
 
 from components.input.input import input_component_generate
 from components.selection.select import download_selection_generate, DownloadSelection
@@ -39,7 +38,7 @@ OUTPUT_ID_SUFFIX_DICT = {
 Download = html.Div([
     html.H5("Download Data"),
     dbc.InputGroup([
-        DownloadSelection,
+        # DownloadSelection,
         html.Button("Download File", id="download-btn", className="btn btn-primary")
     ]),
     dcc.Download(id="download-text"),
