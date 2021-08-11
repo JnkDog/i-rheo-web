@@ -60,12 +60,12 @@ def download_component_generate(prefix_app_name):
     message_id  = prefix_app_name + OUTPUT_ID_SUFFIX_DICT["MESSAGE"]
     download_id = prefix_app_name + OUTPUT_ID_SUFFIX_DICT["TEXT"]
     
-    Selection = download_selection_generate(prefix_app_name)
+    # Selection = download_selection_generate(prefix_app_name)
 
     Download = html.Div([
         html.H5("Download Data"),
         dbc.InputGroup([
-            Selection,
+            # Selection,
             html.Button("Download File", id=btn_id, className="btn btn-primary")
         ]),
         dcc.Download(id=download_id),

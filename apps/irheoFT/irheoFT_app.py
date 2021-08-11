@@ -18,7 +18,8 @@ from components.loglinearswitch.axisSwitch import vertical_axis_swith
 # import algorithm
 from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import convert_lists_to_df, generate_df, generate_df_from_local
-from algorithm.pwft import ftdata, fast_ftdata
+from algorithm.pwft import fast_ftdata
+from algorithm.saving_process import combine_as_complex, six_decimal_saving
 
 # Using your own app name. Can't be same.
 prefix_app_name = "FTAPP"
@@ -29,6 +30,11 @@ class DOWNLOAD_OPTIONS(Enum):
     OVERSAMPLED_RAW_DATA  = 0
     FT_RAW_DATA = 1
     FT_OVERSAMPLED_DATA = 2
+
+@unique
+class TIME_DERIVATED(Enum):
+    NONTIME_DERIVATED = False
+    TIME_DERIVATED = True
 
 # TODO need modify and change the algorithm plus with function
 Layout = dbc.Row([
@@ -223,37 +229,39 @@ app.clientside_callback(
     Output("FTAPP-download-text", "data"),
     Output("FTAPP-download-message", "children"),
     Input("FTAPP-download-btn", "n_clicks"),
-    State("FTAPP-download-selection", "value"),
+    # State("FTAPP-download-selection", "value"),
+    # State("FTAPP-oversampling-data-store", "data"),
+    # State("FTAPP-ft-data-store", "data"),
+    State("FTAPP-time-derivative", "value"),
     State("FTAPP-raw-data-store","data"),
-    State("FTAPP-oversampling-data-store", "data"),
-    State("FTAPP-ft-data-store", "data"),
     State("FTAPP-oversampled-ft-data-store", "data"),
     prevent_initial_call=True,
 )
-def download(n_clicks, option, raw_data, oversampled_raw_data, ft_raw_data, ft_oversampled_data):
-    if option is None or raw_data is None:
-        raise dash.exceptions.PreventUpdate
-    
-    # Covert the option from string to int
-    option = int(option)
-    file_suffix_name = raw_data.get("filename")
-    saved_file_name = ""
-    saved_data_df = pd.DataFrame()
-
-    if option == DOWNLOAD_OPTIONS.OVERSAMPLED_RAW_DATA.value \
-        and oversampled_raw_data is not None:
-        saved_file_name = "Oversampled_raw_data_" + file_suffix_name
-        saved_data_df = pd.DataFrame(oversampled_raw_data)
-    elif option == DOWNLOAD_OPTIONS.FT_RAW_DATA.value \
-        and ft_raw_data is not None:
-        saved_file_name = "FT_raw_data_" + file_suffix_name
-        saved_data_df = pd.DataFrame(ft_raw_data)
-    elif option == DOWNLOAD_OPTIONS.FT_OVERSAMPLED_DATA.value \
-        and ft_oversampled_data is not None:
-        saved_file_name = "FT_oversampled_data_" + file_suffix_name
-        saved_data_df = pd.DataFrame(ft_oversampled_data)
-    else:
+def download(n_clicks, time_derivatived_option, raw_data, ft_oversampled_data):
+    if ft_oversampled_data is None:
         return None, "No data available!"
+
+    option = time_derivatived_option[0] if time_derivatived_option \
+        is not None and time_derivatived_option != [] else False
+
+    file_suffix_name = raw_data.get("filename")
+    saved_file_name = "Oversampled_" + file_suffix_name
+
+    if option == TIME_DERIVATED.NONTIME_DERIVATED.value:
+        complex_list = combine_as_complex(
+            ft_oversampled_data["non_time_y1"],
+            ft_oversampled_data["non_time_y2"]
+        )
+    else:
+        complex_list = combine_as_complex(
+            ft_oversampled_data["y1"],
+            ft_oversampled_data["y2"]
+        )
+    
+    saved_data_df = pd.DataFrame(six_decimal_saving({
+        "x": ft_oversampled_data["x"],
+        "y": complex_list
+    }))
 
     return (dcc.send_data_frame(saved_data_df.to_csv, saved_file_name, 
                                 header=False, index=False, 
