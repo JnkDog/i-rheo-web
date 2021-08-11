@@ -79,14 +79,16 @@ Trigger when the experiental data(raw data) uploaded
     Output("loading-message", "children"),
     Input("upload", "contents"),
     Input("load-example", "n_clicks"),
-    # The g_0 and g_inf are not used ... 
+    Input("GT-refresh-btn", "n_clicks"),
     State("GT-g_0", "value"),
     State("GT-g_inf", "value"),
     State("GT-oversampling-Nf", "value"),
     State("upload", "filename"),
+    State("raw-data-store", "data"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, g_0, g_inf, N_f, file_name):
+def store_raw_data(content, example_click, refresh_click, 
+                   g_0, g_inf, N_f, file_name, prev_raw_data):
     # Deciding which raw_data used according to the ctx
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -95,8 +97,13 @@ def store_raw_data(content, n_clicks, g_0, g_inf, N_f, file_name):
     if button_id == "load-example":
         path = "example_data/SingExp6_5.txt"
         df = generate_df_from_local(path)
-    else:
+    elif button_id == "upload":
         df = generate_df(content)
+    else:
+        if prev_raw_data is None:
+            raise PreventUpdate
+        df = convert_lists_to_df(prev_raw_data)
+        file_name = prev_raw_data["filename"]
     
     # save file_name and lens for message recovering when app changing
     data = {
@@ -135,6 +142,7 @@ and the oversampling button clicked with the oversampling ntimes.
     Output("oversampling-data-store", "data"),
     Output("oversampled-ft-data-store", "data"),
     Input("GT-oversampling-btn", "n_clicks"),
+    Input("GT-refresh-btn", "n_clicks"),
     State("GT-g_0", "value"),
     State("GT-g_inf", "value"),
     State("raw-data-store", "data"),
@@ -142,14 +150,15 @@ and the oversampling button clicked with the oversampling ntimes.
     State("GT-oversampling-input", "value"),
     State("GT-oversampling-Nf", "value"),
 )
-def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes, N_f):
-    if n_clicks is None or data is None or ntimes is None:
+def store_oversampling_data(oversampling_click, refresh_click, 
+                            g_0, g_inf, raw_data, ntimes, N_f):
+    if raw_data is None:
         raise PreventUpdate
 
-    df = convert_lists_to_df(data)
+    df = convert_lists_to_df(raw_data)
 
     # avoid float number
-    ntimes = int(ntimes)
+    ntimes = 10 if ntimes is None else int(ntimes)
     N_f = 100 if N_f is None else int(N_f)
     x, y = get_oversampling_data(df, ntimes=ntimes)
 
