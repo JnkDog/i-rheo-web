@@ -31,3 +31,12 @@ def convert_lists_to_df(data):
     df = pd.DataFrame(list(zip(x, y)))
 
     return df
+    
+# replace the dict's value
+def replace_dict_value(dict, replacement, replacement_keys):
+    idx = 0
+    for key in dict:
+        dict[key] = replacement[idx] if key in replacement_keys else dict[key]
+        idx = idx + 1 if key in replacement_keys else idx
+
+    return dict
