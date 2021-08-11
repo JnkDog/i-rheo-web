@@ -95,7 +95,7 @@ OversamplingHelp = html.Div([
                     html.Div(dbc.Button("Oversampling", color="primary")), 
                 ),
                 dbc.Col(
-                    html.Div(dbc.Button("Refresh", color="secondary")),
+                    html.Div(dbc.Button("Refresh", color="primary")),
                 ),
             ],
         ),

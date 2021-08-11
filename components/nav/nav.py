@@ -1,10 +1,9 @@
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
-from dash_html_components.Div import Div
 
 WEB_LOGO = "assets/imgs/UoG_icon.png"
-BAR_ITEMS = ["INDEX", "MOT", "AFM", "BULK", "GT", "FT"]
+BAR_ITEMS = ["MOT", "AFM", "BULK", "GT", "FT"]
 
 """
 id (string; Must)
@@ -49,7 +48,7 @@ NavBar = html.Header(
                     no_gutters=True,
                 ),
                 # TODO Change the link later
-                href="/gt",
+                href="/index",
             ),
             html.Div(
                 [

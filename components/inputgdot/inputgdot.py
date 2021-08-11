@@ -24,11 +24,16 @@ def input_gdot_generate(prefix_app_name):
     g_0_id   = prefix_app_name + "-g_0"
     g_inf_id = prefix_app_name + "-g_inf"
 
+    if prefix_app_name == "MOT":
+        g_0_placeholder = "Input your g(0), default 1 as A(t), 0 as ∏(t)"
+    else:
+        g_0_placeholder = "Input your g(0), default 1"
+
     Inputgdot = html.Div([
         dbc.Input(
             id=g_0_id,
             type="number",
-            placeholder="Input your g(0), default 1 as A(t), 0 as ∏(t)"
+            placeholder=g_0_placeholder
         ),
         html.Br(),
         dbc.Input(

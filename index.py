@@ -26,9 +26,9 @@ from apps.irheoFT import irheoFT_app
 from apps.bulk import bulk_app
 from apps.notfound import notfound_app
 from apps.wiki import wiki_app
+from apps.index import index_app
 # from apps.bulk import bulk_app
 from components.nav.nav import NavBar
-from components.support import supportIntro
 
 app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
@@ -36,23 +36,6 @@ app.layout = html.Div([
     html.Div(id="page-content")
 ], className="container-fluid")
 
-IndexLayout = html.Div([
-    html.Div(html.H1("Support to Use the Website"), style={"text-align": "center"}),
-    html.Br(),
-    supportIntro.GeneralHelp,
-    html.Br(),
-    supportIntro.SupportHelp,
-    html.Br(),
-    supportIntro.InputHelp,
-    html.Br(),
-    supportIntro.OversamplingHelp,
-    html.Br(),
-    supportIntro.DownloadHelp,
-    html.Br(),
-    supportIntro.FigHelp,
-    html.Br(),
-    ]   
-)
 
 @app.callback(
     Output("page-content", "children"),
@@ -63,7 +46,7 @@ def display_page(pathname):
     
     # TODO need to modify
     if pathname == "/" or pathname == "/index":
-        return IndexLayout
+        return index_app.Layout
     if pathname == "/bulk":
         bulk_app.Layout
     if pathname == "/afm":
