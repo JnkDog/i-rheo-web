@@ -53,6 +53,9 @@ STIFFNESS_RADIUS_COMPONENTS_ID = [
     "MOT-at"
 ]
 
+DEFAULT_G_0_AT = 1
+DEFAULT_G_0_PAIT = 0
+
 Layout = dbc.Row([
             dbc.Col([
                     html.H5("Support .txt"),
@@ -101,13 +104,14 @@ Trigger when the experiental data(raw data) uploaded
     Output("MOT-loading-message", "children"),
     Input("MOT-upload", "contents"),
     Input("MOT-load-example", "n_clicks"),
+    Input("MOT-refresh-btn", "n_clicks"),
     # TODO need change later
     # Boundary conditions
-    Input("MOT-g_0", "value"),
-    Input("MOT-g_inf", "value"),
+    State("MOT-g_0", "value"),
+    State("MOT-g_inf", "value"),
     # Trap stiffness and radius
-    Input("MOT-kt", "value"),
-    Input("MOT-at", "value"),
+    State("MOT-kt", "value"),
+    State("MOT-at", "value"),
     State("MOT-oversampling-Nf", "value"),
     # Decide the A(t) or ∏(t)
     State("MOT-radioitems-input", "value"),
@@ -118,13 +122,14 @@ Trigger when the experiental data(raw data) uploaded
     State("MOT-ft-data-store", "data"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, N_f, func_flag, file_name, 
+def store_raw_data(content, example_click, refresh_click, 
+                   g_0, g_inf, kt, at, 
+                   N_f, func_flag, file_name, 
                    prev_raw_data, prev_ft_data):
-    # PreventUpdate without data
-    data_null_prevents_updated(prev_raw_data, prev_ft_data)
-
     raw_data = {}
     ft_raw_data = {}
+    
+    is_disable_FT = disable_FT(g_0, g_inf, kt, at, N_f, prev_ft_data)
 
     """
     default kt: 1e-6, at: 1e-6
@@ -139,10 +144,13 @@ def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, N_f, func_flag, file_n
     default g_0   : 1 as A(t), 0 as ∏(t)
             g_inf : 0 
     """
-    if func_flag == FUNTION_TYPE.AT.value:
-        g_0 = 1 if g_0 is None else float(g_0)
+    if g_0 is None:
+        is_double_FT = True
+        # Whatever the value is, the important value is the is_double_FT
+        g_0 = 1
     else:
-        g_0 = 0 if g_0 is None else float(g_0)
+        is_double_FT = False
+        g_0 = float(g_0)
 
     g_inf = 0 if g_inf is None else float(g_inf)
 
@@ -157,27 +165,26 @@ def store_raw_data(content, n_clicks, g_0, g_inf, kt, at, N_f, func_flag, file_n
         path = "example_data/mot/data.txt"
         df = generate_df_from_local(path)
         raw_data, ft_raw_data = \
-            upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, N_f, file_name)
+            upload_local_data_workflow(df, g_0, g_inf, kt, at, 
+                                       N_f, file_name, is_double_FT)
 
     # upload the data from users
     elif trigger_id == "MOT-upload":
         df = generate_df(content)
         raw_data, ft_raw_data = \
-            upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, N_f, file_name)
+            upload_local_data_workflow(df, g_0, g_inf, kt, at, 
+                                       N_f, file_name, is_double_FT)
+    else:
+        data_null_prevents_updated()
 
-    # only trigger when 
-    elif trigger_id in STIFFNESS_RADIUS_COMPONENTS_ID:
-        replacement_elements = chenged_G_start_to_g(kt, at, prev_ft_data)
-        replacement_keys = ["pai_y1", "pai_y2", "at_y1", "at_y2"]
-        ft_raw_data = replace_dict_value(prev_ft_data, replacement_elements, replacement_keys)
-        raw_data = prev_raw_data
-
-    elif trigger_id in BOUNDARY_COMPONENTS_ID:
-        df = convert_lists_to_df(prev_raw_data)
-        replacement_elements = mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, False)
-        replacement_keys = ["x", "pai_y1", "pai_y2", "at_y1", "at_y2", "ft_real", "ft_imag"]
-        ft_raw_data = replace_dict_value(prev_ft_data, replacement_elements, replacement_keys)
-        raw_data = prev_raw_data
+        if is_disable_FT:
+            raw_data = prev_raw_data
+            ft_raw_data = update_ft_data(prev_ft_data, kt, at, func_flag)
+        else:
+            df = convert_lists_to_df(prev_raw_data)
+            file_name = prev_ft_data["filename"]
+            raw_data, ft_raw_data = \
+                upload_local_data_workflow(df, g_0, g_inf, kt, at, N_f, is_double_FT)
 
     # return data, upload_messge, ft_data
     return raw_data, ft_raw_data, ""
@@ -190,13 +197,14 @@ and the oversampling button clicked with the oversampling ntimes.
     Output("MOT-oversampling-data-store", "data"),
     Output("MOT-oversampled-ft-data-store", "data"),
     Input("MOT-oversampling-btn", "n_clicks"),
+    Input("MOT-refresh-btn", "n_clicks"),
     # TODO need change later
     # Boundary conditions
-    Input("MOT-g_0", "value"),
-    Input("MOT-g_inf", "value"),
+    State("MOT-g_0", "value"),
+    State("MOT-g_inf", "value"),
     # Trap stiffness and radius
-    Input("MOT-kt", "value"),
-    Input("MOT-at", "value"),
+    State("MOT-kt", "value"),
+    State("MOT-at", "value"),
     # Decide the A(t) or ∏(t)
     State("MOT-radioitems-input", "value"),
     State("MOT-raw-data-store", "data"),
@@ -208,23 +216,34 @@ and the oversampling button clicked with the oversampling ntimes.
     State("MOT-oversampling-data-store", "data"),
     State("MOT-oversampled-ft-data-store", "data"),
 )
-def store_oversampling_data(n_clicks, g_0, g_inf, kt, at, func_flag, raw_data, 
-                            ntimes, N_f, prev_oversampled_data, prev_oversampled_ft_data):
-    if raw_data is None or ntimes is None:
+def store_oversampling_data(oversampling_click, refresh_click,
+                            g_0, g_inf, kt, at, func_flag, raw_data, 
+                            ntimes, N_f, prev_oversampled_data, 
+                            prev_ft_oversampled_data):
+    if raw_data is None and ntimes is None:
         raise PreventUpdate
 
-    # avoid float number
-    ntimes = int(ntimes)
+    is_disable_FT = disable_FT(g_0, g_inf, kt, at, N_f, prev_ft_oversampled_data)
+
+    trigger_id = get_trigger_id()
+
+    # avoid float number or string
+    ntimes = 10 if ntimes is None else int(ntimes)
     N_f = 100 if N_f is None else int(N_f)
+    func_flag = int(func_flag)
+
     """
     Boundary conditions (aka. Oversampling parameters)
     default g_0   : 1 as A(t), 0 as ∏(t)
             g_inf : 0 
     """
-    if func_flag == FUNTION_TYPE.AT.value:
-        g_0 = 1 if g_0 is None else float(g_0)
+    if g_0 is None:
+        is_double_FT = True
+        # Whatever the value is, the important value is the is_double_FT
+        g_0 = 1
     else:
-        g_0 = 0 if g_0 is None else float(g_0)
+        is_double_FT = False
+        g_0 = float(g_0)
 
     g_inf = 0 if g_inf is None else float(g_inf) 
 
@@ -239,33 +258,19 @@ def store_oversampling_data(n_clicks, g_0, g_inf, kt, at, func_flag, raw_data,
     oversampled_data = {}
     ft_oversampled_data = {}
 
-    trigger_id = get_trigger_id()
-
     if trigger_id == "MOT-oversampling-btn":
         df = convert_lists_to_df(raw_data)
         oversampled_data, ft_oversampled_data = \
-            oversampling_button_workflow(df, kt, at, g_0, g_inf, N_f, ntimes)
-    
-    elif trigger_id in STIFFNESS_RADIUS_COMPONENTS_ID:
-        # upload the data but without oversampling need to prevent update
-        if prev_oversampled_data is None or prev_oversampled_ft_data is None:
-            raise PreventUpdate
+            oversampling_button_workflow(df, kt, at, g_0, g_inf, N_f, ntimes, is_double_FT)
+    else:
+        if is_disable_FT:
+            oversampled_data = prev_oversampled_data
+            ft_oversampled_data = update_ft_data(prev_ft_oversampled_data, kt, at, func_flag)
+        else:
+            df = convert_lists_to_df(raw_data)
+            raw_data, ft_oversampled_data = \
+                oversampling_button_workflow(df, kt, at,  g_0, g_inf, N_f, ntimes, is_double_FT)
 
-        replacement_elements = chenged_G_start_to_g(kt, at, prev_oversampled_ft_data)
-        replacement_keys = ["pai_y1", "pai_y2", "at_y1", "at_y2"]
-        ft_oversampled_data = replace_dict_value(prev_oversampled_ft_data, replacement_elements, replacement_keys)
-        oversampled_data = prev_oversampled_data
-    
-    elif trigger_id in BOUNDARY_COMPONENTS_ID:
-        # upload the data but without oversampling need to prevent update
-        if prev_oversampled_data is None or prev_oversampled_ft_data is None:
-            raise PreventUpdate
-
-        df = convert_lists_to_df(raw_data)
-        replacement_elements = mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, False)
-        replacement_keys = ["x", "pai_y1", "pai_y2", "at_y1", "at_y2", "ft_real", "ft_imag"]
-        ft_oversampled_data = replace_dict_value(prev_oversampled_ft_data, replacement_elements, replacement_keys)
-        oversampled_data = prev_oversampled_data
 
     return oversampled_data, ft_oversampled_data
 
@@ -370,13 +375,17 @@ def get_trigger_id():
     return trigger_id
 
 # Prevent updated when the datastore is NULL
-def data_null_prevents_updated(raw_data, ft_raw_data):
-    trigger_id = get_trigger_id()
-
-    if trigger_id in BOUNDARY_COMPONENTS_ID+STIFFNESS_RADIUS_COMPONENTS_ID+["MOT-radioitems-input"]\
-        and raw_data is None and ft_raw_data is None:
+def data_null_prevents_updated(data):
+    if data is None:
         raise PreventUpdate
 
+# If the data exists and the g_o is None with the g_inf
+def disable_FT(g_0, g_inf, kt, at, N_f, prev_data):
+    if all([g_0, g_inf, N_f]) is False and prev_data is not None:
+        return True
+    else:
+        return False
+       
 # replace the dict's value
 def replace_dict_value(dict, replacement, replacement_keys):
     idx = 0
@@ -386,9 +395,42 @@ def replace_dict_value(dict, replacement, replacement_keys):
 
     return dict
 
+# Extract data
+def extract_from_prev_data(original_data, func_flag):
+    if func_flag == FUNTION_TYPE.AT.value:
+        data = {
+            "x": original_data["at_x"],
+            "ft_real": original_data["at_ft_real"],
+            "ft_imag": original_data["at_ft_imag"],
+        }
+    else:
+        data = {
+            "x": original_data["pai_x"],
+            "ft_real": original_data["pait_ft_real"],
+            "ft_imag": original_data["pait_ft_imag"],
+        }
+
+    return data
+
+# Updata FT data acroding the func_flag
+def update_ft_data(ft_data, kt, at, func_flag):
+    data = extract_from_prev_data(ft_data, func_flag)
+    if func_flag == FUNTION_TYPE.AT.value:
+        _, _, replace_g_p, replace_g_pp = chenged_G_start_to_g(kt, at, data)
+        replacement_keys = ["at_y1", "at_y2"]
+        replacement_elements = [replace_g_p, replace_g_pp]
+    else:
+        replace_g_p, replace_g_pp, _, _ = chenged_G_start_to_g(kt, at, data)
+        replacement_keys = ["pai_y1", "pai_y2"]
+        replacement_elements = [replace_g_p, replace_g_pp]
+
+    updated_data = replace_dict_value(ft_data, replacement_elements, replacement_keys)
+
+    return updated_data
 
 # only the upload button and example button trigger this
-def upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, N_f, file_name):
+def upload_local_data_workflow(df, g_0, g_inf, kt, at, 
+                                N_f, file_name, is_double_FT):
     # save file_name and lens for message recovering when app changing
     raw_data = {
         "x": df[0],
@@ -397,22 +439,47 @@ def upload_local_data_workflow(df, func_flag, g_0, g_inf, kt, at, N_f, file_name
         "lines": len(df)
     }
 
-    omega, pai_g_p, pai_g_pp, a_t_g_p, a_t_g_pp, ft_real, ft_imag = \
-        mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, False)
-    
-    ft_raw_data = {
-        "x": omega,
-        "pai_y1": pai_g_p,
-        "pai_y2": pai_g_pp,
-        "at_y1" : a_t_g_p,
-        "at_y2" : a_t_g_pp,
-        "ft_real": ft_real,
-        "ft_imag": ft_imag
-    }
+    if is_double_FT:
+        # At
+        omega_at, _, _, a_t_g_p, a_t_g_pp, at_ft_real, at_ft_imag = \
+            mot_integrated_processing(df, kt, at, DEFAULT_G_0_AT, g_inf, N_f, False)
+
+        # Pait
+        omega_pait, pai_g_p, pai_g_pp, _, _, pait_ft_real, pait_ft_imag = \
+            mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, False)
+
+        ft_raw_data = {
+            "at_x": omega_at,
+            "pai_x": omega_pait,
+            "pai_y1": pai_g_p,
+            "pai_y2": pai_g_pp,
+            "pai_ft_real": pait_ft_real,
+            "pai_ft_imag": pait_ft_imag,
+            "at_y1" : a_t_g_p,
+            "at_y2" : a_t_g_pp,
+            "at_ft_real": at_ft_real,
+            "at_ft_imag": at_ft_imag
+        }
+    else:
+        omega, pai_g_p, pai_g_pp, a_t_g_p, a_t_g_pp, ft_real, ft_imag = \
+            mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, False)
+
+        ft_raw_data = {
+            "at_x": omega,
+            "pai_x": omega,
+            "pai_y1": pai_g_p,
+            "pai_y2": pai_g_pp,
+            "pai_ft_real": ft_real,
+            "pai_ft_imag": ft_imag,
+            "at_y1" : a_t_g_p,
+            "at_y2" : a_t_g_pp,
+            "at_ft_real": ft_real,
+            "at_ft_imag": ft_imag
+        }
 
     return raw_data, ft_raw_data
 
-def oversampling_button_workflow(df, kt, at, g_0, g_inf, N_f, ntimes):
+def oversampling_button_workflow(df, kt, at, g_0, g_inf, N_f, ntimes, is_double_FT):
     x, y = mot_oversampling(df, ntimes)
 
     oversampled_data = {
@@ -420,17 +487,43 @@ def oversampling_button_workflow(df, kt, at, g_0, g_inf, N_f, ntimes):
         "y": y,
     }
 
-    omega, pai_g_p, pai_g_pp, a_t_g_p, a_t_g_pp, ft_real, ft_imag \
-        = mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, True, ntimes)
+    if is_double_FT:
+        # At
+        omega_at, _, _, a_t_g_p, a_t_g_pp, at_ft_real, at_ft_imag = \
+            mot_integrated_processing(df, kt, at, DEFAULT_G_0_AT, g_inf, N_f, True, ntimes)
 
-    ft_oversampled_data = {
-        "x": omega,
-        "pai_y1": pai_g_p,
-        "pai_y2": pai_g_pp,
-        "at_y1" : a_t_g_p,
-        "at_y2" : a_t_g_pp,
-        "ft_real": ft_real,
-        "ft_imag": ft_imag
-    }
+        # Pait
+        omega_pait, pai_g_p, pai_g_pp, _, _, pait_ft_real, pait_ft_imag = \
+            mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, True, ntimes)
+
+        ft_oversampled_data = {
+            "at_x": omega_at,
+            "pai_x": omega_pait,
+            "pai_y1": pai_g_p,
+            "pai_y2": pai_g_pp,
+            "pai_ft_real": pait_ft_real,
+            "pai_ft_imag": pait_ft_imag,
+            "at_y1" : a_t_g_p,
+            "at_y2" : a_t_g_pp,
+            "at_ft_real": at_ft_real,
+            "at_ft_imag": at_ft_imag
+        }
+    else:
+        omega, pai_g_p, pai_g_pp, a_t_g_p, a_t_g_pp, ft_real, ft_imag = \
+            mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, True, ntimes)
+
+        ft_oversampled_data = {
+            "at_x": omega,
+            "pai_x": omega,
+            "pai_y1": pai_g_p,
+            "pai_y2": pai_g_pp,
+            "pai_ft_real": ft_real,
+            "pai_ft_imag": ft_imag,
+            "at_y1" : a_t_g_p,
+            "at_y2" : a_t_g_pp,
+            "at_ft_real": ft_real,
+            "at_ft_imag": ft_imag
+        }
+
 
     return oversampled_data, ft_oversampled_data

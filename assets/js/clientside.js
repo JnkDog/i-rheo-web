@@ -175,12 +175,9 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalA
             "x": oversamplingData.x,
             "y": oversamplingData.y
         };
-
+        
         data.push(rawDataTrace, oversamplingDataTrace);
     } else {
-        // console.log("========= in sigma =============");
-        // console.log(rawData)
-        // data = rawData;
         data.push(rawDataTrace);
     }
 
@@ -207,11 +204,11 @@ motRender = function(ftData, oversampledftData, switchValue=[false],
     let x, y1, y2;
 
     if (functionFlag == FUNCTION_TYPE.AT) {
-        x  = ftData.x;
+        x  = ftData.at_x;
         y1 = ftData.at_y1;
         y2 = ftData.at_y2;
     } else {
-        x  = ftData.x;
+        x  = ftData.pait_x;
         y1 = ftData.pai_y1;
         y2 = ftData.pai_y2;
     }
@@ -245,11 +242,11 @@ motRender = function(ftData, oversampledftData, switchValue=[false],
 
     if (switchValue[0] == true && oversampledftData != undefined) {
         if (functionFlag == FUNCTION_TYPE.AT) {
-            x  = oversampledftData.x;
+            x  = oversampledftData.at_x;
             y1 = oversampledftData.at_y1;
             y2 = oversampledftData.at_y2;
         } else {
-            x  = oversampledftData.x;
+            x  = oversampledftData.pait_x;
             y1 = oversampledftData.pai_y1;
             y2 = oversampledftData.pai_y2;
         }
@@ -642,7 +639,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         tabChangeMotRender: motRender
     },
     clientsideAfm: {
-        tabChangeForRender: forceRender,
+        tabChangeForRender: forceRender, 
         tabChangeIdeRender: identationRender,
         tabChangeFunRender: afmRender,
     },

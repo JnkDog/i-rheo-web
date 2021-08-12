@@ -21,7 +21,7 @@ def switch_component_generate(prefix_app_name):
             options=[
                 {"label": "oversampling render", "value": True}
             ],
-            value=[False], 
+            # value=[False], 
             id=switch_id,
             switch=True,
             style={"fontSize": "20px"}
@@ -36,7 +36,7 @@ def FT_rendering_switch_generate(prefix_app_name):
                     {"label": "time derivative", "value": True}
                 ],
                 id=switch_id,
-                switch=True,
+                # switch=True,
                 style={"fontSize": "20px"}),
                 id="time-derivate-form",
                 className="mt-1")
