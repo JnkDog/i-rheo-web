@@ -263,7 +263,7 @@ def download(n_clicks, time_derivatived_option, raw_data, ft_oversampled_data):
         is not None and time_derivatived_option != [] else False
 
     file_suffix_name = raw_data.get("filename")
-    saved_file_name = "Oversampled_" + file_suffix_name
+    saved_file_name = "FT_oversampled_" + file_suffix_name
 
     if option == TIME_DERIVATED.NONTIME_DERIVATED.value:
         complex_list = combine_as_complex(

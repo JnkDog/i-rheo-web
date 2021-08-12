@@ -293,23 +293,25 @@ def download(n_clicks, raw_data, ft_oversampled_data, func_flag):
         return None, "No data available!"
 
     file_suffix_name = raw_data.get("filename")
-    saved_file_name = "Oversampled_" + file_suffix_name
+    saved_file_name = "FT_oversampled_" + file_suffix_name
 
     # TODO At or Pai t's download data convert...
     # Covert the option from string to int
     if int(func_flag) == FUNTION_TYPE.AT.value:
+        saved_omega = ft_oversampled_data["at_x"]
         complex_list = combine_as_complex(
             ft_oversampled_data["at_y1"],
             ft_oversampled_data["at_y2"]
         )
     else:
+        saved_omega = ft_oversampled_data["pai_x"]
         complex_list = combine_as_complex(
             ft_oversampled_data["pai_y1"],
             ft_oversampled_data["pai_y2"]
         )
     
     saved_data_df = pd.DataFrame(six_decimal_saving({
-        "x": ft_oversampled_data["x"],
+        "x": saved_omega,
         "y": complex_list
     }))
 

@@ -201,7 +201,7 @@ def download(n_clicks, raw_data, ft_oversampled_data):
         return None, "No data available!"
 
     file_suffix_name = raw_data.get("filename")
-    saved_file_name = "Oversampled_" + file_suffix_name
+    saved_file_name = "FT_oversampled_" + file_suffix_name
 
     complex_list = combine_as_complex(
         ft_oversampled_data["y1"],
