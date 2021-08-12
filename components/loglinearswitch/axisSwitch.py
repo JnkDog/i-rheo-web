@@ -22,8 +22,8 @@ def vertical_axis_swith(prefix_app_name):
     VerticalRadioItems = dbc.FormGroup([
         dbc.RadioItems(
             options=[
-                {"label": "loglog", "value": 0},
-                {"label": "linear", "value": 1},
+                {"label": "log-log", "value": 0},
+                {"label": "linear-log", "value": 1},
             ],
             value=0,
             id=radio_id,

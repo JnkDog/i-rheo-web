@@ -215,6 +215,7 @@ and the oversampling button clicked with the oversampling ntimes.
     # State("MOT-ft-data-store", "modified_timestamp"),
     State("MOT-oversampling-data-store", "data"),
     State("MOT-oversampled-ft-data-store", "data"),
+    prevent_initial_call=True
 )
 def store_oversampling_data(oversampling_click, refresh_click,
                             g_0, g_inf, kt, at, func_flag, raw_data, 

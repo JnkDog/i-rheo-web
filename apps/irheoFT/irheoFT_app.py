@@ -148,6 +148,7 @@ and the oversampling button clicked with the oversampling ntimes.
     State("FTAPP-oversampling-Nf", "value"),
     State("FTAPP-oversampling-data-store", "data"),
     State("FTAPP-oversampled-ft-data-store", "data"),
+    prevent_initial_call=True
 )
 def store_oversampling_data(oversampling_click, refresh_click, 
                             g_0, g_inf, raw_data, ntimes, N_f,

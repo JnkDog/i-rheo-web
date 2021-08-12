@@ -149,6 +149,7 @@ and the oversampling button clicked with the oversampling ntimes.
     # State("ft-data-store", "data"),
     State("GT-oversampling-input", "value"),
     State("GT-oversampling-Nf", "value"),
+    prevent_initial_call=True
 )
 def store_oversampling_data(oversampling_click, refresh_click, 
                             g_0, g_inf, raw_data, ntimes, N_f):

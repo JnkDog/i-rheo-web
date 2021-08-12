@@ -35,7 +35,8 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
         "Omega [rad/s]" : "Frequency [Hz]";
     
     setting["text"] = xaxisText;
-    setting["yaxis"] = {"dtick": 1, "tick0": -7, 
+    setting["yaxis"] = {
+        "dtick": 1, "tick0": -7, 
         "type": "log", "title": {"text" : "R, I"},
         "ticks": "outside"
     };
@@ -48,9 +49,10 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
         setting["x"] = oversampledftData.x;
         setting["y1"] = oversampledftData.non_time_y1;
         setting["y2"] = oversampledftData.non_time_y2;
-        setting["yaxis"] = {"type": "linear", 
-            "title": {"text" : "R, I"},
-             "ticks": "outside"};
+        // setting["yaxis"] = {
+        //     "type": "linear", 
+        //     "title": {"text" : "R, I"},
+        //      "ticks": "outside"};
     } else if (timeDerivativedSwitch) {
         setting["x"] = ftData.x;
         setting["y1"] = ftData.y1;
@@ -59,9 +61,10 @@ figSetting = (ftData, oversampledftData, oversamplingSwitch, timeDerivativedSwit
         setting["x"] = ftData.x;
         setting["y1"] = ftData.non_time_y1;
         setting["y2"] = ftData.non_time_y2;
-        setting["yaxis"] = {"type": "linear", 
-        "title": {"text" : "R, I"},
-        "ticks": "outside"};
+        // setting["yaxis"] = {
+        //     "type": "linear", 
+        // "title": {"text" : "R, I"},
+        // "ticks": "outside"};
     }
 
     if (verticalAxisSwitch ==VERTICAL_AXIS_TYPE.LINEAR) {
