@@ -17,8 +17,9 @@ from components.oversampling.oversampling import afm_oversampling_generate, over
 from components.loglinearswitch.axisSwitch import vertical_axis_swith
 
 # import algorithm
-from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
-from algorithm.afm import afm_moduli_process, oversample_function
+from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df, replace_dict_value
+from algorithm.afm import afm_moduli_process, afm_rawdata_oversampling
+from algorithm.saving_process import combine_as_complex, six_decimal_saving
 
 prefix_app_name = "AFM"
 
@@ -57,6 +58,7 @@ Layout = dbc.Row([
     Output("AFM-loading-message", "children"),
     Input("AFM-upload", "contents"),
     Input("AFM-load-example", "n_clicks"),
+    State("AFM-refresh-btn", "n_clicks"),
     State("AFM-upload", "filename"),
     # TODO need change later
     State("AFM-r", "value"),
@@ -66,28 +68,16 @@ Layout = dbc.Row([
     State("AFM-indentation0", "value"),
     State("AFM-indentationinf", "value"),
     State("AFM-oversampling-Nf", "value"),
+    State("AFM-raw-data-store", "value"),
+    State("AFM-ft-data-store", "value"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf, N_f):
+def store_raw_data(content, example_clicks, refresh_clicks, 
+                    file_name, r, v, l0, linf, ind0, indinf, N_f, 
+                    prev_raw_data, prev_ft_data):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-    df = pd.DataFrame()
-    if button_id == "AFM-load-example":
-        path = "test_data/AFM/Agarose_gel.txt"
-        df = generate_df_from_local(path)
-    else:
-        df = generate_df(content)
-    
-    # save file_name and lens for message recovering when app changing
-    data = {
-        "x": df[0],
-        "y": df[1],
-        "z": df[2],
-        "filename": file_name,
-        "lines": len(df)
-    }
 
     # default v = 0.5 & r(named δ actually)
     v = 0.5 if v is None else v
@@ -98,21 +88,34 @@ def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf, N
     indinf = 0 if indinf is None else indinf
     N_f = 100 if N_f is None else int(N_f)
 
-    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, False)
+    df = pd.DataFrame()
+    if button_id == "AFM-load-example":
+        path = "test_rawdata/AFM/a.txt"
+        df = generate_df_from_local(path)
+        raw_data, ft_data = upload_local_data_workflow(df, file_name, r, v, l0, linf, ind0, indinf, N_f)
 
-    ft_data = {
-        "x1": omega,
-        "y1": g_p,
-        "y2": g_pp
-    }
+    elif button_id == "AFM-upload":
+        df = generate_df(content)
+        raw_data, ft_data = upload_local_data_workflow(df, file_name, r, v, l0, linf, ind0, indinf, N_f)
 
-    return data, ft_data, ""
+    elif button_id == "AFM-refresh-btn":
+        if prev_raw_data is None:
+            raise PreventUpdate
+        else:
+            df = convert_lists_to_df(prev_raw_data)
+            replacement_elements = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, False)
+            raw_data = prev_raw_data
+            replacement_keys = ["x", "y1", "y2"]
+            ft_data = replace_dict_value(prev_ft_data, replacement_elements, replacement_keys)
+
+    return raw_data, ft_data, ""
 
 
 @app.callback(
-    # Output("AFM-oversampling-data-store", "data"),
+    Output("AFM-oversampling-data-store", "data"),
     Output("AFM-oversampled-ft-data-store", "data"),
     Input("AFM-oversampling-btn", "n_clicks"),
+    Input("AFM-refresh-btn", "n_clicks"),
     State("AFM-r", "value"),
     State("AFM-v", "value"),
     State("AFM-load0", "value"),
@@ -122,17 +125,24 @@ def store_raw_data(content, n_clicks, file_name, r, v, l0, linf, ind0, indinf, N
     State("AFM-raw-data-store", "data"),
     State("AFM-oversampling-input", "value"),
     State("AFM-oversampling-Nf", "value"),
+    State("AFM-oversampling-data-store", "data"),
+    State("AFM-oversampled-ft-data-store", "data"),
+    prevent_initial_call=True
 )
-def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes, N_f):
-    if n_clicks is None or data is None or ntimes is None:
+def store_oversampling_data(oversampling_clicks, refresh_clicks, 
+                            r, v, l0, linf, ind0, indinf, raw_data, ntimes, N_f,
+                            prev_oversampled_data, prev_oversampled_ft_data):
+    if raw_data is None:
         raise PreventUpdate
 
-    # avoid float number
-    ntimes = int(ntimes)
-    df = convert_lists_to_df(data)
-    # oversample force and identation data
-    # x, y, z = oversample_function(df, ntimes)
-    # ftdata = data
+    ctx = dash.callback_context
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    if button_id == "FTAPP-refresh-btn":
+        if prev_oversampled_data is None and prev_oversampled_ft_data is None:
+            raise PreventUpdate
+    
+    ntimes = 10 if ntimes is None else int(ntimes)
     v = 0.5 if v is None else v
     r = 20 if r is None else r
     l0 = 1 if l0 is None else l0
@@ -140,6 +150,16 @@ def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes
     ind0 = 1 if ind0 is None else ind0
     indinf = 0 if indinf is None else indinf
     N_f = 100 if N_f is None else int(N_f)
+
+    df = convert_lists_to_df(raw_data)
+
+    x, y, z = afm_rawdata_oversampling(df, ntimes)
+
+    oversampled_data = {
+        "x": x,
+        "y": y,
+        "z": z,
+    }
 
     omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, True, ntimes)
 
@@ -149,7 +169,7 @@ def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes
         "y2": g_pp
     }
 
-    return oversampled_ft_data
+    return oversampled_data, oversampled_ft_data
 
 
 # =================== Download Callback =====================
@@ -160,32 +180,27 @@ def store_oversampling_data(n_clicks, r, v, l0, linf, ind0, indinf, data, ntimes
     State("AFM-begin-line-number", "value"),
     State("AFM-end-line-number", "value"),
     State("AFM-oversampled-ft-data-store", "data"),
+    State("FTAPP-raw-data-store", "data"),
+    State("FTAPP-oversampled-ft-data-store", "data"),
     prevent_initial_call=True,
 )
-def download(n_clicks, beginLineIdx, endLineIdx, data):
-    if data is None:
-        raise PreventUpdate
+def download(n_clicks, raw_data, oversampled_ft_data):
+    if oversampled_ft_data is None:
+        return None, "No oversampled data available!"
 
-    # avoid float number
-    beginLineIdx = int(beginLineIdx)
-    endLineIdx = int(endLineIdx)
-    if beginLineIdx >= endLineIdx:
-        return None, "Invaild parameters"
+    file_suffix_name = raw_data.get("filename")
+    saved_file_name = "AFM_oversampled_" + file_suffix_name
 
-    try:
-        saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
-        saving_y_list = data.get("y1")[beginLineIdx:endLineIdx+1]
-        saving_z_list = data.get("y2")[beginLineIdx:endLineIdx+1]
-    except:
-        # if the idx is out of range, say, endLineIdx > len(x)
-        saving_x_list = data.get("x")[beginLineIdx:]
-        saving_y_list = data.get("y1")[beginLineIdx:]
-        saving_z_list = data.get("y2")[beginLineIdx:]
-    else:
-        saving_df = pd.DataFrame({"x": saving_x_list, "y1": saving_y_list, "y2": saving_z_list})
-        saving_file_name = "download_AFM_data.txt"
+    complex_list = combine_as_complex(
+            oversampled_ft_data["y1"],
+            oversampled_ft_data["y2"]
+        )
 
-    return (dcc.send_data_frame(saving_df.to_csv, saving_file_name, 
+    saved_data_df = pd.DataFrame(six_decimal_saving({
+        "x": oversampled_ft_data["x"],
+        "y": complex_list
+    }))
+    return (dcc.send_data_frame(saved_data_df.to_csv, saved_file_name, 
                                 header=False, index=False, 
                                 sep='\t', encoding='utf-8'), 
                                 "Download OK !") 
@@ -201,8 +216,8 @@ app.clientside_callback(
     ),
     Output("AFM-Force-display", "figure"),
     Input("AFM-raw-data-store", "data"),
-    # Input("AFM-oversampling-data-store", "data"),
-    # Input("AFM-oversampling-render-switch", "value"),
+    Input("AFM-oversampling-data-store", "data"),
+    Input("AFM-oversampling-render-switch", "value"),
 )
 
 # output identation fig
@@ -213,6 +228,8 @@ app.clientside_callback(
     ),
     Output("AFM-Indentation-display", "figure"),
     Input("AFM-raw-data-store", "data"),
+    Input("AFM-oversampling-data-store", "data"),
+    Input("AFM-oversampling-render-switch", "value"),
 )
 
 app.clientside_callback(
@@ -238,3 +255,23 @@ app.clientside_callback(
     # prevent_initial_call=True
 )
 
+def upload_local_data_workflow(df, file_name, r, v, l0, linf, ind0, indinf, N_f):
+    # save file_name and lens for message recovering when app changing
+    raw_data = {
+        "x": df[0],
+        "y": df[1],
+        "z": df[2],
+        "filename": file_name,
+        "lines": len(df)
+    }
+
+    # fast FT processing
+    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, False)
+
+    ft_data = {
+        "x1": omega,
+        "y1": g_p,
+        "y2": g_pp
+    }
+
+    return raw_data, ft_data

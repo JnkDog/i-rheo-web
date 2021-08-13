@@ -252,7 +252,7 @@ Input("FTAPP-download-btn", "n_clicks"),
 # State("FTAPP-oversampling-data-store", "data"),
 # State("FTAPP-ft-data-store", "data"),
 State("FTAPP-time-derivative", "value"),
-State("FTAPP-raw-data-store","data"),
+State("FTAPP-raw-data-store", "data"),
 State("FTAPP-oversampled-ft-data-store", "data"),
 prevent_initial_call=True,
 )

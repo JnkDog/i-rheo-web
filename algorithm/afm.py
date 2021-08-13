@@ -1,4 +1,4 @@
-def oversample_function(df, ntimes):
+def oversample_proccess(df, ntimes):
     # used for test
     return df[0], df[1], df[2]
 
@@ -13,8 +13,9 @@ from multiprocessing import Process, Queue, Lock
 from multiprocessing import Pool
 import multiprocessing
 import math
-res = np.zeros(100, dtype=complex)
+from algorithm.oversample import get_oversampling_data, oversampling_process
 
+res = np.zeros(100, dtype=complex)
 
 def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=10):
     g = np.array(g)
@@ -86,6 +87,13 @@ def afm_moduli_process(df, radius=20, v=0.5, load0=1, loadinf=0, ind0=1, indinf=
     g_pp = np.imag(G_star)
 
     return omega1, g_p, g_pp
+
+
+def afm_rawdata_oversampling(content, ntimes):
+    x, y = oversampling_process(content[0], content[1], ntimes)
+    a, z = oversampling_process(content[0], content[2], ntimes)
+    
+    return x, y, z
 
 
 # if __name__ == '__main__':

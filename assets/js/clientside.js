@@ -346,11 +346,7 @@ reImFigRender = function(ftData, oversampledftData,
     };
 }
 
-forceRender = function(rawData) {
-    if (rawData == undefined) {
-        return;
-    }
-
+forceRender = function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch) {
     let data = [];
     let layout = {
         "xaxis": {"dtick": 1, "tick0": -12, 
@@ -360,6 +356,10 @@ forceRender = function(rawData) {
                   "type": "log", "title": {"text" : "Force (uN)"},
                   "ticks": "outside"},
     };
+
+    if (rawData == undefined) {
+        return;
+    }
 
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
@@ -371,7 +371,26 @@ forceRender = function(rawData) {
         "y": rawData.y
     }
 
+    if (switchValue[0] == true && oversamplingData != undefined) {
+        let oversamplingDataTrace = {
+            "name": "Oversampled Force Data",
+            "mode": "markers",
+            "marker": {"symbol": "circle-x", 
+                        "size": 6, "maxdisplayed": 200},
+            "x": oversamplingData.x,
+            "y": oversamplingData.y
+        };
+        
+        data.push(rawDataTrace, oversamplingDataTrace);
+    } else {
         data.push(rawDataTrace);
+    }
+
+    if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
+        layout["yaxis"]["type"] = "linear"
+    } else {
+        layout["yaxis"]["type"] = "log"
+    }
 
     return {
         "data" : data,
@@ -379,11 +398,7 @@ forceRender = function(rawData) {
     };
 }
 
-identationRender = function(rawData) {
-    if (rawData == undefined) {
-        return;
-    }
-
+identationRender = function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch) {
     let data = [];
     let layout = {
         "xaxis": {"dtick": 1, "tick0": -12, 
@@ -393,6 +408,10 @@ identationRender = function(rawData) {
                   "type": "log", "title": {"text" : "Indentation (nm)"},
                   "ticks": "outside"},
     };
+
+    if (rawData == undefined) {
+        return;
+    }
 
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
@@ -404,7 +423,26 @@ identationRender = function(rawData) {
         "y": rawData.z
     }
 
+    if (switchValue[0] == true && oversamplingData != undefined) {
+        let oversamplingDataTrace = {
+            "name": "Oversampled Indentation Data",
+            "mode": "markers",
+            "marker": {"symbol": "circle-x", 
+                        "size": 6, "maxdisplayed": 200},
+            "x": oversamplingData.x,
+            "y": oversamplingData.z
+        };
+        
+        data.push(rawDataTrace, oversamplingDataTrace);
+    } else {
         data.push(rawDataTrace);
+    }
+
+    if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
+        layout["yaxis"]["type"] = "linear"
+    } else {
+        layout["yaxis"]["type"] = "log"
+    }
 
     return {
         "data" : data,
