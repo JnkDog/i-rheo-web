@@ -1,3 +1,4 @@
+from dash.exceptions import PreventUpdate
 from algorithm.oversample import get_oversampling_data
 import dash
 from dash.dependencies import Input, Output, State, ClientsideFunction
@@ -93,6 +94,11 @@ def store_raw_data(content, example_click, refresh_click,
         df = generate_df_from_local(path)
     elif button_id == "BULKAPP-upload":
         df = generate_df(content)
+    else:
+        if prev_raw_data is None:
+            raise PreventUpdate
+        df = convert_lists_to_df(prev_raw_data)
+        file_name = prev_raw_data["filename"]  
 
     raw_data = {
         "x": df[0],
