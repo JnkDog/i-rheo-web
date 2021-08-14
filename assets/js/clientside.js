@@ -539,7 +539,7 @@ uploadMessageRecovery = function(rawData) {
 
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientsideSigma: {
-        tabChangeFigRender: function(rawData, oversamplingData, switchValue=[false]) {
+        tabChangeFigRender: function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch) {
             if (rawData == undefined) {
                 return;
             }
@@ -588,6 +588,12 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 // console.log(rawData)
                 // data = rawData;
                 data.push(rawDataTrace);
+            }
+
+            if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
+                layout["yaxis"]["type"] = "linear"
+            } else {
+                layout["yaxis"]["type"] = "log"
             }
     
             return {

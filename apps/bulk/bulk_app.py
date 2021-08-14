@@ -176,19 +176,25 @@ Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
     """
-    function(rawData, oversamplingData, switchValue=[false]) {
+    function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch) {
         if (rawData == undefined) {
             return;
         }
 
         let data = [];
+        let linearLayout;
+        let linearTick0;
+
         let layout = {
-            "xaxis": {"tick0": -2, "dtick": 1,
-                        "type": "log", "title": {"text": "Time [s]"}, 
-                        "ticks": "outside" 
+            "xaxis": {  
+                "tick0": -2, "dtick": 1,
+                "type": "log", "title": {"text": "Time [s]"}, 
+                "ticks": "outside" 
             },
-            "yaxis": {"title": {"text" : "σ [Pa]"}, "range": [0, 1.0],
-                        "rangemode": "tozero", "ticks": "outside"
+            "yaxis": {  
+                "tick0": -2, "dtick": 1,
+                "type": "log", "title": {"text" : "σ [Pa]"}, 
+                "ticks": "outside"
             },
         }
         let rawDataTrace = {
@@ -212,8 +218,32 @@ app.clientside_callback(
             }
             
             data.push(rawDataTrace, oversamplingDataTrace);
+
+            linearTick0 = oversamplingData.y[0];
+            linearLayout = {
+                "yaxis": {  
+                    "dtick": 2000, "tick0": linearTick0,
+                    "type": "linear", "title": {"text" : "σ [Pa]"}, 
+                    "ticks": "outside"
+                }
+            };
         } else {
             data.push(rawDataTrace);
+
+            linearTick0 = rawData.y[0];
+            linearLayout = {
+                "yaxis": {  
+                    "dtick": 2000, "tick0": linearTick0,
+                    "type": "linear", "title": {"text" : "σ [Pa]"}, 
+                    "ticks": "outside"
+                }
+            };
+        }
+
+        if (verticalAxisSwitch == 1) {
+            layout["yaxis"] = linearLayout;
+        } else {
+            layout["yaxis"]["type"] = "log";
         }
 
         return {
@@ -236,7 +266,7 @@ Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
     """
-    function(rawData, oversamplingData, switchValue=[false]) {
+    function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch) {
         if (rawData == undefined) {
             return;
         }
@@ -274,6 +304,12 @@ app.clientside_callback(
             data.push(rawDataTrace, oversamplingDataTrace);
         } else {
             data.push(rawDataTrace);
+        }
+
+        if (verticalAxisSwitch == 1) {
+            layout["yaxis"]["type"] = "linear"
+        } else {
+            layout["yaxis"]["type"] = "log"
         }
 
         return {
@@ -321,7 +357,7 @@ app.clientside_callback(
             "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
             "name": "G\'",
             "mode": "lines",
-            "line": {color:"black", "width": "8"},
+            "line": {color:"black"},
             // "marker": {"color": "black", "symbol": "square", "size": 7},
             "x": ftData.x,
             "y": ftData.y1,
@@ -339,7 +375,7 @@ app.clientside_callback(
             let oversampledftDataTrace0 = {
                 "name": "oversampled-G\'",
                 "mode": "lines",
-                "line": {color:"black", "width": "8"},
+                "line": {color:"black"},
                 // "marker": {"color": "black"},
                 "x": oversampledftData.x,
                 "y": oversampledftData.y1,
@@ -358,7 +394,7 @@ app.clientside_callback(
         }
         
         let layout = [];
-        if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
+        if (verticalAxisSwitch == 1) {
             layout = layoutLinear;
         } else {
             layout = layoutLog;
@@ -371,8 +407,8 @@ app.clientside_callback(
     } 
     """,
     Output("BULKAPP-vm-display", "figure"),
-    Input("BULKAPP-raw-data-store", "data"),
-    Input("BULKAPP-oversampling-data-store", "data"),
+    Input("BULKAPP-FT-data-store", "data"),
+    Input("BULKAPP-oversampled-ft-data-store", "data"),
     Input("BULKAPP-oversampling-render-switch", "value"),
     Input("BULKAPP-vertical-axis-switch", "value"),
     # prevent_initial_call=True
