@@ -18,7 +18,8 @@ from components.loglinearswitch.axisSwitch import vertical_axis_swith
 
 # import algorithm
 from algorithm.read_data import generate_df, generate_df_from_local, convert_lists_to_df
-from algorithm.pwft import ftdata
+from algorithm.bulk.bulk import bulk_ft
+from algorithm.saving_process import combine_as_complex, six_decimal_saving
 
 """
 The orginal version is the i-Rheo virtual instrument (VI) LABVIEW.
@@ -33,9 +34,9 @@ Layout = dbc.Row([
                     html.H5("Support .txt"),
                     html.Div([
                         upload_component_generate("BULKAPP-upload"),
-                        dcc.Store(id="BULKAPP-raw-data-store"),
-                        dcc.Store(id="BULKAPP-oversampling-data-store"),
-                        dcc.Store(id="BULKAPP-FT-data-store"),
+                        dcc.Store(id="BULKAPP-raw-data-store", storage_type="session"),
+                        dcc.Store(id="BULKAPP-oversampling-data-store", storage_type="session"),
+                        dcc.Store(id="BULKAPP-FT-data-store", storage_type="session"),
                         dcc.Loading(dcc.Store(id="BULKAPP-oversampled-ft-data-store", 
                                               storage_type="session"),
                                     id="full-screen-mask",
@@ -68,27 +69,32 @@ Trigger when the experiental data(raw data) uploaded
 @app.callback(
     Output("BULKAPP-raw-data-store", "data"),
     # Output("BULKAPP-upload-message", "children"),
+    Output("BULKAPP-FT-data-store", "data"),
     Output("BULKAPP-loading-message", "children"),
     Input("BULKAPP-upload", "contents"),
-    Input("BULKAPPload-example", "n_clicks"),
+    Input("BULKAPP-load-example", "n_clicks"),
+    Input("BULKAPP-refresh-btn", "n_clicks"),
     State("BULKAPP-g_0", "value"),
     State("BULKAPP-g_inf", "value"),
+    State("BULKAPP-oversampling-Nf", "value"),
     State("BULKAPP-upload", "filename"),
+    State("BULKAPP-raw-data-store", "data"),
     prevent_initial_call=True
 )
-def store_raw_data(content, n_clicks,  g_0, g_inf, file_name):
+def store_raw_data(content, example_click, refresh_click,
+                   g_0, g_inf, N_f, file_name, prev_raw_data):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     df = pd.DataFrame()
-    if button_id == "load-example":
+    if button_id == "BULKAPP-load-example":
         path = "./example_data/bulk/example.txt"
         df = generate_df_from_local(path)
-    else:
+    elif button_id == "BULKAPP-upload":
         df = generate_df(content)
 
-    data = {
+    raw_data = {
         "x": df[0],
         "y": df[1],
         "z": df[2],
@@ -99,8 +105,9 @@ def store_raw_data(content, n_clicks,  g_0, g_inf, file_name):
     # default g_0: 1, g_inf: 0
     g_0 = 1 if g_0 is None else int(g_0)
     g_inf = 0 if g_inf is None else int(g_inf)
+    N_f = 100 if N_f is None else int(N_f)
 
-    omega, g_p, g_pp = ftdata(df, g_0, g_inf, False)
+    omega, g_p, g_pp = bulk_ft(df, g_0, g_inf, True, N_f)
 
     ft_data = {
         "x": omega,
@@ -111,7 +118,7 @@ def store_raw_data(content, n_clicks,  g_0, g_inf, file_name):
     """
     Don't pass any string to this return. This component only for loading message.
     """
-    return data, ft_data, ""
+    return raw_data, ft_data, ""
 
 """
 Trigger when the experiental data(raw data) has already uploaded
@@ -121,32 +128,39 @@ and the oversampling button clicked with the oversampling ntimes.
     Output("BULKAPP-oversampling-data-store", "data"),
     Output("BULKAPP-oversampled-ft-data-store", "data"),
     Input("BULKAPP-oversampling-btn", "n_clicks"),
+    Input("BULKAPP-refresh-btn", "n_clicks"),
     State("BULKAPP-g_0", "value"),
     State("BULKAPP-g_inf", "value"),
     State("BULKAPP-raw-data-store", "data"),
-    State("BULKAPP-oversampling-input", "value")
+    State("BULKAPP-oversampling-input", "value"),
+    State("BULKAPP-oversampling-Nf", "value"),
+    prevent_initial_call=True
 )
-def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
-    if n_clicks is None or data is None or ntimes is None:
+def store_oversampling_data(oversampling_click, refresh_click,
+                            g_0, g_inf, raw_data, ntimes, N_f):
+    if raw_data is None:
         raise dash.exceptions.PreventUpdate
 
     # avoid float number
-    ntimes = int(ntimes)    
-    df = convert_lists_to_df(data)
-    x, y = get_oversampling_data(df, ntimes)
-    # x, y = get_oversampling_data(content=content, ntimes=ntimes)
-
-    data = {
-        "x" : x,
-        "y" : y,
-    }
-
+    ntimes = 10 if ntimes is None else int(ntimes)
+    N_f = 100 if N_f is None else int(N_f)
     # default g_0: 1, g_inf: 0
     g_0 = 1 if g_0 is None else int(g_0)
     g_inf = 0 if g_inf is None else int(g_inf)
+
+    df = convert_lists_to_df(raw_data)
+    x, y, z = bulk_ft(df, g_0, g_inf, False, N_f)
+
+    # x, y = get_oversampling_data(content=content, ntimes=ntimes)
+
+    oversampled_data = {
+        "x" : x,
+        "y" : y,
+        "z" : z
+    }
     
     # This function takes lots of time
-    omega, g_p, g_pp = ftdata(df, g_0, g_inf, True, ntimes)
+    omega, g_p, g_pp = bulk_ft(df, g_0, g_inf, True, N_f, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
@@ -154,55 +168,214 @@ def store_oversampling_data(n_clicks, g_0, g_inf, data, ntimes):
         "y2": g_pp
     }
 
-    return data, oversampled_ft_data
+    return oversampled_data, oversampled_ft_data
 
 """
-Sigma Renedr
+Stress Renedr
 Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
-    ClientsideFunction(
-        namespace="clientsideSigma",
-        function_name="tabChangeFigRender"
-    ),
-    Output("BULKAPP-sigma-display", "figure"),
-    Input("BULKAPP-raw-data-store", "data"),
-    Input("BULKAPP-oversampling-data-store", "data"),
-    Input("BULKAPP-oversampling-render-switch", "value"),
-    prevent_initial_call=True
-)
+    """
+    function(rawData, oversamplingData, switchValue=[false]) {
+        if (rawData == undefined) {
+            return;
+        }
 
-"""
-Gamma Renedr
-Trigger when the experiental data(raw data) or oversampling data changed
-"""
-app.clientside_callback(
-    ClientsideFunction(
-        namespace="clientsideGamma",
-        function_name="tabChangeFigRender"
-    ),
-    Output("BULKAPP-gamma-display", "figure"),
+        let data = [];
+        let layout = {
+            "xaxis": {"tick0": -2, "dtick": 1,
+                        "type": "log", "title": {"text": "Time [s]"}, 
+                        "ticks": "outside" 
+            },
+            "yaxis": {"title": {"text" : "σ [Pa]"}, "range": [0, 1.0],
+                        "rangemode": "tozero", "ticks": "outside"
+            },
+        }
+        let rawDataTrace = {
+            "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+            "name": "Experiental Data",
+            "mode": "markers",
+            "marker": {color:"green", "symbol": "circle-open", 
+                        "size": 10, "maxdisplayed": 200},
+            "x": rawData.x,
+            "y": rawData.y
+        }
+
+        if (switchValue[0] == true && oversamplingData != undefined) {
+            let oversamplingDataTrace = {
+                "name": "Oversampling Data",
+                "mode": "markers",
+                "marker": {color:"darkgreen", "symbol": "circle-x", 
+                            "size": 6, "maxdisplayed": 200},
+                "x": oversamplingData.x,
+                "y": oversamplingData.y
+            }
+            
+            data.push(rawDataTrace, oversamplingDataTrace);
+        } else {
+            data.push(rawDataTrace);
+        }
+
+        return {
+            "data" : data,
+            "layout": layout
+        }   
+    }
+    """,
+    Output("BULKAPP-stress-display", "figure"),
     Input("BULKAPP-raw-data-store", "data"),
     Input("BULKAPP-oversampling-data-store", "data"),
     Input("BULKAPP-oversampling-render-switch", "value"),
     Input("BULKAPP-vertical-axis-switch", "value"),
-    prevent_initial_call=True
+    # prevent_initial_call=True
 )
 
 """
-Eta Renedr
+Strain Renedr
 Trigger when the experiental data(raw data) or oversampling data changed
 """
 app.clientside_callback(
-    ClientsideFunction(
-        namespace="clientsideEta",
-        function_name="tabChangeFigRender"
-    ),
-    Output("BULKAPP-eta-display", "figure"),
+    """
+    function(rawData, oversamplingData, switchValue=[false]) {
+        if (rawData == undefined) {
+            return;
+        }
+
+        let data = [];
+        let layout = {
+            "xaxis": {"tick0": -2, "dtick": 1,
+                        "type": "log", "title": {"text": "Time [s]"}, 
+                        "ticks": "outside" 
+            },
+            "yaxis": { "title": {"text" : "γ"}, 
+                       "rangemode": "tozero", 
+                      "ticks": "outside"},
+        }
+        let rawDataTrace = {
+            "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+            "name": "Experiental Data",
+            "mode": "markers",
+            "marker": {color:"green", "symbol": "circle-open", 
+                        "size": 10, "maxdisplayed": 200},
+            "x": rawData.x,
+            "y": rawData.z
+        }
+
+        if (switchValue[0] == true && oversamplingData != undefined) {
+            let oversamplingDataTrace = {
+                "name": "Oversampling Data",
+                "mode": "markers",
+                "marker": {color:"darkgreen", "symbol": "circle-x", 
+                            "size": 6, "maxdisplayed": 200},
+                "x": oversamplingData.x,
+                "y": oversamplingData.z
+            }
+            
+            data.push(rawDataTrace, oversamplingDataTrace);
+        } else {
+            data.push(rawDataTrace);
+        }
+
+        return {
+            "data" : data,
+            "layout": layout
+        }   
+    }
+    """,
+    Output("BULKAPP-strain-display", "figure"),
     Input("BULKAPP-raw-data-store", "data"),
     Input("BULKAPP-oversampling-data-store", "data"),
     Input("BULKAPP-oversampling-render-switch", "value"),
-    prevent_initial_call=True
+    Input("BULKAPP-vertical-axis-switch", "value"),
+    # prevent_initial_call=True
+)
+
+"""
+Viscoelastic moduli Renedr
+Trigger when the experiental data(raw data) or oversampling data changed
+"""
+app.clientside_callback(
+    """
+    function(ftData, oversampledftData, switchValue=[false], verticalAxisSwitch) {
+        if (ftData == undefined) {
+            return;
+        }
+
+        let data = [];
+        let layoutLinear = {
+            "xaxis": {"dtick": 1, "tick0": -12, 
+                        "type": "log", "title": {"text": "ω [rad/s]"},
+                        "ticks": "outside"},
+            "yaxis": { "type": "linear", "title": {"text" : "G′ G′′ [Pa]"},
+                        "ticks": "outside"},
+        }
+        let layoutLog = {
+            "xaxis": {"dtick": 1, "tick0": -12, 
+                        "type": "log", "title": {"text": "ω [rad/s]"},
+                        "ticks": "outside"},
+            "yaxis": {"dtick": 1, "tick0": -7, 
+                        "type": "log", "title": {"text" : "G′ G′′ [Pa]"},
+                        "ticks": "outside"},
+        }
+        let ftDataTrace0 = {
+            "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+            "name": "G\'",
+            "mode": "lines",
+            "line": {color:"black", "width": "8"},
+            // "marker": {"color": "black", "symbol": "square", "size": 7},
+            "x": ftData.x,
+            "y": ftData.y1,
+        }
+        let ftDataTrace1 = {
+            "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
+            "name": "G\'\'",
+            "mode": "lines",
+            "line": {"color": "red"},
+            "x": ftData.x,
+            "y": ftData.y2,
+        }
+
+        if (switchValue[0] == true && oversampledftData != undefined) {
+            let oversampledftDataTrace0 = {
+                "name": "oversampled-G\'",
+                "mode": "lines",
+                "line": {color:"black", "width": "8"},
+                // "marker": {"color": "black"},
+                "x": oversampledftData.x,
+                "y": oversampledftData.y1,
+            }
+            let oversampledftDataTrace1 = {
+                "name": "oversampled-G\'\'",
+                "mode": "lines",
+                "line": {"color": "red"},
+                "x": oversampledftData.x,
+                "y": oversampledftData.y2,
+            }
+            
+            data.push(oversampledftDataTrace0, oversampledftDataTrace1);
+        } else {
+            data.push(ftDataTrace0, ftDataTrace1);  
+        }
+        
+        let layout = [];
+        if (verticalAxisSwitch == VERTICAL_AXIS_TYPE.LINEAR) {
+            layout = layoutLinear;
+        } else {
+            layout = layoutLog;
+        }
+
+        return {
+            "data" : data,
+            "layout": layout
+        }
+    } 
+    """,
+    Output("BULKAPP-vm-display", "figure"),
+    Input("BULKAPP-raw-data-store", "data"),
+    Input("BULKAPP-oversampling-data-store", "data"),
+    Input("BULKAPP-oversampling-render-switch", "value"),
+    Input("BULKAPP-vertical-axis-switch", "value"),
+    # prevent_initial_call=True
 )
 
 app.clientside_callback(
@@ -221,34 +394,29 @@ app.clientside_callback(
     Output("BULKAPP-download-text", "data"),
     Output("BULKAPP-download-message", "children"),
     Input("BULKAPP-download-btn", "n_clicks"),
-    State("BULKAPP-begin-line-number", "value"),
-    State("BULKAPP-end-line-number", "value"),
+    State("BULKAPP-raw-data-store", "data"),
     State("BULKAPP-oversampling-data-store", "data"),
     prevent_initial_call=True,
 )
-def download(n_clicks, beginLineIdx, endLineIdx, data):
-    if data is None:
-        raise dash.exceptions.PreventUpdate
+def download(n_clicks, raw_data, ft_oversampled_data):
+    if ft_oversampled_data is None:
+        return None, "No data available!"
 
-    # avoid float number
-    beginLineIdx = int(beginLineIdx)
-    endLineIdx   = int(endLineIdx)
-    if beginLineIdx >= endLineIdx:
-        return None, "Invaild parameters"
+    file_suffix_name = raw_data.get("filename")
+    saved_file_name = "FT_oversampled_" + file_suffix_name
 
-    try:
-        saving_x_list = data.get("x")[beginLineIdx:endLineIdx+1]
-        saving_y_list = data.get("y")[beginLineIdx:endLineIdx+1]
-    except:
-        # if the idx is out of range, say, endLineIdx > len(x)
-        saving_x_list = data.get("x")[beginLineIdx:]
-        saving_y_list = data.get("y")[beginLineIdx:]
-    else:
-        saving_df = pd.DataFrame({"x": saving_x_list, "y": saving_y_list})
-        saving_file_name = data.get("file_name") + "_Complex Moduli.txt"
+    complex_list = combine_as_complex(
+        ft_oversampled_data["y1"],
+        ft_oversampled_data["y2"]
+    )
 
-    return (dcc.send_data_frame(saving_df.to_csv,saving_file_name, 
+    saved_data_df = pd.DataFrame(six_decimal_saving({
+        "x": ft_oversampled_data["x"],
+        "y": complex_list
+    }))
+
+    return (dcc.send_data_frame(saved_data_df.to_csv, saved_file_name, 
                                 header=False, index=False, 
                                 sep='\t', encoding='utf-8'), 
-                                "Download OK !") 
+                                "Download OK !")  
 

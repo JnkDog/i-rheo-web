@@ -6,18 +6,16 @@ import dash_bootstrap_components as dbc
 
 from components.display.spinner import Spinner, Spinner_stress, Spinner_FT, Spinner_strain, spinner_generate # Spinner_eta
 
-TABS_LABEL_DICT = {
-    "STRESS": "Stress",
-    "E & V" : "Elastic & Viscous",
-    "STRAIN": "Strain",
-    # "ETA"  :   "eta",
+BULK_TABS_LABEL_DICT = {
+    "1": "Stress",
+    "2": "Strain",
+    "3" : "Viscoelastic moduli",
 }
 
-TABS_ID_SUFFIX_DICT = {
-    "SIGMA": "sigma",
-    "FT"   :    "FT",
-    "GAMMA": "gamma",
-    # "ETA"  :   "eta",
+BULK_TABS_SUFFIX_DICT = {
+    "1" : "stress",
+    "2" : "strain",
+    "3" : "vm",
 }
 
 MOT_TABS_DICT = {
@@ -61,10 +59,10 @@ Tabs = dbc.Tabs([
 
 def tabs_component_generate(prefix_app_name):
     Spinner_list = [spinner_generate(prefix_app_name+"-"+value)
-                    for value in TABS_ID_SUFFIX_DICT.values()]
+                    for value in BULK_TABS_SUFFIX_DICT.values()]
     
-    Tab_list = [dbc.Tab(item, label=list(TABS_LABEL_DICT.values())[idx], 
-                        tab_id=list(TABS_LABEL_DICT.values())[idx].lower()) 
+    Tab_list = [dbc.Tab(item, label=list(BULK_TABS_LABEL_DICT.values())[idx], 
+                        tab_id=list(BULK_TABS_LABEL_DICT.values())[idx].lower()) 
                         for idx, item in enumerate(Spinner_list)]
 
     # Tab_list = [dbc.Tab(spinner_generate(prefix_app_name+"-"+value), 
