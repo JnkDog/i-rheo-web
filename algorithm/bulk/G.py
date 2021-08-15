@@ -11,8 +11,8 @@ from scipy.interpolate import interp1d
 
 res = np.zeros(100, dtype=complex)
 ress = np.zeros(100, dtype=complex)
-resss = np.zeros(100, dtype=complex)
-ressss = np.zeros(100, dtype=complex)
+# resss = np.zeros(100, dtype=complex)
+# ressss = np.zeros(100, dtype=complex)
 
 def manlio_ft(g, t, stress_0, stress_dot_inf, strain_0, strain_dot_inf, interpolate, oversampling, gg,  N_f = 100):
 
