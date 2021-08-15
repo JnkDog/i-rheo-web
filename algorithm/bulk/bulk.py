@@ -11,8 +11,8 @@ from scipy.interpolate import interp1d
 
 i = complex(0, 1)
 
-def manlio_ft(g, t, g_0, g_dot_inf, gg, ggg,  N_f=100, interpolate=False, oversampling=10):
-
+def manlio_ft(g, t, stress_0, stress_dot_inf, strain_0, strain_dot_inf, 
+            gg, ggg,  N_f=100, interpolate=False, oversampling=10):
     g = np.array(g)
     gg = np.array(gg)
     ggg = np.array(ggg)
@@ -32,11 +32,11 @@ def manlio_ft(g, t, g_0, g_dot_inf, gg, ggg,  N_f=100, interpolate=False, oversa
     N_t = len(t)
     omega = np.logspace(np.log10(min_omega), np.log10(max_omega), N_f)
 
-    zero = i * omega * g_0 + (1 - np.exp(-i * omega * t[1])) * ((g[1] - g_0) / t[1]) \
-           + g_dot_inf * np.exp(-i * omega * t[N_t - 1])
+    zero = i * omega * stress_0 + (1 - np.exp(-i * omega * t[1])) * ((g[1] - stress_0) / t[1]) \
+           + stress_dot_inf * np.exp(-i * omega * t[N_t - 1])
 
-    zerooo = i * omega * g_0 + (1 - np.exp(-i * omega * t[1])) * ((ggg[1] - g_0) / t[1]) \
-           + g_dot_inf * np.exp(-i * omega * t[N_t - 1])
+    zerooo = i * omega * strain_0 + (1 - np.exp(-i * omega * t[1])) * ((ggg[1] - strain_0) / t[1]) \
+           + strain_dot_inf * np.exp(-i * omega * t[N_t - 1])
 
     res= multiprocessing.Manager().list()
     for xxx in range(N_f):
@@ -92,7 +92,8 @@ def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
 
         return after
 
-def bulk_ft(df, g_0, g_dot_inf, interpolate, N_f, oversampling=10):
+def bulk_ft(df, stress_0, stress_dot_inf,strain_0, strain_dot_inf, 
+            interpolate, N_f, oversampling=10):
     funcc = df[2]
     func = df[1] 
     time = df[0]
@@ -100,7 +101,9 @@ def bulk_ft(df, g_0, g_dot_inf, interpolate, N_f, oversampling=10):
     funccc = df[1]
 
     omega, res_test, ress_test, resss_test, ressss_test = \
-        manlio_ft(func, time, g_0, g_dot_inf, funcc, funccc, N_f, interpolate, oversampling)
+        manlio_ft(func, time, stress_0, stress_dot_inf, 
+                  strain_0, strain_dot_inf, funcc, funccc, 
+                  N_f, interpolate, oversampling)
 
     G1  = (res_test * omega * i)
     G2  = (ress_test * omega * i)

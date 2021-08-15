@@ -30,12 +30,13 @@ from apps.index import index_app
 # from apps.bulk import bulk_app
 from components.nav.nav import NavBar
 
+server = app.server
+
 app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
     NavBar,
     html.Div(id="page-content")
 ], className="container-fluid")
-
 
 @app.callback(
     Output("page-content", "children"),

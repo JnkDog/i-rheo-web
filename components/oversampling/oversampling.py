@@ -56,7 +56,6 @@ def oversampling_component_generate(prefix_app_name):
 
     return Oversampling
 
-
 def oversampling_control(prefix_app_name, button_id, secondbutton_id):
     input_id = prefix_app_name + INPUT_ID_SUFFIX
     output_id = prefix_app_name + OUTPUT_ID_SUFFIX
@@ -137,6 +136,53 @@ def mot_oversampling_generate(prefix_app_name):
                     oversampling_control(prefix_app_name, button_id, secondbutton_id),
                     html.Br(),
                     switch_component_generate(prefix_app_name)
+    ])
+
+    return Oversampling
+
+
+def bulk_oversampling_generate(prefix_app_name):
+    button_id = prefix_app_name + OVERSAMPLING_BUTTON_SUFFIX
+    secondbutton_id = prefix_app_name + REOVERSAMPLING_BUTTON_SUFFIX
+    stress_0_id   = prefix_app_name + "-stress_0"
+    stress_inf_id = prefix_app_name + "-stress_inf"
+    strain_0_id = prefix_app_name + "-strain_0"
+    strain_inf_id = prefix_app_name + "-strain_inf"
+
+    BoundaryCondition = html.Div([
+        dbc.Input(
+            id=stress_0_id,
+            type="number",
+            placeholder="Input Stress(0), default 1"
+        ),
+        html.Br(),
+        dbc.Input(
+            id=stress_inf_id,
+            type="number",
+            placeholder="Input Stress(∞), default 0"
+        ),
+        html.Br(),
+        dbc.Input(
+            id=strain_0_id,
+            type="number",
+            placeholder="Input Strain(0), default 1"
+        ),
+        html.Br(),
+        dbc.Input(
+            id=strain_inf_id,
+            type="number",
+            placeholder="Input Strain(∞), default 0"
+        )
+    ])
+
+    Oversampling = html.Div([
+        html.H5("Boundary conditions"),
+        BoundaryCondition,
+        html.Br(),
+        html.H5("Oversampling operation"),
+        oversampling_control(prefix_app_name, button_id, secondbutton_id),
+        html.Br(),
+        switch_component_generate(prefix_app_name)
     ])
 
     return Oversampling

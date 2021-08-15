@@ -12,7 +12,7 @@ from app import app
 # import components
 from components.upload.upload import upload_component_generate
 from components.download.download import download_component_generate
-from components.oversampling.oversampling import oversampling_component_generate
+from components.oversampling.oversampling import bulk_oversampling_generate
 from components.tab.tabs import tabs_component_generate
 from components.display.loading import Loading
 from components.loglinearswitch.axisSwitch import vertical_axis_swith
@@ -50,7 +50,7 @@ Layout = dbc.Row([
                     # This is just for show the loading message
                     html.Div(id="BULKAPP-loading-message"),
                     html.Hr(),
-                    oversampling_component_generate(prefix_app_name),
+                    bulk_oversampling_generate(prefix_app_name),
                     html.Hr(),
                     download_component_generate(prefix_app_name)
                     ], width=3), 
@@ -75,15 +75,20 @@ Trigger when the experiental data(raw data) uploaded
     Input("BULKAPP-upload", "contents"),
     Input("BULKAPP-load-example", "n_clicks"),
     Input("BULKAPP-refresh-btn", "n_clicks"),
-    State("BULKAPP-g_0", "value"),
-    State("BULKAPP-g_inf", "value"),
+    # Stress condition
+    State("BULKAPP-stress_0", "value"),
+    State("BULKAPP-stress_inf", "value"),
+    # Strain condition
+    State("BULKAPP-strain_0", "value"),
+    State("BULKAPP-strain_inf", "value"),
     State("BULKAPP-oversampling-Nf", "value"),
     State("BULKAPP-upload", "filename"),
     State("BULKAPP-raw-data-store", "data"),
     prevent_initial_call=True
 )
 def store_raw_data(content, example_click, refresh_click,
-                   g_0, g_inf, N_f, file_name, prev_raw_data):
+                   stress_0, stress_inf, strain_0, strain_inf,
+                   N_f, file_name, prev_raw_data):
     # Deciding which raw_data used according to the ctx 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -109,11 +114,16 @@ def store_raw_data(content, example_click, refresh_click,
     }
 
     # default g_0: 1, g_inf: 0
-    g_0 = 1 if g_0 is None else int(g_0)
-    g_inf = 0 if g_inf is None else int(g_inf)
+    stress_0 = 1 if stress_0 is None else float(stress_0)
+    stress_inf = 0 if stress_inf is None else float(stress_inf)
+    strain_0 = 1 if strain_0 is None else float(strain_0)
+    strain_inf = 0 if strain_inf is None else float(strain_inf)
+
+    # avoid float number
     N_f = 100 if N_f is None else int(N_f)
 
-    omega, g_p, g_pp = bulk_ft(df, g_0, g_inf, True, N_f)
+    omega, g_p, g_pp = bulk_ft(df, stress_0, stress_inf, 
+                                strain_0, strain_inf, True, N_f)
 
     ft_data = {
         "x": omega,
@@ -135,27 +145,37 @@ and the oversampling button clicked with the oversampling ntimes.
     Output("BULKAPP-oversampled-ft-data-store", "data"),
     Input("BULKAPP-oversampling-btn", "n_clicks"),
     Input("BULKAPP-refresh-btn", "n_clicks"),
-    State("BULKAPP-g_0", "value"),
-    State("BULKAPP-g_inf", "value"),
+    # Stress condition
+    State("BULKAPP-stress_0", "value"),
+    State("BULKAPP-stress_inf", "value"),
+    # Strain condition
+    State("BULKAPP-strain_0", "value"),
+    State("BULKAPP-strain_inf", "value"),
     State("BULKAPP-raw-data-store", "data"),
     State("BULKAPP-oversampling-input", "value"),
     State("BULKAPP-oversampling-Nf", "value"),
     prevent_initial_call=True
 )
 def store_oversampling_data(oversampling_click, refresh_click,
-                            g_0, g_inf, raw_data, ntimes, N_f):
+                           stress_0, stress_inf, 
+                           strain_0, strain_inf, 
+                           raw_data, ntimes, N_f):
     if raw_data is None:
         raise dash.exceptions.PreventUpdate
 
     # avoid float number
     ntimes = 10 if ntimes is None else int(ntimes)
     N_f = 100 if N_f is None else int(N_f)
+
     # default g_0: 1, g_inf: 0
-    g_0 = 1 if g_0 is None else int(g_0)
-    g_inf = 0 if g_inf is None else int(g_inf)
+    stress_0 = 1 if stress_0 is None else float(stress_0)
+    stress_inf = 0 if stress_inf is None else float(stress_inf)
+    strain_0 = 1 if strain_0 is None else float(strain_0)
+    strain_inf = 0 if strain_inf is None else float(strain_inf)
 
     df = convert_lists_to_df(raw_data)
-    x, y, z = bulk_ft(df, g_0, g_inf, False, N_f)
+    x, y, z = bulk_ft(df, stress_0, stress_inf, 
+                      strain_0, strain_inf, False, N_f)
 
     # x, y = get_oversampling_data(content=content, ntimes=ntimes)
 
@@ -166,7 +186,9 @@ def store_oversampling_data(oversampling_click, refresh_click,
     }
     
     # This function takes lots of time
-    omega, g_p, g_pp = bulk_ft(df, g_0, g_inf, True, N_f, ntimes)
+    omega, g_p, g_pp = bulk_ft(df, stress_0, stress_inf, 
+                               strain_0, strain_inf,True,
+                               N_f, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
@@ -437,7 +459,7 @@ app.clientside_callback(
     Output("BULKAPP-download-message", "children"),
     Input("BULKAPP-download-btn", "n_clicks"),
     State("BULKAPP-raw-data-store", "data"),
-    State("BULKAPP-oversampling-data-store", "data"),
+    State("BULKAPP-oversampled-ft-data-store", "data"),
     prevent_initial_call=True,
 )
 def download(n_clicks, raw_data, ft_oversampled_data):
@@ -447,14 +469,10 @@ def download(n_clicks, raw_data, ft_oversampled_data):
     file_suffix_name = raw_data.get("filename")
     saved_file_name = "FT_oversampled_" + file_suffix_name
 
-    complex_list = combine_as_complex(
-        ft_oversampled_data["y1"],
-        ft_oversampled_data["y2"]
-    )
-
     saved_data_df = pd.DataFrame(six_decimal_saving({
         "x": ft_oversampled_data["x"],
-        "y": complex_list
+        "y1": ft_oversampled_data["y1"],
+        "y2": ft_oversampled_data["y2"],
     }))
 
     return (dcc.send_data_frame(saved_data_df.to_csv, saved_file_name, 
