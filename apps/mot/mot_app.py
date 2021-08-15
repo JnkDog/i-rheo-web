@@ -175,16 +175,17 @@ def store_raw_data(content, example_click, refresh_click,
             upload_local_data_workflow(df, g_0, g_inf, kt, at, 
                                        N_f, file_name, is_double_FT)
     else:
-        data_null_prevents_updated()
+        data_null_prevents_updated(prev_ft_data)
 
         if is_disable_FT:
             raw_data = prev_raw_data
             ft_raw_data = update_ft_data(prev_ft_data, kt, at, func_flag)
         else:
             df = convert_lists_to_df(prev_raw_data)
-            file_name = prev_ft_data["filename"]
+            file_name = prev_raw_data["filename"]
             raw_data, ft_raw_data = \
-                upload_local_data_workflow(df, g_0, g_inf, kt, at, N_f, is_double_FT)
+                upload_local_data_workflow(df, g_0, g_inf, kt, at, 
+                    N_f, file_name,is_double_FT)
 
     # return data, upload_messge, ft_data
     return raw_data, ft_raw_data, ""
@@ -336,6 +337,7 @@ app.clientside_callback(
     Input("MOT-oversampling-data-store", "data"),
     Input("MOT-oversampling-render-switch", "value"),
     Input("MOT-vertical-axis-switch", "value"),
+    Input("MOT-radioitems-input", "value"),
     # Due to the dcc.Stroe's storage_type is session
     # if prevent_initial_call=True, the fig cannot show
     # prevent_initial_call=True
@@ -384,7 +386,7 @@ def data_null_prevents_updated(data):
 
 # If the data exists and the g_o is None with the g_inf
 def disable_FT(g_0, g_inf, kt, at, N_f, prev_data):
-    if all([g_0, g_inf, N_f]) is False and prev_data is not None:
+    if any([g_0, g_inf, N_f]) is False and prev_data is not None:
         return True
     else:
         return False
@@ -409,8 +411,8 @@ def extract_from_prev_data(original_data, func_flag):
     else:
         data = {
             "x": original_data["pai_x"],
-            "ft_real": original_data["pait_ft_real"],
-            "ft_imag": original_data["pait_ft_imag"],
+            "ft_real": original_data["pai_ft_real"],
+            "ft_imag": original_data["pai_ft_imag"],
         }
 
     return data
@@ -449,7 +451,7 @@ def upload_local_data_workflow(df, g_0, g_inf, kt, at,
 
         # Pait
         omega_pait, pai_g_p, pai_g_pp, _, _, pait_ft_real, pait_ft_imag = \
-            mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, False)
+            mot_integrated_processing(df, kt, at, DEFAULT_G_0_PAIT, g_inf, N_f, False)
 
         ft_raw_data = {
             "at_x": omega_at,
@@ -497,7 +499,7 @@ def oversampling_button_workflow(df, kt, at, g_0, g_inf, N_f, ntimes, is_double_
 
         # Pait
         omega_pait, pai_g_p, pai_g_pp, _, _, pait_ft_real, pait_ft_imag = \
-            mot_integrated_processing(df, kt, at, g_0, g_inf, N_f, True, ntimes)
+            mot_integrated_processing(df, kt, at, DEFAULT_G_0_PAIT, g_inf, N_f, True, ntimes)
 
         ft_oversampled_data = {
             "at_x": omega_at,

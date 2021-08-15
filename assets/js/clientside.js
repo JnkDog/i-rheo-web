@@ -142,9 +142,15 @@ gammaRender = function(rawData, oversamplingData, switchValue=[false], verticalA
     };
 }
 
-motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalAxisSwitch) {
+motAtRender = function(rawData, oversamplingData, switchValue=[false], 
+                    verticalAxisSwitch, functionFlag) {
     if (rawData == undefined) {
         return;
+    }
+    
+    let yaxisTitleText = "A(t)";
+    if (functionFlag == FUNCTION_TYPE.PAI_T) {
+        yaxisTitleText = "∏(t)";
     }
 
     let data = [];
@@ -153,8 +159,9 @@ motAtRender = function(rawData, oversamplingData, switchValue=[false], verticalA
                 "type": "log", "title": {"text": "t (sec)"}, 
                 "ticks": "outside" 
         },
-        "yaxis": {"title": {"text" : "A(t)"}, 
+        "yaxis": {"title": {"text" : yaxisTitleText}, 
                 // "range": [0, 1.0],
+                "tick0": -2, "dtick": 1,
                 "type": "log",
                 "rangemode": "tozero", "ticks": "outside"
         },
@@ -211,7 +218,7 @@ motRender = function(ftData, oversampledftData, switchValue=[false],
         y1 = ftData.at_y1;
         y2 = ftData.at_y2;
     } else {
-        x  = ftData.pait_x;
+        x  = ftData.pai_x;
         y1 = ftData.pai_y1;
         y2 = ftData.pai_y2;
     }
@@ -249,7 +256,7 @@ motRender = function(ftData, oversampledftData, switchValue=[false],
             y1 = oversampledftData.at_y1;
             y2 = oversampledftData.at_y2;
         } else {
-            x  = oversampledftData.pait_x;
+            x  = oversampledftData.pai_x;
             y1 = oversampledftData.pai_y1;
             y2 = oversampledftData.pai_y2;
         }
