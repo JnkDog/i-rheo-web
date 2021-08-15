@@ -14,7 +14,7 @@ ress = np.zeros(100, dtype=complex)
 resss = np.zeros(100, dtype=complex)
 ressss = np.zeros(100, dtype=complex)
 
-def manlio_ft(g, t, g_0, g_dot_inf, interpolate, oversampling, gg,ggg,  N_f = 100):
+def manlio_ft(g, t, stress_0, stress_dot_inf, strain_0, strain_dot_inf, interpolate, oversampling, gg,ggg,  N_f = 100):
 
     g = np.array(g)
     gg = np.array(gg)
@@ -35,11 +35,11 @@ def manlio_ft(g, t, g_0, g_dot_inf, interpolate, oversampling, gg,ggg,  N_f = 10
     N_t = len(t)
     omega = np.logspace(np.log10(min_omega), np.log10(max_omega), N_f)
 
-    zero = i * omega * g_0 + (1 - np.exp(-i * omega * t[1])) * ((g[1] - g_0) / t[1]) \
-           + g_dot_inf * np.exp(-i * omega * t[N_t - 1])
+    zero = i * omega * stress_0 + (1 - np.exp(-i * omega * t[1])) * ((g[1] - stress_0) / t[1]) \
+           + stress_dot_inf * np.exp(-i * omega * t[N_t - 1])
 
-    zerooo = i * omega * g_0 + (1 - np.exp(-i * omega * t[1])) * ((ggg[1] - g_0) / t[1]) \
-           + g_dot_inf * np.exp(-i * omega * t[N_t - 1])
+    zerooo = i * omega * strain_0 + (1 - np.exp(-i * omega * t[1])) * ((ggg[1] - strain_0) / t[1]) \
+           + strain_dot_inf * np.exp(-i * omega * t[N_t - 1])
 
     res= multiprocessing.Manager().list()
     for xxx in range(100):
@@ -102,7 +102,7 @@ def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
         return after
 
 
-def test(g_0, g_dot_inf,interpolate, oversampling):
+def test(stress_0, stress_dot_inf,strain_0, strain_dot_inf,interpolate, oversampling):
     i = complex(0, 1)
     funcc = df_news[2]
     func = df_news[1] 
@@ -110,7 +110,7 @@ def test(g_0, g_dot_inf,interpolate, oversampling):
     func = func/funcc
     funccc = df_news[1]
 
-    omega, res_test, ress_test, resss_test, ressss_test = manlio_ft(func, time, g_0, g_dot_inf, interpolate, oversampling, funcc, funccc)
+    omega, res_test, ress_test, resss_test, ressss_test = manlio_ft(func, time, stress_0, stress_dot_inf, strain_0, strain_dot_inf, interpolate, oversampling, funcc, funccc)
 
     G1=(res_test * omega * i)
     G2=(ress_test * omega * i)
@@ -134,7 +134,7 @@ def test(g_0, g_dot_inf,interpolate, oversampling):
 if __name__ == '__main__':
     start=time.time()
     df_news = pd.read_table('PI130k-02_-30C_SR01_CP10H_gt.txt',sep='	',header = None)
-    test(g_0=1, g_dot_inf=0,interpolate=True, oversampling=10)
+    test(stress_0=1, stress_dot_inf=0, strain_0=1, strain_dot_inf=0,interpolate=True, oversampling=10)
     end=time.time()
     print("\ntime",end-start)
     
