@@ -546,12 +546,15 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
 
             let data = [];
             let layout = {
-                "xaxis": {"tick0": -2, "dtick": 1,
-                          "type": "log", "title": {"text": "Time [s]"}, 
-                          "ticks": "outside" 
+                "xaxis": {
+                    "tick0": -2, "dtick": 1,
+                    "type": "log", "title": {"text": "Time [s]"}, 
+                    "ticks": "outside" 
                 },
-                "yaxis": {"title": {"text" : "Input"}, "range": [0, 1.0],
-                          "rangemode": "tozero", "ticks": "outside"
+                "yaxis": {
+                    "title": {"text" : "Input"},
+                    "rangemode": "tozero", 
+                    "ticks": "outside"
                 },
             }
             let rawDataTrace = {

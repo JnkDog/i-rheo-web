@@ -211,6 +211,7 @@ app.clientside_callback(
     Input("FTAPP-raw-data-store", "data"),
     Input("FTAPP-oversampling-data-store", "data"),
     Input("FTAPP-oversampling-render-switch", "value"),
+    Input("FTAPP-vertical-axis-switch", "value")
     # prevent_initial_call=True
 )
 
