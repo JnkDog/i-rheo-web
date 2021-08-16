@@ -153,7 +153,7 @@ def bulk_oversampling_generate(prefix_app_name):
         dbc.Input(
             id=stress_0_id,
             type="number",
-            placeholder="Input Stress(0), default 1"
+            placeholder="Input Stress(0), default 0"
         ),
         html.Br(),
         dbc.Input(
@@ -165,7 +165,7 @@ def bulk_oversampling_generate(prefix_app_name):
         dbc.Input(
             id=strain_0_id,
             type="number",
-            placeholder="Input Strain(0), default 1"
+            placeholder="Input Strain(0), default 0"
         ),
         html.Br(),
         dbc.Input(
