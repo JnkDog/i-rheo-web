@@ -114,16 +114,16 @@ def store_raw_data(content, example_click, refresh_click,
     }
 
     # default g_0: 1, g_inf: 0
-    stress_0 = 1 if stress_0 is None else float(stress_0)
+    stress_0 = 0 if stress_0 is None else float(stress_0)
     stress_inf = 0 if stress_inf is None else float(stress_inf)
-    strain_0 = 1 if strain_0 is None else float(strain_0)
+    strain_0 = 0 if strain_0 is None else float(strain_0)
     strain_inf = 0 if strain_inf is None else float(strain_inf)
 
     # avoid float number
     N_f = 100 if N_f is None else int(N_f)
 
     omega, g_p, g_pp = bulk_ft(df, stress_0, stress_inf, 
-                                strain_0, strain_inf, True, N_f)
+                                strain_0, strain_inf, False, N_f)
 
     ft_data = {
         "x": omega,
@@ -168,9 +168,9 @@ def store_oversampling_data(oversampling_click, refresh_click,
     N_f = 100 if N_f is None else int(N_f)
 
     # default g_0: 1, g_inf: 0
-    stress_0 = 1 if stress_0 is None else float(stress_0)
+    stress_0 = 0 if stress_0 is None else float(stress_0)
     stress_inf = 0 if stress_inf is None else float(stress_inf)
-    strain_0 = 1 if strain_0 is None else float(strain_0)
+    strain_0 = 0 if strain_0 is None else float(strain_0)
     strain_inf = 0 if strain_inf is None else float(strain_inf)
 
     df = convert_lists_to_df(raw_data)
