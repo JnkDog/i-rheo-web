@@ -21,8 +21,8 @@ def manlio_ft(g, t, stress_0, stress_dot_inf, strain_0, strain_dot_inf, interpol
     # ggg = np.array(ggg)
     t = np.array(t)
     if interpolate is True:
-        gi = interp1d(t, g, kind='cubic', fill_value='extrapolate')
-        ggi = interp1d(t, gg, kind='cubic', fill_value='extrapolate')
+        gi = interp1d(t, g, kind='linear', fill_value='extrapolate')
+        ggi = interp1d(t, gg, kind='linear', fill_value='extrapolate')
         # gggi = interp1d(t, ggg, kind='cubic', fill_value='extrapolate')
         t_new = np.logspace(min(np.log10(t)), max(np.log10(t)), len(t) * oversampling)  # re-sample t in log space
         g = gi(t_new)  # get new g(t) taken at log-space sampled t
@@ -139,7 +139,7 @@ def test(stress_0, stress_dot_inf,strain_0, strain_dot_inf,interpolate, oversamp
 if __name__ == '__main__':
     start=time.time()
     df_news = pd.read_table('PI130k-02_-30C_SR01_CP10H_gt.txt',sep='	',header = None)
-    test(stress_0=0, stress_dot_inf=0, strain_0=0, strain_dot_inf=0, interpolate=False, oversampling=10)
+    test(stress_0=0, stress_dot_inf=0, strain_0=0, strain_dot_inf=0, interpolate=True, oversampling=10)
     end=time.time()
     print("\ntime",end-start)
     
