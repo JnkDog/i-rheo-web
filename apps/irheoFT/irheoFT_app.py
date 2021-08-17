@@ -20,6 +20,7 @@ from components.loglinearswitch.axisSwitch import vertical_axis_swith
 from algorithm.oversample import get_oversampling_data
 from algorithm.read_data import convert_lists_to_df, generate_df, generate_df_from_local, replace_dict_value
 from algorithm.pwft import fast_ftdata
+from algorithm.normal_way import ftdata
 from algorithm.saving_process import combine_as_complex, six_decimal_saving
 
 # Using your own app name. Can't be same.
@@ -186,7 +187,7 @@ def store_oversampling_data(oversampling_click, refresh_click,
     }
 
     # fast FT
-    omega, g_p, g_pp, non_time_g_p, non_time_g_pp = fast_ftdata(df, g_0, g_inf, N_f, True, ntimes)
+    omega, g_p, g_pp, non_time_g_p, non_time_g_pp = ftdata(df, g_0, g_inf, N_f, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
