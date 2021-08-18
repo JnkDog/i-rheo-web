@@ -1,1 +1,1 @@
-web: gunicorn index:server -c gunicorn.conf --timeout 120
+web: gunicorn -c gunicorn.conf --timeout 120 --graceful-timeout 120 index:server 
