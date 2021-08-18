@@ -1,1 +1,1 @@
-web: gunicorn -c gunicorn.conf index:server 
+web: gunicorn index:server -c gunicorn.conf --timeout 120
