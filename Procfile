@@ -1,1 +1,1 @@
-web: gunicorn index:server
+web: gunicorn -c gunicorn.conf index:server 
