@@ -130,9 +130,10 @@ def test(stress_0, stress_dot_inf,strain_0, strain_dot_inf,interpolate, oversamp
     g_pp = np.imag(G4)
     plt.loglog(omega,g_p, '-o', lw=3, color='red',label='$G^{I}$') 
     plt.loglog(omega, g_pp, '-o', lw=3, color='royalblue', label='$G^{II}$')
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Moduli (Pa)')
+    plt.xlabel('Omega [rad/s]')
+    plt.ylabel('Viscoelastic Moduli[Pa]')
     plt.legend()
+    plt.grid()
     plt.show()
 
 
