@@ -539,9 +539,10 @@ uploadMessageRecovery = function(rawData) {
 
     const filename = rawData.filename;
     const len = rawData.lines;
+    const step = rawData.step;
 
     return `The upload file ${filename} 
-            with ${len} lines`;
+            with ${len} lines ${step}`;
 }
 
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
