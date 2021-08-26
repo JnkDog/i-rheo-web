@@ -24,7 +24,7 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
 
     if interpolate is True:
         gi = interp1d(t, g, kind='cubic', fill_value='extrapolate')
-        t_new = np.logspace(min(np.log10(t+epsilon)), max(np.log10(t+epsilon)), len(t) * oversampling)  # re-sample t in log space
+        t_new = np.logspace(min(np.log10(t+epsilon)), max(np.log10(t+epsilon)), len(t)*oversampling)  # re-sample t in log space
         g = gi(t_new)  # get new g(t) taken at log-space sampled t
         t = t_new
 
