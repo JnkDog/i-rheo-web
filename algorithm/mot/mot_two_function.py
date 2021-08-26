@@ -5,6 +5,7 @@ import pandas as pd
 import math
 import multiprocessing
 from scipy.interpolate import interp1d
+from scipy.fftpack import fft
 
 """
 Using multi-processes to accelerate processing
@@ -118,3 +119,28 @@ def combine_as_complex(data):
     ft_complex.imag = ft_image
 
     return ft_complex
+
+def fast_wpc_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=10):
+    g = np.array(g)
+    t = np.array(t)
+
+    if interpolate is True:
+        gi = interp1d(t, g, kind='cubic', fill_value='extrapolate')
+        t_new = np.logspace(min(np.log10(t)), max(np.log10(t)), len(t) * oversampling)  # re-sample t in log space
+        g = gi(t_new)  # get new g(t) taken at log-space sampled t
+        t = t_new
+
+    i = complex(0, 1)
+    min_omega = 1 / max(t)
+    max_omega = 1 / min(t)
+    N_t = len(t)
+    omega = np.logspace(np.log10(min_omega), np.log10(max_omega), N_f)
+
+    zero = i * omega * g_0 + (1 - np.exp(-i * omega * t[1])) * ((g[1] - g_0) / t[1]) \
+           + g_dot_inf * np.exp(-i * omega * t[N_t - 1])
+
+    y = (np.sin(omega)-np.sin(omega))
+    fft_y = fft(y)/omega
+    print(fft_y[0:5])
+    
+    return omega, fft_y
