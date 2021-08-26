@@ -151,11 +151,8 @@ def store_oversampling_data(oversampling_clicks, refresh_clicks,
     indinf = 0 if indinf is None else indinf
     N_f = 100 if N_f is None else int(N_f)
 
-    # df = convert_lists_to_df(raw_data)
-    raw_data["step"] = "convert"
-    # x, y, z = afm_rawdata_oversampling(df, ntimes)
-    x, y, z = 1, 1, 1
-    raw_data["step"] = "raw data oversampling finish"
+    df = convert_lists_to_df(raw_data)
+    x, y, z = afm_rawdata_oversampling(df, ntimes)
 
     oversampled_data = {
         "x": x,
@@ -163,9 +160,7 @@ def store_oversampling_data(oversampling_clicks, refresh_clicks,
         "z": z,
     }
 
-    # omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, True, ntimes)
-    omega, g_p, g_pp = 2, 2, 2
-    raw_data["step"] = "ft data oversampling finish"
+    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, True, ntimes)
 
     oversampled_ft_data = {
         "x": omega,
@@ -256,6 +251,7 @@ app.clientside_callback(
     ),
     Output("AFM-upload-message", "children"),
     Input("AFM-raw-data-store", "data"),
+    Input("AFM-oversampling-data-store", "data"),
     # prevent_initial_call=True
 )
 

@@ -532,17 +532,17 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
     };
 }
 
-uploadMessageRecovery = function(rawData) {
+uploadMessageRecovery = function(rawData, oversampledData) {
     if (rawData == undefined) {
         return;
     }
 
     const filename = rawData.filename;
     const len = rawData.lines;
-    const step = rawData.step;
+    const step = oversampledData[0][0];
 
     return `The upload file ${filename} 
-            with ${len} lines ${step}`;
+            with ${len} lines oversampling operation ${step}`;
 }
 
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
