@@ -251,7 +251,6 @@ app.clientside_callback(
     ),
     Output("AFM-upload-message", "children"),
     Input("AFM-raw-data-store", "data"),
-    Input("AFM-oversampling-data-store", "data"),
     # prevent_initial_call=True
 )
 
