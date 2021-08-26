@@ -370,7 +370,7 @@ forceRender = function(rawData, oversamplingData, switchValue=[false], verticalA
 
     let rawDataTrace = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-        "name": "force-time",
+        "name": "Force-Time",
         "mode": "lines",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
@@ -380,7 +380,7 @@ forceRender = function(rawData, oversamplingData, switchValue=[false], verticalA
 
     if (switchValue[0] == true && oversamplingData != undefined) {
         let oversamplingDataTrace = {
-            "name": "Oversampled Force Data",
+            "name": "Oversampled Force-Time",
             "mode": "markers",
             "marker": {"symbol": "circle-x", 
                         "size": 6, "maxdisplayed": 200},
@@ -432,7 +432,7 @@ identationRender = function(rawData, oversamplingData, switchValue=[false], vert
 
     if (switchValue[0] == true && oversamplingData != undefined) {
         let oversamplingDataTrace = {
-            "name": "Oversampled Indentation Data",
+            "name": "Oversampled Indentation-Time",
             "mode": "markers",
             "marker": {"symbol": "circle-x", 
                         "size": 6, "maxdisplayed": 200},
@@ -483,7 +483,7 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
 
     let ftDataTrace1 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-        "name": "Data1",
+        "name": "G'",
         "mode": "lines",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
@@ -492,7 +492,7 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
     }
     let ftDataTrace2 = {
         "hovertemplate": "x=%{x}<br>y=%{y}<extra></extra>", 
-        "name": "Data2",
+        "name": "G''",
         "mode": "lines",
         "marker": {"symbol": "circle-open", 
                 "size": 10, "maxdisplayed": 200},
@@ -502,7 +502,7 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
 
     if (switchValue[0] == true && oversampledData != undefined) {
         let oversampledDataTrace1 = {
-            "name": "Oversampling Data",
+            "name": "G'",
             "mode": "markers",
             "marker": {"symbol": "circle-x", 
                         "size": 6, "maxdisplayed": 200},
@@ -510,7 +510,7 @@ afmRender = function(ftData, oversampledData, switchValue=[false], verticalAxisS
             "y": oversampledData.y1
         };
         let oversampledDataTrace2 = {
-            "name": "Oversampling Data",
+            "name": "G''",
             "mode": "markers",
             "marker": {"symbol": "circle-x", 
                         "size": 6, "maxdisplayed": 200},
