@@ -44,7 +44,7 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
         res.append(i)
 
     lock = multiprocessing.Manager().Lock()
-    pool = multiprocessing.Pool(processes=3)
+    pool = multiprocessing.Pool(processes=2)
 
     for w_i, w in enumerate(omega):
         after = 0
@@ -54,7 +54,7 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
     pool.close()
     pool.join()
     del pool
-    
+    del lock
     return omega, ((res) / (i * omega) ** 2)
 
 
