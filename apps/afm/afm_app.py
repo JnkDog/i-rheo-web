@@ -108,7 +108,7 @@ def store_raw_data(content, example_clicks, refresh_clicks,
             replacement_keys = ["x", "y1", "y2"]
             ft_data = replace_dict_value(prev_ft_data, replacement_elements, replacement_keys)
 
-    return raw_data, ft_data, "here is the test"
+    return raw_data, ft_data, ""
 
 
 @app.callback(
@@ -152,8 +152,9 @@ def store_oversampling_data(oversampling_clicks, refresh_clicks,
     N_f = 100 if N_f is None else int(N_f)
 
     df = convert_lists_to_df(raw_data)
-
+    raw_data["step"] = "convert"
     x, y, z = afm_rawdata_oversampling(df, ntimes)
+    raw_data["step"] = "raw data oversampling finish"
 
     oversampled_data = {
         "x": x,
@@ -162,6 +163,7 @@ def store_oversampling_data(oversampling_clicks, refresh_clicks,
     }
 
     omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, True, ntimes)
+    raw_data["step"] = "ft data oversampling finish"
 
     oversampled_ft_data = {
         "x": omega,
@@ -262,7 +264,8 @@ def upload_local_data_workflow(df, file_name, r, v, l0, linf, ind0, indinf, N_f)
         "y": df[1],
         "z": df[2],
         "filename": file_name,
-        "lines": len(df)
+        "lines": len(df),
+        "step": "raw"
     }
 
     # fast FT processing
