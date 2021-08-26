@@ -53,8 +53,8 @@ def manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=
         # res[w_i] = (zero[w_i] + after)
     pool.close()
     pool.join()
-    # print("-----------------\n",res)
-    # print(len(res))
+    del pool
+    
     return omega, ((res) / (i * omega) ** 2)
 
 
