@@ -540,7 +540,10 @@ uploadMessageRecovery = function(rawData, oversampledData) {
     const filename = rawData.filename;
     const len = rawData.lines;
     const step = oversampledData[0][0];
-
+    if (oversampled == undefined) {
+        return `The upload file ${filename} 
+                with ${len} lines`;
+    }
     return `The upload file ${filename} 
             with ${len} lines oversampling operation ${step}`;
 }
