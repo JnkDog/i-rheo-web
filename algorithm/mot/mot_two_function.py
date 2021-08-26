@@ -52,7 +52,7 @@ def fast_manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversamp
     # setting a lock
     lock = multiprocessing.Manager().Lock()
     # seting a resource pool
-    pool = multiprocessing.Pool(processes = 2)
+    pool = multiprocessing.Pool(processes = 3)
     for w_i, w in enumerate(omega):
         #维持执行的进程总数为processes，当一个进程执行完毕后会添加新的进程进去
         pool.apply_async(calcu, (N_t, g, t, i, w, w_i, lock, zero, res))   
