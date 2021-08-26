@@ -586,7 +586,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 let oversamplingDataTrace = {
                     "name": "Oversampling Data",
                     "mode": "markers",
-                    "marker": {"symbol": "circle-x", 
+                    "marker": {color:"orange", "symbol": "circle-x", 
                                 "size": 6, "maxdisplayed": 200},
                     "x": oversamplingData.x,
                     "y": oversamplingData.y
