@@ -5,7 +5,6 @@ import pandas as pd
 import math
 import multiprocessing
 from scipy.interpolate import interp1d
-from numba import jit
 
 """
 Using multi-processes to accelerate processing
