@@ -108,7 +108,7 @@ def store_raw_data(content, example_clicks, refresh_clicks,
             replacement_keys = ["x", "y1", "y2"]
             ft_data = replace_dict_value(prev_ft_data, replacement_elements, replacement_keys)
 
-    return raw_data, ft_data, ""
+    return raw_data, ft_data, "here is the test"
 
 
 @app.callback(
