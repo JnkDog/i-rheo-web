@@ -5,13 +5,16 @@ import pandas as pd
 import math
 import multiprocessing
 from scipy.interpolate import interp1d
+from numba import jit
 
 """
 Using multi-processes to accelerate processing
 """
+
 i = complex(0, 1)
 
 # Race condition --- lock
+@jit
 def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
         after=0
         for k in range(2, N_t):
@@ -25,6 +28,7 @@ def calcu(N_t,g,t,i,w,w_i,lock,zero,res):
 
         return after
 
+@jit
 def fast_manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversampling=10):
     g = np.array(g)
     t = np.array(t)
@@ -62,14 +66,17 @@ def fast_manlio_ft(g, t, g_0=1, g_dot_inf=0, N_f=100, interpolate=True, oversamp
     del lock
     return omega, ((res) / (i * omega) ** 2)
 
+@jit
 def pai_t_G_star_processing(k, a, omega, ft_result):
     G_start = (k/(6 * math.pi * a))*(1/(i * omega * ft_result) - 1)
     return G_start
 
+@jit
 def a_t_G_star_processing(k, a, omega, ft_result):
     G_star = (k/(6 * math.pi * a))*(1/(1 - i * omega * ft_result) - 1)
     return G_star
 
+@jit
 def mot_integrated_processing(df, k, a, g_0, g_dot_inf, N_f, interpolate=False, n_times=10):
     # The input value is k, a, g_0, g_dot_inf
     x = df[0]
@@ -91,6 +98,7 @@ def mot_integrated_processing(df, k, a, g_0, g_dot_inf, N_f, interpolate=False, 
 """
 k, a only influence the gp gpp not the FT 
 """
+@jit
 def chenged_G_start_to_g(k, a, data):
     ft_complex = combine_as_complex(data)
     omega = np.asarray(data["x"]) 
@@ -108,6 +116,7 @@ def chenged_G_start_to_g(k, a, data):
 """
 Combine the real_list and imag_list to complex_ndarray
 """
+@jit
 def combine_as_complex(data):
     ft_real  = data["ft_real"] 
     ft_image = data["ft_imag"]
