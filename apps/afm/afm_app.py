@@ -112,7 +112,6 @@ def store_raw_data(content, example_clicks, refresh_clicks,
 
 
 @app.callback(
-    Output("AFM-raw-data-store", "data"),
     Output("AFM-oversampling-data-store", "data"),
     Output("AFM-oversampled-ft-data-store", "data"),
     Input("AFM-oversampling-btn", "n_clicks"),
@@ -174,7 +173,7 @@ def store_oversampling_data(oversampling_clicks, refresh_clicks,
         "y2": g_pp
     }
 
-    return raw_data, oversampled_data, oversampled_ft_data
+    return oversampled_data, oversampled_ft_data
 
 
 # =================== Download Callback =====================
