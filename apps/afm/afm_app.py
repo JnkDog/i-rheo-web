@@ -112,6 +112,7 @@ def store_raw_data(content, example_clicks, refresh_clicks,
 
 
 @app.callback(
+    Output("AFM-raw-data-store", "data"),
     Output("AFM-oversampling-data-store", "data"),
     Output("AFM-oversampled-ft-data-store", "data"),
     Input("AFM-oversampling-btn", "n_clicks"),
@@ -171,7 +172,7 @@ def store_oversampling_data(oversampling_clicks, refresh_clicks,
         "y2": g_pp
     }
 
-    return oversampled_data, oversampled_ft_data
+    return raw_data, oversampled_data, oversampled_ft_data
 
 
 # =================== Download Callback =====================
@@ -265,7 +266,7 @@ def upload_local_data_workflow(df, file_name, r, v, l0, linf, ind0, indinf, N_f)
         "z": df[2],
         "filename": file_name,
         "lines": len(df),
-        "step": "raw"
+        "step": "raw",
     }
 
     # fast FT processing
