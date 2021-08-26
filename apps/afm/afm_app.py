@@ -154,7 +154,8 @@ def store_oversampling_data(oversampling_clicks, refresh_clicks,
 
     df = convert_lists_to_df(raw_data)
     raw_data["step"] = "convert"
-    x, y, z = afm_rawdata_oversampling(df, ntimes)
+    # x, y, z = afm_rawdata_oversampling(df, ntimes)
+    x, y, z = 1, 1, 1
     raw_data["step"] = "raw data oversampling finish"
 
     oversampled_data = {
@@ -163,7 +164,8 @@ def store_oversampling_data(oversampling_clicks, refresh_clicks,
         "z": z,
     }
 
-    omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, True, ntimes)
+    # omega, g_p, g_pp = afm_moduli_process(df, r, v, l0, linf, ind0, indinf, N_f, True, ntimes)
+    omega, g_p, g_pp = 2, 2, 2
     raw_data["step"] = "ft data oversampling finish"
 
     oversampled_ft_data = {
