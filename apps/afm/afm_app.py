@@ -152,7 +152,7 @@ def store_oversampling_data(oversampling_clicks, refresh_clicks,
     indinf = 0 if indinf is None else indinf
     N_f = 100 if N_f is None else int(N_f)
 
-    df = convert_lists_to_df(raw_data)
+    # df = convert_lists_to_df(raw_data)
     raw_data["step"] = "convert"
     # x, y, z = afm_rawdata_oversampling(df, ntimes)
     x, y, z = 1, 1, 1
